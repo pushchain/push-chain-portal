@@ -1,4 +1,4 @@
-import { useAuthHeaders } from "./useAuthHeaders";
+import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { useGetSpinStatus } from "../../../queries/hooks";
 
 export const useSpinStatus = () => {

@@ -79,7 +79,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      // showCloseButton={false}
       size="small"
       css={css`
         border-radius: var(--radius-lg, 32px);
@@ -96,7 +95,8 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         children: "Get Started",
         onClick: handleSubmit,
         block: true,
-        disabled: isPending
+        disabled: isPending,
+        loading: isPending
         }}
       cancelButtonProps={null}
     >

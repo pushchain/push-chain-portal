@@ -1,9 +1,9 @@
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 
-import { useGetAllInvites, useGetSeasonThreeUserByWallet } from "../../queries"
+import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetSquadsDetails } from "../../queries"
 import { walletToFullCAIP10 } from "../../helpers/web3helper"
-import { useAuthHeaders } from "../Rewards/hooks/useAuthHeaders"
+import { useAuthHeaders } from "../../context/authHeadersContext"
 
 import { device } from "../../config/globals"
 import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
@@ -12,7 +12,7 @@ import { Box, Link, Text } from "../../blocks"
 
 
 export const Squads = () => {
-  const { connectionStatus, universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext();
   const { authHeaders } = useAuthHeaders();
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -23,51 +23,48 @@ export const Squads = () => {
     walletAddress: caip10WalletAddress
   });
 
+  const { data: squadsDetails } = useGetSquadsDetails(authHeaders);
   const { data: inviteCodeDetails } = useGetAllInvites(authHeaders);
 
+  console.log(squadsDetails,'data')
 
-  // Mock data - replace with actual data from API
-  const statsData = {
-    totalActiveReferrals: 2,
-    pointsEarned: 10000
-  };
 
-  const squadData = {
-    squadName: 'HellFire',
-    level: 1,
-    xpToLevelUp: 15000,
-    currentXp: 0,
-    totalMembers: 1,
-    maxMembers: 10,
-    spinLuckBonus: 0.5,
-    xpCollected: 15000,
-    members: [
-      {
-        memberId: '0x7A0bAeB5a6180F89Bae36998e3B5e29ae63b4669',
-        joinDate: '16 Jan, 2026',
-        xpCollected: 5000,
-        isCurrentUser: true
-      },
-      {
-        memberId: '0x48fD2Ab413884849e582465cB6a658dD8B2FF5D6',
-        joinDate: '16 Jan, 2026',
-        xpCollected: 4500,
-        isCurrentUser: false
-      },
-      {
-        memberId: '0x94F5e4897a6FCed670F745B3d1339801efE7dFA8',
-        joinDate: '16 Jan, 2026',
-        xpCollected: 2000,
-        isCurrentUser: false
-      },
-      {
-        memberId: '0xA5D897E2ddBD508d252B208a8813b269f9a45710',
-        joinDate: '16 Jan, 2026',
-        xpCollected: 3500,
-        isCurrentUser: false
-      }
-    ]
-  };
+  // const squadData = {
+  //   squadName: 'HellFire',
+  //   level: 1,
+  //   xpToLevelUp: 15000,
+  //   currentXp: 0,
+  //   totalMembers: 1,
+  //   maxMembers: 10,
+  //   spinLuckBonus: 0.5,
+  //   xpCollected: 15000,
+  //   members: [
+  //     {
+  //       memberId: '0x7A0bAeB5a6180F89Bae36998e3B5e29ae63b4669',
+  //       joinDate: '16 Jan, 2026',
+  //       xpCollected: 5000,
+  //       isCurrentUser: true
+  //     },
+  //     {
+  //       memberId: '0x48fD2Ab413884849e582465cB6a658dD8B2FF5D6',
+  //       joinDate: '16 Jan, 2026',
+  //       xpCollected: 4500,
+  //       isCurrentUser: false
+  //     },
+  //     {
+  //       memberId: '0x94F5e4897a6FCed670F745B3d1339801efE7dFA8',
+  //       joinDate: '16 Jan, 2026',
+  //       xpCollected: 2000,
+  //       isCurrentUser: false
+  //     },
+  //     {
+  //       memberId: '0xA5D897E2ddBD508d252B208a8813b269f9a45710',
+  //       joinDate: '16 Jan, 2026',
+  //       xpCollected: 3500,
+  //       isCurrentUser: false
+  //     }
+  //   ]
+  // };
 
   const handleCopyAddress = (address: string) => {
     console.log(`Copied address: ${address}`);
@@ -165,7 +162,7 @@ export const Squads = () => {
         `}
       >
         <SquadSection
-          squadData={squadData}
+          squadData={squadsDetails}
           onInviteMembers={handleInviteMembers}
           onCopyAddress={handleCopyAddress}
         />

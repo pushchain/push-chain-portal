@@ -14,7 +14,7 @@ import { Alert, Box, Button, Text } from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { ActivityVerificationButton } from "../RewardsActivity/ActivityVerificationButton";
-import { useAuthHeaders } from "../hooks/useAuthHeaders";
+import { useAuthHeaders } from "../../../context/authHeadersContext";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 

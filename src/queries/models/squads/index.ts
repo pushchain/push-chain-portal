@@ -1,4 +1,4 @@
-export * from './getSquadsListModel';
+export * from './getSquadsDetailsModel';
 export * from './createSquadModel';
 export * from './sendSquadInviteModel';
 export * from './acceptSquadInviteModel';

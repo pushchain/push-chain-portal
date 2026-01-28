@@ -40,6 +40,7 @@ import SquadsPage from "./pages/SquadsPage";
 import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
 import { useGetSeasonThreeUserByWallet } from "./queries";
+import { AuthHeadersProvider } from "./context/authHeadersContext";
 
 
 const GlobalStyle = createGlobalStyle`
@@ -275,14 +276,16 @@ function App() {
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
            >
-          <RewardsContextProvider>
-            <QueryClientProvider client={queryClient}>
-              <Router basename={basename}>
-                <AppContent />
-              </Router>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
-          </RewardsContextProvider>
+              <RewardsContextProvider>
+                  <QueryClientProvider client={queryClient}>
+                    <AuthHeadersProvider>
+                    <Router basename={basename}>
+                      <AppContent />
+                    </Router>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                    </AuthHeadersProvider>
+                  </QueryClientProvider>
+              </RewardsContextProvider>
       </PushUniversalWalletProvider>
     </ThemeProviderWrapper>
   );

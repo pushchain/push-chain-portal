@@ -13,20 +13,10 @@ type SquadMember = {
   isCurrentUser?: boolean;
 }
 
-type SquadData = {
-  squadName: string;
-  level: number;
-  xpToLevelUp: number;
-  currentXp: number;
-  totalMembers: number;
-  maxMembers: number;
-  spinLuckBonus: number;
-  xpCollected: number;
-  members: SquadMember[];
-}
+
 
 type SquadSectionProps = {
-  squadData: SquadData;
+  squadData: any;
   onInviteMembers?: () => void;
   onCopyAddress?: (address: string) => void;
 }
@@ -41,7 +31,8 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
     >
       <SquadHeader onInviteMembers={onInviteMembers} />
 
-      <Box
+     {!squadData &&
+       <Box
         width="100%"
         minHeight="169px"
         display="flex"
@@ -60,52 +51,57 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
           </Link>
         </Text>
       </Box>
-{/*
-      <Box
-        display="flex"
-        flexDirection={{ initial: "row", tb: "column" }}
-        gap="spacing-md"
-        width="100%"
-        height="100%"
-      >
-        <Box
-          height="100%"
-          css={css`
-            flex-shrink: 0;
+     }
 
-            @media ${device.tablet} {
-              width: 100%;
-              max-width: 100%;
-            }
-          `}
+
+     {squadData &&
+       <>
+        <Box
+          display="flex"
+          flexDirection={{ initial: "row", tb: "column" }}
+          gap="spacing-md"
+          width="100%"
+          height="100%"
         >
-          <SquadLevelCard
-            squadName={squadData.squadName}
-            level={squadData.level}
-            xpToLevelUp={squadData.xpToLevelUp}
-            currentXp={squadData.currentXp}
-          />
+          <Box
+            height="100%"
+            css={css`
+              flex-shrink: 0;
+
+              @media ${device.tablet} {
+                width: 100%;
+                max-width: 100%;
+              }
+            `}
+          >
+            {/*<SquadLevelCard
+              squadName={squadData.squadName}
+              level={squadData.level}
+              xpToLevelUp={squadData.xpToLevelUp}
+              currentXp={squadData.currentXp}
+            />*/}
+          </Box>
+
+          <Box
+            height="100%"
+            css={css`
+              flex: 1;
+              min-width: 0;
+              `}>
+            {/*<SquadStatsRow
+              totalMembers={squadData?.data.memberCount}
+              maxMembers={squadData?.data.maxMembers}
+              spinLuckBonus={squadData.spinLuckBonus}
+              xpCollected={squadData.xpCollected}
+            />*/}
+          </Box>
         </Box>
 
-        <Box
-          height="100%"
-          css={css`
-            flex: 1;
-            min-width: 0;
-            `}>
-          <SquadStatsRow
-            totalMembers={squadData.totalMembers}
-            maxMembers={squadData.maxMembers}
-            spinLuckBonus={squadData.spinLuckBonus}
-            xpCollected={squadData.xpCollected}
-          />
-        </Box>
-      </Box>
-
-      <SquadMembersTable
-        members={squadData.members}
-        onCopyAddress={onCopyAddress}
-      />*/}
+        <SquadMembersTable
+          members={squadData?.data.squadMembers}
+          onCopyAddress={onCopyAddress}
+        />
+     </>}
     </Box>
   );
 };

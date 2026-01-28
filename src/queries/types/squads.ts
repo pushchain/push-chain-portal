@@ -5,16 +5,36 @@ export type SquadMember = {
   isCurrentUser?: boolean;
 };
 
-export type SquadsListResponse = {
-  squadName: string;
-  level: number;
-  xpToLevelUp: number;
-  currentXp: number;
-  totalMembers: number;
-  maxMembers: number;
-  spinLuckBonus: number;
-  xpCollected: number;
-  members: SquadMember[];
+export type SquadsDetailsResponse = {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    leaderId: string;
+    memberCount: number;
+    maxMembers: number;
+    squadLevel: number;
+    squadLuckProb: number;
+    totalXPSquad: number;
+    perfectCheckInDays: number;
+    todayCheckInCount: number;
+    lastCheckInDate: string | null;
+    isLocked: boolean;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    leader: {
+      userId: string;
+      userWallet: string;
+      [key: string]: any;
+    };
+    squadMembers: Array<{
+      id: string;
+      squadId: string;
+      userId: string;
+      [key: string]: any;
+    }>;
+  };
 };
 
 export type CreateSquadParams = {

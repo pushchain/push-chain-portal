@@ -1,6 +1,7 @@
 import { css } from "styled-components"
 import { Box, Text, Copy } from "../../../blocks"
 import { device } from "../../../config/globals"
+import { fullCAIP10ToWallet, shortenText } from "../../../helpers/web3helper";
 
 type SquadMember = {
   memberId: string;
@@ -15,10 +16,7 @@ type MemberRowProps = {
 }
 
 const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
-  const truncateAddress = (address: string) => {
-    if (address.length <= 20) return address;
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+
 
   return (
     <Box
@@ -28,7 +26,6 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
       width="100%"
       padding="spacing-xs spacing-none"
     >
-      {/* Member ID */}
       <Box
         display="flex"
         alignItems="center"
@@ -49,7 +46,7 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
             min-width: 0;
           `}
         >
-          <Text 
+          <Text
             variant="bs-semibold"
             css={css`
               color: ${member.isCurrentUser ? 'var(--text-brand-medium)' : '#fff'};
@@ -62,10 +59,9 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
               }
             `}
           >
-            <span className="full-address" style={{ display: 'none' }}>{member.memberId}</span>
-            <span className="truncated-address">{truncateAddress(member.memberId)}</span>
+            <span>{shortenText(fullCAIP10ToWallet(member.user.userWallet), 9)}</span>
           </Text>
-          
+
           {member.isCurrentUser && (
             <Box
               display="flex"
@@ -79,29 +75,31 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
         </Box>
       </Box>
 
-      {/* Join Date */}
       <Box
         display="flex"
         alignItems="center"
         justifyContent="center"
         css={css`
           flex: 1;
-          
+
           @media ${device.mobileL} {
             display: none;
           }
         `}
       >
-        <Text 
-          variant="bs-semibold" 
+        <Text
+          variant="bs-semibold"
           color="text-primary"
           css={css`text-align: center;`}
         >
-          {member.joinDate}
+          {new Date(member.joinedAt).toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })}
         </Text>
       </Box>
 
-      {/* XP Collected */}
       <Box
         display="flex"
         alignItems="center"
@@ -111,12 +109,12 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
           min-width: 100px;
         `}
       >
-        <Text 
-          variant="bs-semibold" 
+        <Text
+          variant="bs-semibold"
           color="text-primary"
           css={css`text-align: right;`}
         >
-          {member.xpCollected.toLocaleString()} XP
+          {member.user.xp.toLocaleString()} XP
         </Text>
       </Box>
     </Box>
@@ -140,7 +138,6 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
       flexDirection="column"
       width="100%"
     >
-      {/* Header */}
       <Box
         display="flex"
         alignItems="center"
@@ -152,7 +149,7 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
         `}
       >
         <Box css={css`flex: 2;`}>
-          <Text 
+          <Text
             variant="h5-semibold"
             css={css`
               color: rgba(255, 255, 255, 0.75);
@@ -162,17 +159,17 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
             Member ID
           </Text>
         </Box>
-        <Box 
+        <Box
           css={css`
-            flex: 1; 
+            flex: 1;
             text-align: center;
-            
+
             @media ${device.mobileL} {
               display: none;
             }
           `}
         >
-          <Text 
+          <Text
             variant="h5-semibold"
             css={css`color: rgba(255, 255, 255, 0.75);`}
           >
@@ -180,7 +177,7 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
           </Text>
         </Box>
         <Box css={css`flex: 1; text-align: right;`}>
-          <Text 
+          <Text
             variant="h5-semibold"
             css={css`color: rgba(255, 255, 255, 0.75);`}
           >
@@ -189,14 +186,13 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
         </Box>
       </Box>
 
-      {/* Member Rows */}
       <Box
         display="flex"
         flexDirection="column"
         gap="spacing-xxxs"
         css={css`padding-top: var(--spacing-xs);`}
       >
-        {members.map((member, index) => (
+        {members?.map((member, index) => (
           <MemberRow
             key={index}
             member={member}

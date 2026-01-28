@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { css } from "styled-components";
+import { useCreateSquad, useGetSquadsDetails } from "../../../queries/hooks";
+
+import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
-import { useCreateSquad } from "../../../queries/hooks";
+import { useAuthHeaders } from "../../../context/authHeadersContext";
+
+
 
 type CreateSquadModalProps = {
   isOpen: boolean;
@@ -11,8 +16,11 @@ type CreateSquadModalProps = {
 export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => {
   const [squadName, setSquadName] = useState("");
   const [error, setError] = useState("");
+  const { authHeaders } = useAuthHeaders();
 
   const { mutate: createSquad, isPending } = useCreateSquad();
+  const { refetch } = useGetSquadsDetails(authHeaders);
+
 
   const handleCreate = () => {
     if (!squadName.trim()) {
@@ -22,10 +30,16 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
 
     setError("");
     createSquad(
-      { name: squadName.trim() },
+      {
+        params: {
+          name: squadName
+        },
+        authHeaders: authHeaders
+      },
       {
         onSuccess: () => {
           setSquadName("");
+          refetch();
           onClose();
         },
         onError: (err: any) => {
@@ -49,26 +63,20 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
       css={css`
         border-radius: var(--radius-lg, 32px);
         outline: none;
-        background: linear-gradient(180deg, #000 0%, #4C2A6B 100%);
+        background: url(${ModalBg}) no-repeat center center;
+        background-size: cover;
 
-        &::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          padding: 1px;
-          background: rgba(255, 255, 255, 0.25);
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          pointer-events: none;
+        & > div:last-child {
+          width: 100%;
+          margin-bottom: 16px;
         }
       `}
       acceptButtonProps={{
         children: isPending ? "Creating..." : "Create Squad",
         onClick: handleCreate,
         disabled: isPending,
+        loading: isPending,
+        block: true,
       }}
       cancelButtonProps={null}
     >
@@ -97,6 +105,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
           onChange={(e) => setSquadName(e.target.value)}
           error={!!error}
           errorMessage={error}
+          backgroundColor={"rgba(0, 0, 0, 0.25)"}
         />
 
         <Text

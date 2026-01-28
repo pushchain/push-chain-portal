@@ -1,4 +1,4 @@
-export * from './getSquadsList';
+export * from './getSquadsDetails';
 export * from './createSquad';
 export * from './sendSquadInvite';
 export * from './acceptSquadInvite';

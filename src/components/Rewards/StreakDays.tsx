@@ -1,7 +1,7 @@
 import { css } from "styled-components"
 
 import { useGetDailyCheckInDetails } from "../../queries";
-import { useAuthHeaders } from "./hooks/useAuthHeaders";
+import { useAuthHeaders } from "../../context/authHeadersContext";
 
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"

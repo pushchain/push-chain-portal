@@ -2,7 +2,7 @@ import { useState } from "react";
 import { css } from "styled-components"
 import { Box, Text, Copy } from "../../../blocks"
 import { useGetAllInvites } from "../../../queries";
-import { useAuthHeaders } from "../../Rewards/hooks/useAuthHeaders";
+import { useAuthHeaders } from "../../../context/authHeadersContext";
 
 type InviteCodeRowProps = {
   code: string;
