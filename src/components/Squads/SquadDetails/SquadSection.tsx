@@ -88,12 +88,12 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
               flex: 1;
               min-width: 0;
               `}>
-            {/*<SquadStatsRow
+            <SquadStatsRow
               totalMembers={squadData?.data.memberCount}
               maxMembers={squadData?.data.maxMembers}
-              spinLuckBonus={squadData.spinLuckBonus}
-              xpCollected={squadData.xpCollected}
-            />*/}
+              spinLuckBonus={squadData?.data.squadLuckProb}
+              xpCollected={squadData?.data.totalXPSquad}
+            />
           </Box>
         </Box>
 

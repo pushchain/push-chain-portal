@@ -84,18 +84,32 @@ export const SquadStatsRow = ({
       gap="spacing-md"
       width="100%"
     >
-      <StatCard
-        value={`${totalMembers}/${maxMembers}`}
-        label={"Total\nMembers"}
-      />
-      <StatCard
-        value={`${spinLuckBonus}x`}
-        label={"Spin\nLuck Bonus"}
-      />
-      <StatCard
-        value={xpCollected.toLocaleString()}
-        label={"XP\nCollected"}
-      />
+      <Box css={css`
+        flex: 1
+        `}>
+        <StatCard
+          value={`${totalMembers}/${maxMembers}`}
+          label={"Total\nMembers"}
+        />
+      </Box>
+
+      <Box css={css`
+        flex: 1
+        `}>
+          <StatCard
+            value={`${spinLuckBonus}x`}
+            label={"Spin\nLuck Bonus"}
+          />
+        </Box>
+
+      <Box css={css`
+        flex: 2
+        `}>
+          <StatCard
+            value={xpCollected.toLocaleString()}
+            label={"XP\nCollected"}
+          />
+        </Box>
     </Box>
   );
 };

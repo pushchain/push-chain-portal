@@ -3,21 +3,12 @@ import { Box, Text, Copy } from "../../../blocks"
 import { device } from "../../../config/globals"
 import { fullCAIP10ToWallet, shortenText } from "../../../helpers/web3helper";
 
-type SquadMember = {
-  memberId: string;
-  joinDate: string;
-  xpCollected: number;
-  isCurrentUser?: boolean;
-}
-
 type MemberRowProps = {
-  member: SquadMember;
+  member: any;
   onCopyAddress?: (address: string) => void;
 }
 
 const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
-
-
   return (
     <Box
       display="flex"
