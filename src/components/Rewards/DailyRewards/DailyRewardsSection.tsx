@@ -119,6 +119,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
                 size="small"
                 onClick={handleClaimRewards}
                 disabled={isClaimingRewards}
+                loading={isClaimingRewards}
               >
                 Claim
               </Button>

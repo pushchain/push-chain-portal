@@ -124,7 +124,7 @@ const SpinToWinCard = () => {
               borderRadius="radius-xl"
             >
               <Text variant="bs-bold" color="text-on-dark-bg">
-                {remainingSpins} FREE Spin{remainingSpins !== 1 ? 's' : ''}/Day
+                1 FREE Spin/Day
               </Text>
             </Box>
 
@@ -134,9 +134,7 @@ const SpinToWinCard = () => {
           <Button
             size="medium"
             variant="primary"
-            disabled={!spinStatus?.canSpin}
             onClick={() => {
-              if (!spinStatus?.canSpin) return;
               setIsModalOpen(true)
             }}
             css={css`

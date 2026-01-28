@@ -19,43 +19,34 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const { spinStatus, authHeaders, refetch } = useSpinStatus();
   const { mutate: spin, isPending: isSpinPending } = useSpinTheWheel();
 
-  const prizes = [
-    '80 Points',
-    '0.1x Multiplier',
-    '10 PC Tokens',
-    'Rare Pass',
-    '150 Points',
-    '500 PC Tokens',
-    '0.1x Multiplier',
-    '500 Points',
-    'Rare Pass',
-    '5 PC Tokens'
-  ];
-
   const handleSpinClick = () => {
-    if (isSpinning || !spinStatus?.canSpin || !authHeaders) return;
-    setShowResult(false);
+    // if (isSpinning || !spinStatus?.canSpin || !authHeaders) return;
+    // setShowResult(false);
     setIsSpinning(true);
 
-    spin(authHeaders, {
-      onSuccess: (data) => {
-        // Pass the prize index from API response to the spinboard
-        // Adjust data.prizeIndex based on actual API response structure
-        const prizeIndex = data?.prizeIndex ?? data?.data?.prizeIndex;
-        spinboardRef.current?.spin(prizeIndex);
-        refetch();
-      },
-      onError: (error) => {
-        setIsSpinning(false);
-        console.error('Spin failed:', error);
-      },
-    });
+
+    // target the spin
+    spinboardRef.current?.spin(4);
+
+    // spin(authHeaders, {
+    //   onSuccess: (data) => {
+    //     const slotIndex = (data?.slotId ?? 1) - 1;
+    //     const rewardLabel = data?.rewardLabel ?? 'Prize';
+    //     setWonPrize(rewardLabel);
+    //     spinboardRef.current?.spin(slotIndex);
+    //     refetch();
+    //   },
+      // onError: (error) => {
+      // },
+    // });
+    //
+      setIsSpinning(false);
+    //
   };
 
-  const handleSpinComplete = (prizeIndex: number) => {
-    setIsSpinning(false);
-    setWonPrize(prizes[prizeIndex]);
-    setShowResult(true);
+  const handleSpinComplete = () => {
+    // setIsSpinning(false);
+    // setShowResult(true);
   };
 
   const handleClose = () => {
@@ -67,6 +58,10 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
   const canSpin = spinStatus?.canSpin ?? false;
+  const nextSpinCost = spinStatus?.nextSpinCost ?? 0;
+  const userPoints = spinStatus?.userPoints ?? 0;
+  const hasEnoughPoints = spinStatus?.hasEnoughPoints ?? false;
+  const isFirstSpin = spinStatus?.currentSpinCount === 0;
 
   return (
     <Modal
@@ -90,6 +85,10 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           mask-composite: exclude;
           pointer-events: none;
         }
+
+        & > div:last-child:empty {
+          display: none;
+        }
       `}
       acceptButtonProps={null}
       cancelButtonProps={null}
@@ -111,21 +110,9 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             -webkit-text-fill-color: transparent;
           `}
         >
-          Spin to Win
+          Spin 2 Win
         </Text>
 
-        <Box
-          display="inline-flex"
-          alignItems="center"
-          justifyContent="center"
-          padding="spacing-xxs spacing-xs"
-          backgroundColor="surface-primary"
-          borderRadius="radius-xl"
-        >
-          <Text variant="bs-bold" color="text-on-dark-bg">
-            {remainingSpins} Spin{remainingSpins !== 1 ? 's' : ''} Remaining
-          </Text>
-        </Box>
 
         {showResult ? (
           <Box
@@ -160,6 +147,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           </Box>
         )}
 
+       <Button onClick={handleSpinClick}>Test Spin</Button>
+
         <Button
           size="medium"
           variant="primary"
@@ -175,12 +164,23 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             ? 'Spinning...'
             : showResult
               ? remainingSpins > 0
-                ? 'Spin Again'
+                ? `Spin Again${nextSpinCost > 0 ? ` (${nextSpinCost} Points)` : ''}`
                 : 'Close'
               : canSpin
-                ? 'Spin Now'
-                : 'No Spins Available'}
+                ? isFirstSpin
+                  ? 'Free Spin x1'
+                  : `Spin The Wheel (${nextSpinCost} Points)`
+                : !hasEnoughPoints
+                  ? `Spin The Wheel ${nextSpinCost} Points`
+                  : 'No Spins Available'}
         </Button>
+
+        {isFirstSpin &&
+          <Text variant='bes-semibold'>Come back daily for a free spin</Text>}
+
+        {!isFirstSpin &&
+          <Text variant='bes-semibold'>Spin again for better rewards { spinStatus?.currentSpinCount }/5
+          </Text>}
 
         {showResult && remainingSpins === 0 && (
           <Button
