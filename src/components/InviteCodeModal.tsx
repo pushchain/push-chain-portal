@@ -56,7 +56,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       },
       {
         onSuccess: (response) => {
-          console.log(response)
           refetch();
           onClose();
 

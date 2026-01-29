@@ -33,7 +33,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 
   const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards } = useGetDailyCheckInDetails(authHeaders);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
-  console.log(getDailyCheckInDetails, 'daily')
 
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
@@ -41,7 +40,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const handleClaimRewards = () => {
     claimDailyRewards(authHeaders, {
       onSuccess: (data) => {
-        console.log(data);
         refetch();
       },
       onError: (error) => {

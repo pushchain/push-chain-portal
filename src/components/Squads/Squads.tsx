@@ -28,8 +28,6 @@ export const Squads = () => {
   const { data: inviteCodeDetails, refetch,isLoading: isFetchingInvites } = useGetAllInvites(authHeaders);
   const { mutate: requestForInviteCode } = useRequestInviteCode();
 
-  console.log(inviteCodeDetails,'data')
-
   useEffect(() => {
     if (isFetchingSeasonThreeDetails || !seasonThreeDetails) return;
     if (isFetchingInvites || inviteCodeDetails?.data.invites > 0) return;

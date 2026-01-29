@@ -42,7 +42,6 @@ export const RenderLoggedInUnverifiedState = () => {
       },
       {
         onSuccess: (response) => {
-          console.log(response)
           setIsUserEligible(response?.eligible)
         },
         onError: (error: any) => {
