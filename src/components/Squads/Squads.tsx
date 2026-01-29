@@ -1,7 +1,7 @@
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 
-import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetSquadsDetails } from "../../queries"
+import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetSquadsDetails, useRequestInviteCode } from "../../queries"
 import { walletToFullCAIP10 } from "../../helpers/web3helper"
 import { useAuthHeaders } from "../../context/authHeadersContext"
 
@@ -9,6 +9,7 @@ import { device } from "../../config/globals"
 import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
+import { useEffect } from "react"
 
 
 export const Squads = () => {
@@ -19,14 +20,43 @@ export const Squads = () => {
     universalAccount?.address as string,
     universalAccount?.chain,
   );
-  const { data: seasonThreeDetails } = useGetSeasonThreeUserByWallet({
+  const { data: seasonThreeDetails, isLoading: isFetchingSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
 
   const { data: squadsDetails } = useGetSquadsDetails(authHeaders);
-  const { data: inviteCodeDetails } = useGetAllInvites(authHeaders);
+  const { data: inviteCodeDetails, refetch,isLoading: isFetchingInvites } = useGetAllInvites(authHeaders);
+  const { mutate: requestForInviteCode } = useRequestInviteCode();
 
-  console.log(squadsDetails,'data')
+  console.log(inviteCodeDetails,'data')
+
+  useEffect(() => {
+    if (isFetchingSeasonThreeDetails || !seasonThreeDetails) return;
+    if (isFetchingInvites || inviteCodeDetails?.data.invites > 0) return;
+    requestInvitesCode()
+  },[inviteCodeDetails, seasonThreeDetails])
+
+
+  const requestInvitesCode = () => {
+    requestForInviteCode(
+      {
+        payload: {
+          count: seasonThreeDetails?.inviteCodes
+        },
+        authHeaders
+      },
+      {
+        onSuccess: (response) => {
+          console.log(response)
+          refetch();
+
+        },
+        onError: (error: any) => {
+          console.log("Error in creating activity", error);
+        },
+      },
+    );
+  }
 
 
   const handleCopyAddress = (address: string) => {
