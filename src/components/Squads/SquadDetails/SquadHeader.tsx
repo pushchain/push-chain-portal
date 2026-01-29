@@ -3,14 +3,36 @@ import { css } from "styled-components"
 import { Box, Text, Button, RarePassIcon } from "../../../blocks"
 import { device } from "../../../config/globals"
 import { CreateSquadModal } from "./CreateSquadModal"
+import { InviteMemberModal } from "./InviteMemberModal"
+import { useGetSeasonThreeUserByWallet } from "../../../queries"
+import { usePushWalletContext } from "@pushchain/ui-kit"
+import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 
 type SquadHeaderProps = {
   onInviteMembers?: () => void;
+  squadData?: any;
 }
 
 
-export const SquadHeader = ({ onInviteMembers }: SquadHeaderProps) => {
+export const SquadHeader = ({ squadData, onInviteMembers }: SquadHeaderProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const { universalAccount } = usePushWalletContext();
+
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const {
+    data: seasonThreeUserDetails
+  } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const isCurrentLeader = seasonThreeUserDetails?.userId === squadData?.data.leaderId
+
 
   return (
     <>
@@ -57,7 +79,8 @@ export const SquadHeader = ({ onInviteMembers }: SquadHeaderProps) => {
             }
           `}
         >
-          <Button
+          {!squadData &&
+            <Button
             variant="outline"
             size="medium"
             onClick={() => setIsCreateModalOpen(true)}
@@ -71,13 +94,37 @@ export const SquadHeader = ({ onInviteMembers }: SquadHeaderProps) => {
             `}
           >
             Create Squad
-          </Button>
+          </Button>}
+
+
+          {squadData && isCurrentLeader &&
+            <Button
+            variant="outline"
+            size="medium"
+            onClick={() => setIsInviteModalOpen(true)}
+            css={css`
+              border-color: rgba(255, 255, 255, 0.75);
+              min-width: 100px;
+
+              @media ${device.mobileL} {
+                width: 100%;
+              }
+            `}
+          >
+            Invite Member
+          </Button>}
         </Box>
       </Box>
 
       <CreateSquadModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      <InviteMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        squadId={squadData?.data?.id}
       />
     </>
   );

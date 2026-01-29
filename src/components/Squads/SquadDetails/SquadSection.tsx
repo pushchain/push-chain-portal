@@ -29,7 +29,7 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
       gap="spacing-md"
       width="100%"
     >
-      <SquadHeader onInviteMembers={onInviteMembers} />
+      <SquadHeader squadData={squadData} onInviteMembers={onInviteMembers} />
 
      {!squadData &&
        <Box
