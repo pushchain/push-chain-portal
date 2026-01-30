@@ -12,7 +12,7 @@ import {
 } from "../../queries";
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
-import { Back, Box, Button, Spinner, Text } from "../../blocks";
+import { Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
 import { OtterCharacter, generateRandomCharacterId } from "./OtterCharacter";
 
@@ -298,7 +298,7 @@ export const PushPassItem = () => {
                 -webkit-text-fill-color: transparent;
               `}
             >
-              {isMinted ? "Your Rare Pass" : "Your Character"}
+              {isMinted ? "Your Rare Pass" : "Your Rare Pass has been revealed!"}
             </Text>
             <Text
               variant="bm-regular"
@@ -308,7 +308,7 @@ export const PushPassItem = () => {
             >
               {isMinted
                 ? "This pass has been minted and locked forever."
-                : "Reshuffle for new traits or mint to lock it forever."}
+                : "HODL onto your passes until the burn event and be one of the lucky few to get Eternal Rewards*"}
             </Text>
           </Box>
 
@@ -328,42 +328,17 @@ export const PushPassItem = () => {
               flexDirection="column"
               alignItems="center"
               gap="spacing-sm"
-              padding="spacing-md"
               borderRadius="radius-md"
               css={css`
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(171, 70, 248, 0.3);
+                background: #ececb4;
+                width: 248px;
+                height: 318px;
+                aspect-ratio: 124/159;
               `}
             >
-              <OtterCharacter characterId={characterId} size={280} />
+              <OtterCharacter characterId={characterId} width={248} height={318} />
 
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap="spacing-xxs"
-                css={css`
-                  margin-top: 16px;
-                `}
-              >
-                <Text
-                  variant="bs-semibold"
-                  css={css`
-                    color: rgba(255, 255, 255, 0.6);
-                  `}
-                >
-                  Character ID
-                </Text>
-                <Text
-                  variant="h4-semibold"
-                  css={css`
-                    color: #c742dd;
-                    font-family: monospace;
-                  `}
-                >
-                  {characterId}
-                </Text>
-              </Box>
+
             </Box>
 
             {!isMinted && (
@@ -377,25 +352,28 @@ export const PushPassItem = () => {
               >
                 <Button
                   variant="outline"
-                  onClick={handleReshuffle}
-                  disabled={actionLoading}
-                  css={css`
-                    min-width: 140px;
-                  `}
-                >
-                  {actionLoading ? <Spinner size="small" /> : "Reshuffle"}
-                </Button>
-
-                <Button
-                  variant="primary"
                   onClick={handleMint}
                   disabled={actionLoading}
                   css={css`
                     min-width: 140px;
                   `}
                 >
-                  {actionLoading ? <Spinner size="small" /> : "Mint Pass"}
+                  {actionLoading ? <Spinner size="small" /> : "Confirm & Claim Pass"}
                 </Button>
+
+                <Button
+                  variant="primary"
+                  onClick={handleReshuffle}
+                  disabled={actionLoading}
+                  css={css`
+                    min-width: 140px;
+                  `}
+                >
+                  {!actionLoading && <Twitter width={20} height={20} />}
+                  {actionLoading ? <Spinner size="small" /> : "Tweet to Reroll"}
+                </Button>
+
+
               </Box>
             )}
 

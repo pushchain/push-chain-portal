@@ -108,7 +108,8 @@ type OtterTraits = {
 
 type OtterCharacterProps = {
   characterId: string;
-  size?: number;
+  width?: number;
+  height?: number;
 };
 
 const parseCharacterId = (characterId: string): OtterTraits | null => {
@@ -125,7 +126,7 @@ const parseCharacterId = (characterId: string): OtterTraits | null => {
   };
 };
 
-export const OtterCharacter = ({ characterId, size = 300 }: OtterCharacterProps) => {
+export const OtterCharacter = ({ characterId, width, height }: OtterCharacterProps) => {
   const traits = parseCharacterId(characterId);
 
   const assets = useMemo(() => {
@@ -143,8 +144,8 @@ export const OtterCharacter = ({ characterId, size = 300 }: OtterCharacterProps)
     return (
       <div
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${width}px`,
+          height: `${height}px`,
           background: "rgba(255, 255, 255, 0.05)",
           borderRadius: "16px",
           display: "flex",
@@ -170,8 +171,8 @@ export const OtterCharacter = ({ characterId, size = 300 }: OtterCharacterProps)
     <div
       style={{
         position: "relative",
-        width: `${size}px`,
-        height: `${size}px`,
+        width: `${width}px`,
+        height: `${height}px`,
       }}
     >
       {assets.body && (
