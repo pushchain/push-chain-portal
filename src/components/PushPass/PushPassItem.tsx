@@ -131,6 +131,7 @@ export const PushPassItem = () => {
       padding="spacing-md"
       borderRadius="radius-md"
       width="100%"
+      overflow="hidden"
       css={css`
         display: inline-flex;
         flex-direction: column;
@@ -329,11 +330,14 @@ export const PushPassItem = () => {
               alignItems="center"
               gap="spacing-sm"
               borderRadius="radius-md"
+              position="relative"
               css={css`
                 background: #ececb4;
                 width: 248px;
                 height: 318px;
                 aspect-ratio: 124/159;
+                overflow: 'hidden';
+
               `}
             >
               <OtterCharacter characterId={characterId} width={248} height={318} />

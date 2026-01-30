@@ -187,6 +187,28 @@ export const OtterCharacter = ({ characterId, width, height }: OtterCharacterPro
       {assets.accessory && (
         <img src={assets.accessory} alt="Accessory" style={{ ...imgStyle, zIndex: 4 }} />
       )}
+
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            width: "100%",
+            height: "100%",
+            transform: "scaleY(-1)",
+            opacity: 0.15,
+            filter: "blur(4px)",
+            overflow: 'hidden',
+            background: '#ececb4',
+            borderRadius: '24px',
+            zIndex:'-2'
+          }}
+        >
+          {assets.body && <img src={assets.body} style={imgStyle} />}
+          {assets.head && <img src={assets.head} style={imgStyle} />}
+          {assets.headgear && <img src={assets.headgear} style={imgStyle} />}
+          {assets.accessory && <img src={assets.accessory} style={imgStyle} />}
+        </div>
     </div>
   );
 };
