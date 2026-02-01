@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { device } from "../../config/globals";
 import {
@@ -14,124 +13,97 @@ import {
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
 import { Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
-import { OtterCharacter, generateRandomCharacterId } from "./OtterCharacter";
+import { OtterCharacter } from "./OtterCharacter";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 type PassState = "loading" | "unopened" | "opened" | "minted";
 
-const DEMO_MODE = true;
-
 const getPassState = (
   isLoading: boolean,
-  data?: { eligible: boolean; assigned: boolean; characterId: string | null }
+  characterId: string | undefined,
+  data?: { eligible: boolean; assigned: boolean; characters: any[] }
 ): PassState => {
   if (isLoading) return "loading";
-  if (!data?.assigned) return "unopened";
-  if (data?.characterId) return "opened";
+  if (!characterId || characterId === "open") return "unopened";
+
+  const character = data?.characters?.find((c) => c.characterId === characterId);
+  if (!character) return "unopened";
+  if (character.status === "MINTED") return "minted";
+  if (character.characterId) return "opened";
   return "unopened";
 };
 
 export const PushPassItem = () => {
   const navigate = useNavigate();
+  const { id: routeId } = useParams<{ id: string }>();
+  const isOpenRoute = routeId === "open";
+  const characterId = isOpenRoute ? undefined : routeId;
   const { universalAccount } = usePushWalletContext();
 
-  const [demoState, setDemoState] = useState<{
-    passState: PassState;
-    characterId: string | null;
-    isMinted: boolean;
-  }>({
-    passState: "unopened",
-    characterId: null,
-    isMinted: false,
-  });
-  const [isActionLoading, setIsActionLoading] = useState(false);
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
 
-  const { data: characterInfo, isLoading } = useGetCharacterInfo({
-    walletAddress: universalAccount?.address,
+  const { data: characterInfo, isLoading, refetch } = useGetCharacterInfo({
+    walletAddress: caip10WalletAddress,
   });
 
   const generateCharacter = useGenerateCharacter();
   const reshuffleCharacter = useReshuffleCharacter();
   const mintCharacter = useMintCharacter();
 
-  const passState = DEMO_MODE ? demoState.passState : getPassState(isLoading, characterInfo);
-  const characterId = DEMO_MODE ? demoState.characterId : characterInfo?.characterId;
-  const isMinted = DEMO_MODE
-    ? demoState.isMinted
-    : characterInfo?.characterId && characterInfo?.assigned;
+  const passState = getPassState(isLoading, characterId, characterInfo);
+  const character = characterInfo?.characters?.find((c) => c.characterId === characterId);
+  const isMinted = character?.status === "MINTED";
 
   const handleOpenPass = () => {
-    if (DEMO_MODE) {
-      setIsActionLoading(true);
-      setTimeout(() => {
-        const newCharacterId = generateRandomCharacterId();
-        setDemoState({
-          passState: "opened",
-          characterId: newCharacterId,
-          isMinted: false,
-        });
-        setIsActionLoading(false);
-      }, 1500);
-      return;
-    }
-
     if (!universalAccount?.address) return;
-    generateCharacter.mutate({ walletAddress: universalAccount.address });
+    generateCharacter.mutate(
+      { walletAddress: universalAccount.address },
+      {
+        onSuccess: (data) => {
+          refetch();
+          if (data?.characterId) {
+            navigate(`/rewards/pushpass/${data.characterId}`, { replace: true });
+          }
+        },
+      }
+    );
   };
 
   const handleReshuffle = () => {
-    if (DEMO_MODE) {
-      setIsActionLoading(true);
-      setTimeout(() => {
-        const newCharacterId = generateRandomCharacterId();
-        setDemoState((prev) => ({
-          ...prev,
-          characterId: newCharacterId,
-        }));
-        setIsActionLoading(false);
-      }, 1000);
-      return;
-    }
-
     if (!universalAccount?.address) return;
-    reshuffleCharacter.mutate({ walletAddress: universalAccount.address });
+    reshuffleCharacter.mutate(
+      { walletAddress: universalAccount.address },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
   };
 
   const handleMint = () => {
-    if (DEMO_MODE) {
-      setIsActionLoading(true);
-      setTimeout(() => {
-        setDemoState((prev) => ({
-          ...prev,
-          isMinted: true,
-          passState: "minted",
-        }));
-        setIsActionLoading(false);
-      }, 1500);
-      return;
-    }
-
     if (!universalAccount?.address) return;
-    mintCharacter.mutate({ walletAddress: universalAccount.address });
+    mintCharacter.mutate(
+      { walletAddress: universalAccount.address },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
   };
 
-  const handleResetDemo = () => {
-    setDemoState({
-      passState: "unopened",
-      characterId: null,
-      isMinted: false,
-    });
-  };
-
-  const actionLoading = DEMO_MODE
-    ? isActionLoading
-    : generateCharacter.isPending || reshuffleCharacter.isPending || mintCharacter.isPending;
-
-  // console.log(characterInfo, 'char')
+  const isActionLoading =
+    generateCharacter.isPending || reshuffleCharacter.isPending || mintCharacter.isPending;
 
   return (
     <Box
       padding="spacing-md"
       borderRadius="radius-md"
+      position="relative"
       width="100%"
       overflow="hidden"
       css={css`
@@ -147,50 +119,36 @@ export const PushPassItem = () => {
         backdrop-filter: blur(10px);
       `}
     >
-      <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        width="100%"
-      >
-        <Button
-          variant="outline"
-          onClick={() => navigate("/rewards/pushpass")}
-          css={css`
+      <Button
+        variant="outline"
+        onClick={() => navigate("/rewards/pushpass")}
+        css={css`
+          border: none;
+          &:hover {
             border: none;
-            &:hover {
-              border: none;
-            }
-            @media ${device.tablet} {
-              padding: 0px;
-              min-width: auto;
-            }
-          `}
-        >
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
-            <Back
-              css={css`
-                color: #c742dd;
-              `}
-            />
-            <Text
-              variant="bm-bold"
-              css={css`
-                color: #c742dd;
-              `}
-            >
-              Back
-            </Text>
-          </Box>
-        </Button>
-
-        {DEMO_MODE && (
-          <Button variant="outline" size="small" onClick={handleResetDemo}>
-            Reset Demo
-          </Button>
-        )}
-      </Box>
+          }
+          @media ${device.tablet} {
+            padding: 0px;
+            min-width: auto;
+          }
+        `}
+      >
+        <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
+          <Back
+            css={css`
+              color: #c742dd;
+            `}
+          />
+          <Text
+            variant="bm-bold"
+            css={css`
+              color: #c742dd;
+            `}
+          >
+            Back
+          </Text>
+        </Box>
+      </Button>
 
       {passState === "loading" && (
         <Box
@@ -253,12 +211,12 @@ export const PushPassItem = () => {
             <Button
               variant="primary"
               onClick={handleOpenPass}
-              disabled={actionLoading || (!DEMO_MODE && !characterInfo?.eligible)}
+              disabled={isActionLoading}
             >
-              {actionLoading ? <Spinner size="small" /> : "Open Pass"}
+              {generateCharacter.isPending ? <Spinner size="small" /> : "Open Pass"}
             </Button>
 
-            {!DEMO_MODE && !characterInfo?.eligible && (
+            {/*{!characterInfo?.eligible && (
               <Text
                 variant="bs-regular"
                 css={css`
@@ -267,9 +225,9 @@ export const PushPassItem = () => {
               >
                 You are not eligible to open this pass yet.
               </Text>
-            )}
+            )}*/}
 
-            {!DEMO_MODE && generateCharacter.isError && (
+            {generateCharacter.isError && (
               <Text
                 variant="bs-regular"
                 css={css`
@@ -332,19 +290,15 @@ export const PushPassItem = () => {
               alignItems="center"
               gap="spacing-sm"
               borderRadius="radius-md"
-              position="relative"
               css={css`
                 background: #ececb4;
                 width: 248px;
                 height: 318px;
                 aspect-ratio: 124/159;
                 overflow: 'hidden';
-
               `}
             >
               <OtterCharacter characterId={characterId} width={248} height={318} />
-
-
             </Box>
 
             {!isMinted && (
@@ -359,31 +313,29 @@ export const PushPassItem = () => {
                 <Button
                   variant="outline"
                   onClick={handleMint}
-                  disabled={actionLoading}
+                  disabled={isActionLoading}
                   css={css`
                     min-width: 140px;
                   `}
                 >
-                  {actionLoading ? <Spinner size="small" /> : "Confirm & Claim Pass"}
+                  {isActionLoading ? <Spinner size="small" /> : "Confirm & Claim Pass"}
                 </Button>
 
                 <Button
                   variant="primary"
                   onClick={handleReshuffle}
-                  disabled={actionLoading}
+                  disabled={isActionLoading}
                   css={css`
                     min-width: 140px;
                   `}
                 >
-                  {!actionLoading && <Twitter width={20} height={20} />}
-                  {actionLoading ? <Spinner size="small" /> : "Tweet to Reroll"}
+                  {!isActionLoading && <Twitter width={20} height={20} />}
+                  {isActionLoading ? <Spinner size="small" /> : "Tweet to Reroll"}
                 </Button>
-
-
               </Box>
             )}
 
-            {!DEMO_MODE && (reshuffleCharacter.isError || mintCharacter.isError) && (
+            {(reshuffleCharacter.isError || mintCharacter.isError) && (
               <Text
                 variant="bs-regular"
                 css={css`

@@ -8,6 +8,11 @@ type Pass = {
   id: number;
   isLocked: boolean;
   lockMessage?: string;
+  character?: {
+    characterId: string;
+    status: string;
+    [key: string]: any;
+  };
 };
 
 type UnopenedPassesContentProps = {
@@ -102,6 +107,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
             isLocked={pass.isLocked}
             lockMessage={pass.lockMessage}
             id={pass.id}
+            characterId={pass.character?.characterId}
           />
         ))}
       </Box>

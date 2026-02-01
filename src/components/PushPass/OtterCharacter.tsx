@@ -112,17 +112,33 @@ type OtterCharacterProps = {
   height?: number;
 };
 
+const BODY_COUNT = 15;
+const HEAD_COUNT = 10;
+const HEADGEAR_COUNT = 21;
+const ACCESSORY_COUNT = 19;
+
+const wrapToRange = (value: number, max: number): string => {
+  const wrapped = value % max;
+  const final = wrapped === 0 ? max : wrapped;
+  return String(final).padStart(2, "0");
+};
+
 const parseCharacterId = (characterId: string): OtterTraits | null => {
   if (!characterId) return null;
 
-  const parts = characterId.split("-");
-  if (parts.length < 5) return null;
+  const clean = characterId.replace(/[^0-9]/g, "");
+  if (clean.length < 10) return null;
+
+  const bodyRaw = parseInt(clean.substring(2, 4), 10);
+  const headRaw = parseInt(clean.substring(4, 6), 10);
+  const headgearRaw = parseInt(clean.substring(6, 8), 10);
+  const accessoryRaw = parseInt(clean.substring(8, 10), 10);
 
   return {
-    body: parts[1],
-    head: parts[2],
-    headgear: parts[3],
-    accessory: parts[4],
+    body: wrapToRange(bodyRaw, BODY_COUNT),
+    head: wrapToRange(headRaw, HEAD_COUNT),
+    headgear: wrapToRange(headgearRaw, HEADGEAR_COUNT),
+    accessory: wrapToRange(accessoryRaw, ACCESSORY_COUNT),
   };
 };
 
@@ -214,14 +230,17 @@ export const OtterCharacter = ({ characterId, width, height }: OtterCharacterPro
 };
 
 export const generateRandomCharacterId = (): string => {
-  const randomPad = (max: number) => String(Math.floor(Math.random() * max) + 1).padStart(2, "0");
+  const randomPad = (max: number) => String(Math.floor(Math.random() * max)).padStart(2, "0");
 
-  const body = randomPad(15);
-  const head = randomPad(10);
-  const headgear = randomPad(21);
-  const accessory = randomPad(19);
+  const body = randomPad(100);
+  const head = randomPad(100);
+  const headgear = randomPad(100);
+  const accessory = randomPad(100);
+  const extra1 = randomPad(100);
+  const extra2 = randomPad(100);
+  const extra3 = randomPad(100);
 
-  return `99-${body}-${head}-${headgear}-${accessory}`;
+  return `99${body}${head}${headgear}${accessory}${extra1}${extra2}${extra3}`;
 };
 
 export { parseCharacterId };

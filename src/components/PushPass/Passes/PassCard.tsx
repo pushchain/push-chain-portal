@@ -10,17 +10,23 @@ type PassCardProps = {
   lockMessage?: string;
   backgroundImage?: string;
   id?: number;
+  characterId?: string;
 };
 
 const PassCard: FC<PassCardProps> = ({
   isLocked,
   lockMessage = 'Locked',
-  id
+  id,
+  characterId,
 }) => {
   const navigate = useNavigate();
 
-  const handleNavigation = (id: number) => {
-    navigate(`/rewards/pushpass/${id}`)
+  const handleNavigation = () => {
+    if (characterId) {
+      navigate(`/rewards/pushpass/${characterId}`);
+    } else {
+      navigate(`/rewards/pushpass/open`);
+    }
   }
   return (
     <Box
@@ -88,7 +94,7 @@ const PassCard: FC<PassCardProps> = ({
               <Button
                 size="medium"
                 variant="primary"
-                onClick={() => handleNavigation(id)}
+                onClick={handleNavigation}
                 css={css`
                   min-width: 100px;
                   height: 48px;
