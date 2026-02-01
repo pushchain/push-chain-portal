@@ -126,6 +126,8 @@ export const PushPassItem = () => {
     ? isActionLoading
     : generateCharacter.isPending || reshuffleCharacter.isPending || mintCharacter.isPending;
 
+  // console.log(characterInfo, 'char')
+
   return (
     <Box
       padding="spacing-md"

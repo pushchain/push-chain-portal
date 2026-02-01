@@ -24,6 +24,7 @@ export const userRewardsStats = 'userRewardsStats';
 export const userTwitterDetails = 'userTwitterDetails';
 export const seasonOneUserDetails = "seasonOneUserDetails";
 
+export const characterEligible = "characterEligible";
 export const characterInfo = "characterInfo";
 export const characterGenerate = "characterGenerate";
 export const characterMint = "characterMint";

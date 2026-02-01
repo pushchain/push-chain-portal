@@ -1,3 +1,4 @@
+export * from './getCharacterEligible';
 export * from './getCharacterInfo';
 export * from './generateCharacter';
 export * from './mintCharacter';

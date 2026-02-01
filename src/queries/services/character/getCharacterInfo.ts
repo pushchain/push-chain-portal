@@ -2,11 +2,10 @@ import axios from 'axios';
 
 import { getCharacterInfoModel } from '../../models';
 import { CharacterInfoParams } from '../../types/character';
-import { getRewardsBaseURL } from '../../baseURL';
+import { getSeasonThreeBaseURL } from '../../baseURL';
 
 export const getCharacterInfo = ({ walletAddress }: CharacterInfoParams) =>
   axios({
     method: 'GET',
-    url: `${getRewardsBaseURL()}/api/character/info/${walletAddress}`,
-    // params: {  },
+    url: `${getSeasonThreeBaseURL()}/api/v3/character/info?userWallet=${walletAddress}`,
   }).then((response) => getCharacterInfoModel(response.data));

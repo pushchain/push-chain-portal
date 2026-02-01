@@ -1,3 +1,4 @@
+export * from './useGetCharacterEligible';
 export * from './useGetCharacterInfo';
 export * from './useGenerateCharacter';
 export * from './useMintCharacter';

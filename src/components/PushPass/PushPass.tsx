@@ -1,26 +1,86 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Link, Text } from '../../blocks';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
+import { useGetCharacterEligible, useGetCharacterInfo } from '../../queries';
+
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import PushPassTabs from './Tabs/PushPassTabs';
 import UnopenedPassesContent from './Passes/UnopenedPassesContent';
 import MyCollectionContent from './Passes/MyCollectionContent';
+import { Box, Link, Text } from '../../blocks';
+import { walletToFullCAIP10 } from '../../helpers/web3helper';
+
 
 type TabType = 'unopened' | 'collection';
 
 const PushPass = () => {
   const [activeTab, setActiveTab] = useState<TabType>('unopened');
+  const { universalAccount } = usePushWalletContext();
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCharacterInfo, isLoading } = useGetCharacterInfo({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: userEligible } = useGetCharacterEligible({
+    userWallet: caip10WalletAddress,
+  })
+
+  const isEligible = userEligible?.eligible || false;
+  const characters = userCharacterInfo?.characters || [];
+  const hasUnmintedPass = characters?.some((c) => c.status === 'UNMINTED');
+  // const hasMintedPass = characters.some((c) => c.status === 'MINTED');
+
 
   const passes = [
-    { id: 1, isLocked: false },
-    { id: 2, isLocked: true, lockMessage: 'Spin to Unlock' },
-    { id: 3, isLocked: true, lockMessage: 'Unlocks at Lv. 15' },
-    { id: 4, isLocked: true, lockMessage: 'Unlocks at Lv. 25' },
-    { id: 5, isLocked: true, lockMessage: 'Unlocks at Lv. 40' },
-    { id: 6, isLocked: true, lockMessage: 'Unlocks at Lv. 50' },
-    { id: 7, isLocked: true, lockMessage: 'Complete Boss Quest' },
-    { id: 8, isLocked: true, lockMessage: 'Complete Boss Quest' },
+    {
+      id: 1,
+      isLocked: !isEligible && !hasUnmintedPass,
+      lockMessage: hasUnmintedPass ? 'View Pass' : isEligible ? 'Open Now' : 'Not Eligible',
+      character: characters.find((c) => c.status === 'UNMINTED'),
+    },
+    {
+      id: 2,
+      isLocked: true,
+      lockMessage: 'Spin to Unlock'
+    },
+    {
+      id: 3,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 15'
+    },
+    {
+      id: 4,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 25'
+    },
+    {
+      id: 5,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 40'
+    },
+    {
+      id: 6,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 50'
+    },
+    {
+      id: 7,
+      isLocked: true,
+      lockMessage: 'Complete Boss Quest'
+    },
+    {
+      id: 8,
+      isLocked: true,
+      lockMessage: 'Complete Boss Quest'
+    },
   ];
+
 
   return (
     <Box

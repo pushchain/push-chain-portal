@@ -16,10 +16,14 @@ export interface CharacterReshuffleParams {
   walletAddress: string;
 }
 
+type CharacterDetails = {
+  characterId: string;
+  status: string;
+}
+
 export interface CharacterInfoResponse {
-  eligible: boolean;
-  assigned: boolean;
-  characterId: string | null;
+  characters: Array<CharacterDetails>;
+  wallet: string;
 }
 
 export interface CharacterGenerateResponse {
@@ -38,4 +42,12 @@ export interface CharacterReshuffleResponse {
   success: boolean;
   newCharacterId: string;
   status: CharacterStatus;
+}
+
+export interface CharacterEligibleParams {
+  userWallet: string;
+}
+
+export interface CharacterEligibleResponse {
+  eligible: boolean;
 }
