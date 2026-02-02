@@ -12,36 +12,54 @@ interface SpinboardProps {
 }
 
 export interface SpinboardHandle {
-  spin: (slotId: number) => void;
+  startSpin: () => void;
+  landOn: (slotId: number) => void;
 }
 
 const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
   ({ onSpinComplete, disabled = false }, ref) => {
     const wheelRef = useRef<HTMLDivElement>(null);
+    const loopTween = useRef<gsap.core.Tween | null>(null);
     const [isSpinning, setIsSpinning] = useState(false);
+    const currentRotation = useRef(0);
 
-    const handleSpin = (slotId: number) => {
+    const startSpin = () => {
       if (isSpinning || disabled || !wheelRef.current) return;
-
       setIsSpinning(true);
 
-      // Each slot is 36 degrees (360 / 10 slots)
+      const spin = () => {
+        if (!wheelRef.current) return;
+        currentRotation.current += 360;
+        loopTween.current = gsap.to(wheelRef.current, {
+          rotation: currentRotation.current,
+          duration: 0.6,
+          ease: 'none',
+          onComplete: spin,
+        });
+      };
+
+      spin();
+    };
+
+    const landOn = (slotId: number) => {
+      if (!wheelRef.current) return;
+
+      if (loopTween.current) {
+        loopTween.current.kill();
+        loopTween.current = null;
+      }
+
       const slotAngle = 36;
-
-      // Full spins for visual effect (5-7 rotations)
-      const fullSpins = (Math.floor(Math.random() * 3) + 5) * 360;
-
-      // Target angle: negative to spin clockwise to the slot
       const targetAngle = -(slotId * slotAngle);
-
-      // Final rotation
-      const finalRotation = fullSpins + targetAngle;
+      const fullSpins = (Math.floor(Math.random() * 2) + 3) * 360;
+      const finalRotation = currentRotation.current + fullSpins + targetAngle;
 
       gsap.to(wheelRef.current, {
         rotation: finalRotation,
-        duration: 4,
+        duration: 3,
         ease: 'power3.out',
         onComplete: () => {
+          currentRotation.current = finalRotation;
           setIsSpinning(false);
           onSpinComplete?.(slotId);
         },
@@ -49,7 +67,8 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      spin: handleSpin,
+      startSpin,
+      landOn,
     }));
 
     return (
@@ -136,27 +155,6 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
             />
           </Box>
         </Box>
-
-        {/*<Box
-          ref={wheelRef}
-          position="relative"
-          width="200px"
-          height="200px"
-          css={css`
-            z-index: 1;
-          `}
-        >
-          <img
-            src={spinboardImage}
-            alt="Spin Board"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15))',
-            }}
-          />
-        </Box>*/}
       </Box>
     );
   }
