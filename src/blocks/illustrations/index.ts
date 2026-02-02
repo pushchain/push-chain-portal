@@ -70,6 +70,8 @@ export { default as PushDev } from "./components/PushDev";
 
 export { default as Points } from "./components/Points";
 
+export { default as PCTokens } from './components/PCTokens';
+
 export { default as Quests } from "./components/Quests";
 
 export { default as Metamask } from "./components/Metamask";

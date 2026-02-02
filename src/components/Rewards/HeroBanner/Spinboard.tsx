@@ -3,6 +3,7 @@ import { css } from 'styled-components';
 import { gsap } from 'gsap';
 import { Box } from '../../../blocks';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
+import spinboardCenter from '/static/assets/website/rewards/spinboardcenter.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
 
 interface SpinboardProps {
@@ -85,6 +86,58 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
         </Box>
 
         <Box
+          position="relative"
+          width="200px"
+          height="200px"
+        >
+          <Box
+            ref={wheelRef}
+            position="absolute"
+            top="0"
+            left="0"
+            width="100%"
+            height="100%"
+            css={css`
+              z-index: 1;
+            `}
+          >
+            <img
+              src={spinboardImage}
+              alt="Spin Board"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15))',
+              }}
+            />
+          </Box>
+
+          <Box
+            position="absolute"
+            width="48px"
+            height="48px"
+            css={css`
+              z-index: 2;
+              pointer-events: none;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            `}
+          >
+            <img
+              src={spinboardCenter}
+              alt="Center"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/*<Box
           ref={wheelRef}
           position="relative"
           width="200px"
@@ -103,7 +156,7 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
               filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15))',
             }}
           />
-        </Box>
+        </Box>*/}
       </Box>
     );
   }
