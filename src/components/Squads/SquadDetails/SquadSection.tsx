@@ -5,6 +5,8 @@ import { SquadLevelCard } from "./SquadLevelCard"
 import { SquadStatsRow } from "./SquadStatsRow"
 import { SquadMembersTable } from "./SquadMembersTable"
 import { device } from "../../../config/globals"
+import { useGetSquadsPendingInvites } from "../../../queries"
+import { useAuthHeaders } from "../../../context/authHeadersContext"
 
 type SquadMember = {
   memberId: string;
@@ -22,6 +24,11 @@ type SquadSectionProps = {
 }
 
 export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: SquadSectionProps) => {
+  const { authHeaders } = useAuthHeaders();
+
+  const { data: getSquadsPendingInvites } = useGetSquadsPendingInvites(authHeaders);
+
+  console.log(getSquadsPendingInvites, 'lolo');
   return (
     <Box
       display="flex"

@@ -20,26 +20,19 @@ export const Squads = () => {
     universalAccount?.address as string,
     universalAccount?.chain,
   );
-  const { data: seasonThreeDetails, isLoading: isFetchingSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
+  const { data: seasonThreeDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
 
   const { data: squadsDetails } = useGetSquadsDetails(authHeaders);
-  const { data: inviteCodeDetails, refetch,isLoading: isFetchingInvites } = useGetAllInvites(authHeaders);
-  const { mutate: requestForInviteCode } = useRequestInviteCode();
-
-  useEffect(() => {
-    if (isFetchingSeasonThreeDetails || !seasonThreeDetails) return;
-    if (isFetchingInvites || inviteCodeDetails?.data.invites > 0) return;
-    requestInvitesCode()
-  },[inviteCodeDetails, seasonThreeDetails])
-
+  const { data: inviteCodeDetails, refetch } = useGetAllInvites(authHeaders);
+  const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
   const requestInvitesCode = () => {
     requestForInviteCode(
       {
         payload: {
-          count: seasonThreeDetails?.inviteCodes
+          count: 5
         },
         authHeaders
       },
@@ -129,7 +122,10 @@ export const Squads = () => {
               }
             `}
           >
-            <InviteCodes />
+            <InviteCodes
+              requestInvitesCode={ requestInvitesCode }
+              isFetchingInviteCode={ isFetchingInviteCode }
+            />
           </Box>
         </Box>
       </Box>

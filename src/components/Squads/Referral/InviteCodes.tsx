@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { css } from "styled-components"
-import { Box, Text, Copy } from "../../../blocks"
+import { Box, Text, Copy, Button } from "../../../blocks"
 import { useGetAllInvites } from "../../../queries";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { usePushWalletContext } from "@pushchain/ui-kit";
 
 type InviteCodeRowProps = {
   code: string;
@@ -103,12 +104,17 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
   );
 };
 
+type InviteCodesProps = {
+  requestInvitesCode: () => void;
+  isFetchingInviteCode: boolean;
+}
 
-export const InviteCodes = () => {
+export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: InviteCodesProps) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const { authHeaders } = useAuthHeaders();
-  const { data: inviteCodeDetails } = useGetAllInvites(authHeaders);
+  const { connectionStatus } = usePushWalletContext();
+  const { data: inviteCodeDetails, isLoading } = useGetAllInvites(authHeaders);
 
   const handleCopy = async (code: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -146,6 +152,7 @@ export const InviteCodes = () => {
           mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
           -webkit-mask-composite: xor;
           mask-composite: exclude;
+          pointer-events: none;
         }
       `}
     >
@@ -181,17 +188,35 @@ export const InviteCodes = () => {
         display="flex"
         flexDirection="column"
         gap="spacing-xs"
-        css={css`flex: 1;`}
+        css={css`
+            flex: 1;
+          `}
       >
-        {inviteCodeDetails?.data?.invites?.map((invite, index) => (
-          <InviteCodeRow
-            key={index}
-            code={invite.code}
-            isUsed={invite.isUsed}
-            copiedCode={copiedCode}
-            onCopy={handleCopy}
-          />
-        ))}
+        {!inviteCodeDetails?.data?.invites?.length && !isLoading  && connectionStatus === "connected" ? (
+          <Button
+            variant="outline"
+            size="extraSmall"
+            onClick={() => requestInvitesCode()}
+            loading={isFetchingInviteCode}
+            disabled={isFetchingInviteCode}
+            css={css`
+              margin: auto auto;
+              cursor: pointer;
+            `}
+          >
+            Get Invite Codes
+          </Button>
+        ) : (
+          inviteCodeDetails?.data?.invites?.map((invite, index) => (
+            <InviteCodeRow
+              key={index}
+              code={invite.code}
+              isUsed={invite.isUsed}
+              copiedCode={copiedCode}
+              onCopy={handleCopy}
+            />
+          ))
+        )}
       </Box>
     </Box>
   );
