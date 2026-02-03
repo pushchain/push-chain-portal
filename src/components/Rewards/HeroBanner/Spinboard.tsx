@@ -1,4 +1,4 @@
-import { useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { css } from 'styled-components';
 import { gsap } from 'gsap';
 import { Box } from '../../../blocks';
@@ -14,14 +14,24 @@ interface SpinboardProps {
 export interface SpinboardHandle {
   startSpin: () => void;
   landOn: (slotId: number) => void;
+  stopSpin: () => void;
+  reset: () => void;
 }
 
 const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
   ({ onSpinComplete, disabled = false }, ref) => {
     const wheelRef = useRef<HTMLDivElement>(null);
     const loopTween = useRef<gsap.core.Tween | null>(null);
+    const landTween = useRef<gsap.core.Tween | null>(null);
     const [isSpinning, setIsSpinning] = useState(false);
     const currentRotation = useRef(0);
+
+    useEffect(() => {
+      return () => {
+        loopTween.current?.kill();
+        landTween.current?.kill();
+      };
+    }, []);
 
     const startSpin = () => {
       if (isSpinning || disabled || !wheelRef.current) return;
@@ -45,8 +55,11 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
       if (!wheelRef.current) return;
 
       if (loopTween.current) {
+        // Grab where the wheel actually is right now before killing
+        const actualRotation = gsap.getProperty(wheelRef.current, 'rotation') as number;
         loopTween.current.kill();
         loopTween.current = null;
+        currentRotation.current = actualRotation;
       }
 
       const slotAngle = 36;
@@ -54,21 +67,47 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
       const fullSpins = (Math.floor(Math.random() * 2) + 3) * 360;
       const finalRotation = currentRotation.current + fullSpins + targetAngle;
 
-      gsap.to(wheelRef.current, {
+      landTween.current = gsap.to(wheelRef.current, {
         rotation: finalRotation,
         duration: 3,
         ease: 'power3.out',
         onComplete: () => {
           currentRotation.current = finalRotation;
+          landTween.current = null;
           setIsSpinning(false);
           onSpinComplete?.(slotId);
         },
       });
     };
 
+    const stopSpin = () => {
+      if (!wheelRef.current) return;
+
+      const actualRotation = gsap.getProperty(wheelRef.current, 'rotation') as number;
+
+      loopTween.current?.kill();
+      loopTween.current = null;
+      landTween.current?.kill();
+      landTween.current = null;
+
+      currentRotation.current = actualRotation;
+      gsap.set(wheelRef.current, { rotation: actualRotation });
+      setIsSpinning(false);
+    };
+
+    const reset = () => {
+      stopSpin();
+      if (wheelRef.current) {
+        gsap.set(wheelRef.current, { rotation: 0 });
+      }
+      currentRotation.current = 0;
+    };
+
     useImperativeHandle(ref, () => ({
       startSpin,
       landOn,
+      stopSpin,
+      reset,
     }));
 
     return (

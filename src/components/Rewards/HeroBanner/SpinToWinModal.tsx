@@ -15,7 +15,21 @@ type SpinToWinModalProps = {
   onClose: () => void;
 };
 
-const spinConfig = [
+type SpinPrize = {
+  slotId: number;
+  rewardType: string;
+  rewardValue: number;
+  label: string;
+};
+
+type ButtonConfig = {
+  label: string;
+  onClick?: () => void;
+  disabled: boolean;
+  variant?: string;
+};
+
+const spinConfig: SpinPrize[] = [
   { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "RARE PASS" },
   { slotId: 1, rewardType: "POINTS", rewardValue: 50, label: "50 Points" },
   { slotId: 2, rewardType: "POINTS", rewardValue: 100, label: "100 Points" },
@@ -28,15 +42,14 @@ const spinConfig = [
   { slotId: 9, rewardType: "XP_BOOST", rewardValue: 25, label: "+25% XP (24h)" },
 ];
 
-const getPrizeBySlotId = (slotId: number) =>
+const getPrizeBySlotId = (slotId: number): SpinPrize | undefined =>
   spinConfig.find(item => item.slotId === slotId);
 
 const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [countdown, setCountdown] = useState('');
-  const [wonPrize, setWonPrize] = useState<ReturnType<typeof getPrizeBySlotId>>(null);
-
+  const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
   const spinboardRef = useRef<SpinboardHandle>(null);
 
   const { spinStatus, authHeaders, refetch } = useSpinStatus();
@@ -47,8 +60,17 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const nextSpinCost = spinStatus?.nextSpinCost ?? 0;
   const hasEnoughPoints = spinStatus?.hasEnoughPoints ?? false;
   const isFirstSpin = spinStatus?.currentSpinCount === 0;
+  const currentSpinCount = spinStatus?.currentSpinCount ?? 0;
 
-
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setShowResult(false);
+      setWonPrize(null);
+      setIsSpinning(false);
+      spinboardRef.current?.reset();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!spinStatus?.resetsAt) return;
@@ -66,15 +88,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
       setCountdown(`${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m`);
     };
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // Update every minute
-
+    const interval = setInterval(updateCountdown, 60000);
     return () => clearInterval(interval);
-  }, [spinStatus?.resetsAt, refetch]);
+  }, [spinStatus?.resetsAt]);
 
   const handleSpinClick = () => {
     if (isSpinning || !canSpin || !authHeaders) return;
@@ -87,11 +107,11 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
         spinboardRef.current?.landOn(slotId);
-        setWonPrize(getPrizeBySlotId(slotId));
+        setWonPrize(getPrizeBySlotId(slotId) ?? null);
         refetch();
       },
-      onError: (error) => {
-        console.error("Spin error:", error);
+      onError: () => {
+        spinboardRef.current?.stopSpin();
         setIsSpinning(false);
       },
     });
@@ -104,8 +124,6 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
   const handleClose = () => {
     if (isSpinning) return;
-    setShowResult(false);
-    setWonPrize(null);
     onClose();
   };
 
@@ -113,28 +131,26 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     setShowResult(false);
   };
 
-  const getButtonConfig = () => {
+  const getButtonConfig = (): ButtonConfig => {
     if (isSpinning) {
       return {
         label: 'Spinning...',
-        onClick: undefined,
         disabled: true };
     }
 
     if (showResult) {
-      if (wonPrize?.rewardType == 'RARE_PASS') {
-            return {
-              label: `More spins unlock in ${ countdown }`,
-              onClick: undefined,
-              disabled: true,
-              variant: 'outline',
-            };
+      if (wonPrize?.rewardType === 'RARE_PASS') {
+        return {
+          label: `More spins unlock in ${countdown}`,
+          disabled: true,
+          variant: 'outline',
+        };
       }
 
       if (remainingSpins > 0) {
         const cost = nextSpinCost > 0 ? ` (${nextSpinCost} Points)` : '';
         return {
-          label: `Spin Again ${cost}`,
+          label: `Spin Again${cost}`,
           onClick: handleSpinAgain,
           disabled: false };
       }
@@ -149,13 +165,10 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       if (!hasEnoughPoints) {
         return {
           label: `Spin The Wheel ${nextSpinCost} Points`,
-          onClick: undefined,
           disabled: true };
       }
-
       return {
         label: 'No Spins Available',
-        onClick: undefined,
         disabled: true };
     }
 
@@ -163,14 +176,14 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       return {
         label: 'Free Spin x1',
         onClick: handleSpinClick,
+        variant: 'success',
         disabled: false };
     }
 
     return {
       label: `Spin The Wheel (${nextSpinCost} Points)`,
       onClick: handleSpinClick,
-      disabled: false
-    };
+      disabled: false };
   };
 
   const buttonConfig = getButtonConfig();
@@ -178,8 +191,6 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const isPointsWinning = wonPrize?.rewardType === "POINTS";
   const isPCTokenWinning = wonPrize?.rewardType === "PC_TOKENS";
   const isXPBoostWinning = wonPrize?.rewardType === "XP_BOOST";
-
-  console.log(spinStatus, 'spin')
 
   return (
     <Modal
@@ -273,17 +284,17 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           {buttonConfig.label}
         </Button>
 
-        {isFirstSpin &&  (
+        {isFirstSpin && (
           <Text variant='bes-semibold'>Come back daily for a free spin</Text>
         )}
 
-        {!isFirstSpin && spinStatus?.currentSpinCount < 5 && (
+        {!isFirstSpin && currentSpinCount < 5 && wonPrize?.rewardType !== "RARE_PASS" && (
           <Text variant='bes-semibold'>
-            Spin again for better rewards {spinStatus?.currentSpinCount}/5
+            Spin again for better rewards {currentSpinCount}/5
           </Text>
         )}
 
-        {!isFirstSpin && (spinStatus?.currentSpinCount === 5 || wonPrize?.rewardType === "RARE_PASS") &&(
+        {!isFirstSpin && (currentSpinCount >= 5 || wonPrize?.rewardType === "RARE_PASS") && (
           <Text variant='bes-semibold'>
             Check back tomorrow for new spins
           </Text>
