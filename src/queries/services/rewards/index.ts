@@ -25,3 +25,4 @@ export * from './spinTheWheel';
 export * from './createSeasonThreeUser';
 export * from './getDailyCheckInDetails';
 export * from './claimDailyRewardsSeasonThree';
+export * from './getLevelProgress';

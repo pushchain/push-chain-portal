@@ -22,3 +22,4 @@ export * from './spinTheWheelModel';
 export * from './createSeasonThreeUserModel';
 export * from './getDailyCheckInDetailsModel';
 export * from './claimDailyRewardsSeasonThreeModel';
+export * from './getLevelProgressModel';

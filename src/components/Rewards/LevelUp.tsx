@@ -1,7 +1,16 @@
-import { css } from "styled-components"
+import { css } from "styled-components";
+
+import { useAuthHeaders } from "../../context/authHeadersContext";
+import { useGetLevelProgress } from "../../queries";
+
 import { Box, Button, LevelUpIcon, Lock, ProgressBar, RewardsStarGradient, Text } from "../../blocks"
 
 export const LevelUp = () => {
+  const { authHeaders } = useAuthHeaders();
+  const { data: levelProgress } = useGetLevelProgress(authHeaders);
+
+  console.log(levelProgress, 'lolo')
+
   return(
     <Box
       borderRadius="radius-md"
@@ -30,7 +39,7 @@ export const LevelUp = () => {
 
           <Box display="flex" flexDirection="row" justifyContent="center" gap="spacing-xs" alignItems="center">
             <LevelUpIcon />
-            <Text variant="h2-semibold">Lv. 0</Text>
+        <Text variant="h2-semibold">Lv. { levelProgress?.level } </Text>
           </Box>
 
           <Box
@@ -45,11 +54,11 @@ export const LevelUp = () => {
             <Text variant="bs-semibold" textAlign="center" css={css`
               color: rgba(255, 255, 255, 0.75);
               `}>
-              Earn 140 XP to level up
+              Earn { levelProgress?.xpProgress.xpNeededForNextLevel } XP to level up
             </Text>
 
             <ProgressBar
-              progress={(30) || null}
+              progress={(levelProgress?.xpProgress.progressPercentage) || null}
               max={100}
               size="large"
               progressIcon={<RewardsStarGradient size={35} />}

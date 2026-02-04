@@ -48,3 +48,4 @@ export const getDailyCheckInDetails = "getDailyCheckInDetails";
 export const claimDailyRewardsNewSeasonThree = "claimDailyRewardsNewSeasonThree";
 export const squadsPendingInvites = "squadsPendingInvites";
 export const resolveWallet = "resolveWallet";
+export const levelProgress = "levelProgress";

@@ -24,3 +24,4 @@ export * from './useSpinTheWheel';
 export * from './useCreateSeasonThreeUser';
 export * from './useGetDailyCheckInDetails';
 export * from './useClaimDailyRewardsSeasonThree';
+export * from './useGetLevelProgress';

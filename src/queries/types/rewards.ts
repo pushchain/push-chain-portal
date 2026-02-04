@@ -589,3 +589,24 @@ export type DailyCheckInDetailsResponse = {
 };
 
 export type ClaimDailyRewardsSeasonThreeResponse = any;
+
+export type LevelConfigItem = {
+  level: number;
+  xpNeeded: number;
+  pointsReward: number;
+  pcTokensReward: number;
+};
+
+export type LevelProgressResponse = {
+  success: boolean;
+  level: number;
+  xp: number;
+  xpProgress: {
+    currentXPInLevel: number;
+    xpNeededForNextLevel: number;
+    progressPercentage: number;
+  };
+  currentLevelConfig: LevelConfigItem;
+  nextLevelConfig: LevelConfigItem;
+  paragonModeEnabled: boolean;
+};
