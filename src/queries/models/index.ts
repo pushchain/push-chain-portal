@@ -3,3 +3,4 @@ export * from './character';
 export * from './pointsVault';
 export * from './squads';
 export * from './invites';
+export * from './wallet';

@@ -48,7 +48,7 @@ export type CreateSquadResponse = {
 
 export type SendSquadInviteParams = {
   squadId: string;
-  walletAddress: string;
+  userId: string;
 };
 
 export type SendSquadInviteResponse = {

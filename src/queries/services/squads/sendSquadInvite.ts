@@ -8,8 +8,7 @@ export const sendSquadInvite = (params: SendSquadInviteParams, authHeaders: Auth
     method: "POST",
     url: `${getSeasonThreeBaseURL()}/api/v3/user/squads/${params.squadId}/invites`,
     data: {
-      // walletAddress: params.walletAddress,
-      inviteeId: params.walletAddress
+      inviteeId: params.userId,
     },
     headers: {
       "Content-Type": "application/json",
