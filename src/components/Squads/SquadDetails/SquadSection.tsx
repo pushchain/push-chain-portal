@@ -1,11 +1,12 @@
+import { useState } from "react"
 import { css } from "styled-components"
-import { Box, Link, Text } from "../../../blocks"
+import { Box, Button, Link, SeasonThreeEllipse, Text } from "../../../blocks"
 import { SquadHeader } from "./SquadHeader"
 import { SquadLevelCard } from "./SquadLevelCard"
 import { SquadStatsRow } from "./SquadStatsRow"
 import { SquadMembersTable } from "./SquadMembersTable"
 import { device } from "../../../config/globals"
-import { useGetSquadsPendingInvites } from "../../../queries"
+import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite } from "../../../queries"
 import { useAuthHeaders } from "../../../context/authHeadersContext"
 
 type SquadMember = {
@@ -25,10 +26,44 @@ type SquadSectionProps = {
 
 export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: SquadSectionProps) => {
   const { authHeaders } = useAuthHeaders();
+  const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
 
-  const { data: getSquadsPendingInvites } = useGetSquadsPendingInvites(authHeaders);
+  const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites(authHeaders);
+  const { mutate: acceptInvite, isPending: isAccepting } = useAcceptSquadInvite();
+  const { mutate: rejectInvite, isPending: isRejecting } = useRejectSquadInvite();
 
-  console.log(getSquadsPendingInvites, 'lolo');
+  const handleAcceptInvite = (inviteId: string) => {
+    setActiveInviteId(inviteId);
+    acceptInvite(
+      { params: { inviteId }, authHeaders },
+      {
+        onSuccess: () => {
+          setActiveInviteId(null);
+          refetchPendingInvites();
+        },
+        onError: () => {
+          setActiveInviteId(null);
+        },
+      }
+    );
+  };
+
+  const handleDeclineInvite = (inviteId: string) => {
+    setActiveInviteId(inviteId);
+    rejectInvite(
+      { params: { inviteId }, authHeaders },
+      {
+        onSuccess: () => {
+          setActiveInviteId(null);
+          refetchPendingInvites();
+        },
+        onError: () => {
+          setActiveInviteId(null);
+        },
+      }
+    );
+  };
+
   return (
     <Box
       display="flex"
@@ -38,7 +73,70 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
     >
       <SquadHeader squadData={squadData} onInviteMembers={onInviteMembers} />
 
-     {!squadData &&
+      {!squadData &&
+        getSquadsPendingInvites?.data?.length > 0 &&
+        getSquadsPendingInvites.data.map((invite) => (
+          <Box
+            key={invite.id}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap="spacing-lg"
+            padding="spacing-md"
+            borderRadius="radius-md"
+            justifyContent="space-between"
+            width="100%"
+            css={css`
+              border: 1px solid rgba(171, 70, 248, 0.4);
+              background: rgba(0, 0, 0, 0.1);
+              background-blend-mode: plus-lighter;
+              box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
+                          1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+              backdrop-filter: blur(10px);
+              box-sizing: border-box;
+            `}
+          >
+            <Box>
+              <Text
+                color="rgba(255, 255, 255, 0.75)"
+                variant="h4-semibold"
+              >
+                You have been invited to join{' '}
+                <Text as="span" color="#fff" variant="h4-semibold">
+                  {invite.squad.name}
+                </Text>{' '}
+                squad
+              </Text>
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="spacing-xs"
+                alignItems="center">
+                <Text variant="bs-semibold">Lv. {invite.squad.squadLevel}</Text> <SeasonThreeEllipse color="#fff" size={4} /> <Text variant="bs-semibold">{invite.squad.memberCount}/{invite.squad.maxMembers}</Text>
+              </Box>
+            </Box>
+
+            <Box display="flex" flexDirection="row" gap="spacing-xs">
+              <Button
+                variant="outline"
+                onClick={() => handleDeclineInvite(invite.id)}
+                loading={isRejecting && activeInviteId === invite.id}
+                disabled={isRejecting && activeInviteId === invite.id}
+              >
+                Decline
+              </Button>
+              <Button
+                onClick={() => handleAcceptInvite(invite.id)}
+                loading={isAccepting && activeInviteId === invite.id}
+                disabled={isAccepting && activeInviteId === invite.id}
+              >
+                Accept Invite
+              </Button>
+            </Box>
+          </Box>
+        ))}
+
+     {!squadData && !getSquadsPendingInvites?.data?.length &&
        <Box
         width="100%"
         minHeight="169px"
