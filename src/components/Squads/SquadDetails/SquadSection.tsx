@@ -172,6 +172,8 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
             height="100%"
             css={css`
               flex-shrink: 0;
+              min-width: 320px;
+              box-sizing: border-box;
 
               @media ${device.tablet} {
                 width: 100%;
@@ -179,12 +181,11 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
               }
             `}
           >
-            {/*<SquadLevelCard
-              squadName={squadData.squadName}
-              level={squadData.level}
-              xpToLevelUp={squadData.xpToLevelUp}
-              currentXp={squadData.currentXp}
-            />*/}
+            <SquadLevelCard
+              squadName={squadData.data.name}
+              level={squadData.data.squadLevel}
+              totalXp={squadData.data.totalXPSquad}
+            />
           </Box>
 
           <Box
