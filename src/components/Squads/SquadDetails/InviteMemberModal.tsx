@@ -18,55 +18,6 @@ const CHAIN_OPTIONS = [
   { label: "Base", value: "8453" },
 ];
 
-const SelectContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xxs, 4px);
-  width: 100%;
-`;
-
-const SelectLabel = styled.label`
-  color: var(--components-inputs-text-default);
-  font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-`;
-
-const StyledSelect = styled.select`
-  appearance: none;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1.5px solid var(--components-inputs-stroke-default);
-  border-radius: var(--radius-xs, 12px);
-  padding: var(--spacing-xs, 12px);
-  color: var(--components-inputs-text-default, #fff);
-  font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  width: 100%;
-  cursor: pointer;
-  outline: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
-  box-sizing: border-box;
-
-  &:hover {
-    border-color: var(--components-inputs-stroke-hover, #c4cbd5);
-  }
-
-  &:focus {
-    border-color: var(--components-inputs-stroke-focus);
-  }
-
-  option {
-    background: #1a1a2e;
-    color: #fff;
-  }
-`;
-
 type InviteMemberModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -228,3 +179,53 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
     </Modal>
   );
 };
+
+
+const SelectContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs, 4px);
+  width: 100%;
+`;
+
+const SelectLabel = styled.label`
+  color: var(--components-inputs-text-default);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+`;
+
+const StyledSelect = styled.select`
+  appearance: none;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1.5px solid var(--components-inputs-stroke-default);
+  border-radius: var(--radius-xs, 12px);
+  padding: var(--spacing-xs, 12px);
+  color: var(--components-inputs-text-default, #fff);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: var(--components-inputs-stroke-hover, #c4cbd5);
+  }
+
+  &:focus {
+    border-color: var(--components-inputs-stroke-focus);
+  }
+
+  option {
+    background: #1a1a2e;
+    color: #fff;
+  }
+`

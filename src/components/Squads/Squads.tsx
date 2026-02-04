@@ -113,6 +113,7 @@ export const Squads = () => {
           </Box>
 
           <Box
+            minHeight="100%"
             css={css`
               flex: 1;
               min-width: 0;

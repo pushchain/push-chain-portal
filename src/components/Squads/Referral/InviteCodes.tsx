@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { css } from "styled-components"
-import { Box, Text, Copy, Button } from "../../../blocks"
+import { css } from "styled-components";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+
 import { useGetAllInvites } from "../../../queries";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
-import { usePushWalletContext } from "@pushchain/ui-kit";
+import { device } from "../../../config/globals";
+
+import { Box, Text, Copy, Button } from "../../../blocks"
+
 
 type InviteCodeRowProps = {
   code: string;
@@ -139,7 +143,12 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
       css={css`
         box-sizing: border-box;
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
-        min-height: 300px;
+        min-height: 100%;
+
+        @media ${device.mobileL} {
+          min-height: 300px;
+        }
+
 
         &::before {
           content: '';
