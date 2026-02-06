@@ -2906,9 +2906,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushchain/core@npm:^4.0.7":
-  version: 4.0.8
-  resolution: "@pushchain/core@npm:4.0.8"
+"@pushchain/core@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@pushchain/core@npm:4.0.9"
   dependencies:
     "@bufbuild/protobuf": "npm:^2.0.0"
     "@coral-xyz/anchor": "npm:^0.31.0"
@@ -2925,17 +2925,17 @@ __metadata:
     tslib: "npm:^2.3.0"
     tweetnacl: "npm:^1.0.3"
     viem: "npm:2.27.2"
-  checksum: 10c0/efd984ca88ae63aad81a8cf722242aface88e8b65e5e97cb63f3c1848bd7fbd5c7667ac661211da731f0d74ea19aaf1ddea0bee6d3354f5f5da493616055bbe8
+  checksum: 10c0/ec1b86bd238c4982fc113127a66be0e7b1ef6833364b005372aec01316b9e362a2cf0f35ac2628677a9342c4c54583186554ff393547e0fb0af387c6b0ed64c1
   languageName: node
   linkType: hard
 
-"@pushchain/ui-kit@npm:^4.0.5":
-  version: 4.0.9
-  resolution: "@pushchain/ui-kit@npm:4.0.9"
+"@pushchain/ui-kit@npm:^4.0.11":
+  version: 4.0.11
+  resolution: "@pushchain/ui-kit@npm:4.0.11"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@metamask/sdk": "npm:^0.32.0"
-    "@pushchain/core": "npm:^4.0.7"
+    "@pushchain/core": "npm:^4.0.9"
     "@solana/web3.js": "npm:^1.98.2"
     "@walletconnect/ethereum-provider": "npm:^2.21.5"
     buffer: "npm:^6.0.3"
@@ -2947,7 +2947,7 @@ __metadata:
   peerDependencies:
     react: ">=18.3.0 <20.0.0"
     react-dom: ">=18.3.0 <20.0.0"
-  checksum: 10c0/047e0bcb2d270341c47d915a3944a2b09a28d656df4949790e9ec9740556c58aabe9a95a23367e4414d216eb587ea5de5e4db38f57e25f7f6410ba17e5a4a565
+  checksum: 10c0/d40e3c702197266142632503df882d273dd346168a32b89875cb5e2801ed9d502f948c5cb5a3922bf40f61b84eb92ef6644c5eef48ee6d7bfeabe8b3b2eccc89
   languageName: node
   linkType: hard
 
@@ -14906,7 +14906,7 @@ __metadata:
     "@babel/runtime": "npm:^7.26.9"
     "@emotion/react": "npm:^11.14.0"
     "@metamask/eth-sig-util": "npm:^4.0.0"
-    "@pushchain/ui-kit": "npm:^4.0.5"
+    "@pushchain/ui-kit": "npm:^4.0.11"
     "@pushprotocol/push-chain": "npm:^0.1.7"
     "@pushprotocol/restapi": "npm:^1.7.31"
     "@pushprotocol/uiweb": "npm:1.7.1"
