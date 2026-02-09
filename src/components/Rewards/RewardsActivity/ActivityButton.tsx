@@ -5,7 +5,7 @@ import React, { FC } from "react";
 import { ActvityType, UsersActivity } from "../../../queries";
 import { Button } from "../../../blocks";
 import { ActivityVerificationButton } from "./ActivityVerificationButton";
-import { useCountdown } from "./hooks/useCountdown";
+// import { useCountdown } from "./hooks/useCountdown";
 
 type ActivityButtonProps = {
   userId: string;
@@ -14,7 +14,7 @@ type ActivityButtonProps = {
   activityType: ActvityType;
   refetchActivity: () => void;
   setErrorMessage: (errorMessage: string) => void;
-  usersSingleActivity?: UsersActivity;
+  usersSingleActivity?: UsersActivity | any;
   isLoadingActivity: boolean;
   label?: string;
   currentLevel?: string;
@@ -37,19 +37,19 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   onStartClaim,
 }) => {
   // current finish date
-  const targetDate = "2025-07-31T23:59:59";
-  const { isExpired } = useCountdown(targetDate);
+  // const targetDate = "2025-07-31T23:59:59";
+  // const { isExpired } = useCountdown(targetDate);
 
-  const hasRewardsExpired = isExpired;
+  // const hasRewardsExpired = isExpired;
 
-  if (hasRewardsExpired) {
-    return (
-      <Button variant="tertiary" size="small" disabled>
-        Ended
-      </Button>
-    );
-  }
-
+  // if (hasRewardsExpired) {
+  //   return (
+  //     <Button variant="tertiary" size="small" disabled>
+  //       Ended
+  //     </Button>
+  //   );
+  // }
+  //
   if (usersSingleActivity?.status === "COMPLETED") {
     return (
       <Button variant="tertiary" size="small" disabled>

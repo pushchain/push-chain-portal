@@ -210,9 +210,9 @@ export type UsersAllActivitiesResponse = {
 
 export type UsersActivity = {
   activityId: string;
-  userId: string;
+  userId?: string;
   activityTypeId: string;
-  data:
+  data?:
     | { twitter?: string; discord?: string }
     | {
         currentEpoch?: number;
@@ -225,7 +225,7 @@ export type UsersActivity = {
   status: "COMPLETED" | "PENDING" | "REJECTED";
   points: number;
   multiplier: number;
-  verificationProof: string;
+  verificationProof?: string;
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
 };

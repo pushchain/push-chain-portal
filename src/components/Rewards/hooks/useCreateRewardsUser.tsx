@@ -54,7 +54,6 @@ const useCreateRewardsUser = () => {
   }: {
     onSuccessCallback?: (user: UserRewardsDetailResponse) => void;
   }) => {
-    console.log(hasRun, "has has");
     if (hasRun.current || userDetails) return;
     hasRun.current = true;
 

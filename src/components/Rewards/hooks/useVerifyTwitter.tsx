@@ -100,6 +100,34 @@ const useVerifyTwitter = ({
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
 
+  const formatTwitterVerificationError = (rawMessage: string): string => {
+    if (!rawMessage) return "Twitter verification failed. Please try again.";
+
+    const lines = rawMessage.split("\n").map(l => l.trim());
+
+    const reasons: string[] = [];
+
+    lines.forEach(line => {
+      if (line.includes("Not following")) {
+        reasons.push("Follow @pushchain on Twitter.");
+      }
+
+      if (line.includes("Insufficient followers")) {
+        reasons.push("Your account must have at least 100 followers.");
+      }
+
+      if (line.includes("Unable to verify account age")) {
+        reasons.push("Your Twitter account must be at least 6 months old.");
+      }
+    });
+
+    if (reasons.length === 0) {
+      return "Twitter verification failed. Please try again later.";
+    }
+
+    return `Twitter verification failed:\n• ${reasons.join("\n• ")}`;
+  };
+
   const handleVerify = useCallback(
     async (userId: string | null) => {
       setErrorMessage("");
@@ -164,9 +192,12 @@ const useVerifyTwitter = ({
             onError: (error: any) => {
               console.log("Error in creating activity", error);
               setVerifyingTwitter(false);
-              if (error.name) {
-                setErrorMessage(error.response.data.error);
-              }
+
+              const rawMessage = error?.response?.data?.error?.message;
+              setErrorMessage(formatTwitterVerificationError(rawMessage));
+              // if (error.name) {
+              //   setErrorMessage(error.response.data.error);
+              // }
             },
           },
         );

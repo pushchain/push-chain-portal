@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getRewardsBaseURL } from "../../../queries/baseURL";
+import { getSeasonThreeBaseURL } from "../../../queries/baseURL";
 import { getRewardsActivityModelCreator } from "../../../queries/models";
 
 export const getRewardsActivity = (userId: string, activityTypes: string[]) => {
@@ -9,6 +9,6 @@ export const getRewardsActivity = (userId: string, activityTypes: string[]) => {
   return axios({
     method: "GET",
 
-    url: `${getRewardsBaseURL()}/v2/users/${userId}/activities/bytype?types=${activitiesString}`,
+    url: `${getSeasonThreeBaseURL()}/v3/users/${userId}/activities/bytype?types=${activitiesString}`,
   }).then((response) => getRewardsActivityModelCreator(response.data));
 };

@@ -9,8 +9,6 @@ export const LevelUp = () => {
   const { authHeaders } = useAuthHeaders();
   const { data: levelProgress } = useGetLevelProgress(authHeaders);
 
-  console.log(levelProgress, 'lolo')
-
   return(
     <Box
       borderRadius="radius-md"
