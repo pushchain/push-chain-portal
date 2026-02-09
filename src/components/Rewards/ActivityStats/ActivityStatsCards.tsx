@@ -1,7 +1,19 @@
 import { Box } from '../../../blocks';
+import { useGetQuests } from '../../../queries';
 import AppQuestCard from './AppQuestCard';
 
 const ActivityStatsCards = () => {
+
+  const { data: lastOneQuests } = useGetQuests({
+    appId: "lastone"
+  });
+
+  const { data: ramenSwapQuests } = useGetQuests({
+    appId: "ramen-swap"
+  });
+
+  console.log(lastOneQuests, ramenSwapQuests, 'one one');
+
   const degenChessQuests = [
     {
       title: 'Play 1 live game',
@@ -96,7 +108,7 @@ const ActivityStatsCards = () => {
         appUrl="degenchess.fun"
         description="Complete quests on degenchess.fun and claim to level up and earn rewards"
         resetTime="New Quests in 6D 23H"
-        quests={degenChessQuests}
+        quests={lastOneQuests?.data.quests}
       />
 
       <AppQuestCard

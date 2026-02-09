@@ -2,21 +2,21 @@ import { FC } from 'react';
 import { css } from 'styled-components';
 import { ArrowUpRight, Box, Button, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
 
-type Quest = {
-  title: string;
-  xp: number;
-  progress?: number;
-  maxProgress?: number;
-  isCompleted: boolean;
-  isDisabled: boolean;
-};
+// type Quest = {
+//   title: string;
+//   xp: number;
+//   progress?: number;
+//   maxProgress?: number;
+//   isCompleted: boolean;
+//   isDisabled: boolean;
+// };
 
 type AppQuestCardProps = {
   appName: string;
   appUrl: string;
   description: string;
   resetTime: string;
-  quests: Quest[];
+  quests: any;
   icon?: string;
   gradient?: string;
   titleGradient?: string;
@@ -114,7 +114,17 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 ) : (
                   <Box display="flex" alignItems="center" justifyContent="center" width="112px">
                     <Box display="inline-flex" alignItems="flex-start">
-                      <Button
+                      {/*<ActivityButton
+                        activityType={item.activityType as ActvityType}
+                        activityTypeId={item.activityTypeId}
+                        userId={userDetails?.userId as string}
+                        refetchActivity={() => refetchActivities()}
+                        usersSingleActivity={activityStatus}
+                        setErrorMessage={setErrorMessage}
+                        isLoadingActivity={isLoadingActivities}
+                        label="Claim"
+                      />*/}
+                      {/*<Button
                         size="small"
                         variant="primary"
                         // disabled={quest.isDisabled}
@@ -139,7 +149,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                             Claim
                           </Text>
                         </Box>
-                      </Button>
+                      </Button>*/}
                     </Box>
                   </Box>
                 )}
@@ -160,7 +170,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                       <XP />
                     </Box>
                     <Text variant="bm-bold" color="text-primary">
-                      {quest.xp}
+                      {quest.baseXP}
                     </Text>
                   </Box>
                 </Box>
@@ -364,7 +374,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             alignItems="flex-start"
             padding="spacing-lg spacing-none spacing-none spacing-none"
           >
-            {quests.map((quest, index) => renderQuestItem(quest, index))}
+            {quests?.map((quest, index) => renderQuestItem(quest, index))}
           </Box>
         </Box>
       </Box>

@@ -1,0 +1,1 @@
+export { getQuestsModel } from './getQuestsModel';

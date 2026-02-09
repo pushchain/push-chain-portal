@@ -1,0 +1,1 @@
+export { getQuests } from './getQuests';
