@@ -32,8 +32,8 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   usersSingleActivity,
   isLoadingActivity,
   label,
-  currentLevel,
-  setCurrentLevel,
+  // currentLevel,
+  // setCurrentLevel,
   onStartClaim,
 }) => {
   // current finish date
@@ -77,8 +77,8 @@ const ActivityButton: FC<ActivityButtonProps> = ({
       setErrorMessage={setErrorMessage}
       isLoadingActivity={isLoadingActivity}
       label={label}
-      currentLevel={currentLevel}
-      setCurrentLevel={setCurrentLevel}
+      // currentLevel={currentLevel}
+      // setCurrentLevel={setCurrentLevel}
       onStartClaim={onStartClaim}
     />
   );

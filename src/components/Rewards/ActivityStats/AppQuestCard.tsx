@@ -1,6 +1,8 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { css } from 'styled-components';
-import { ArrowUpRight, Box, Button, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ArrowUpRight, Box, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ActvityType } from '../../../queries';
+import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
 // type Quest = {
 //   title: string;
@@ -22,6 +24,10 @@ type AppQuestCardProps = {
   titleGradient?: string;
   linkColor?: string;
   blurColor?: string;
+  activityStatus?: any;
+  isLoading?: boolean;
+  refetchActivities?: any;
+  userId?: string;
 };
 
 const AppQuestCard: FC<AppQuestCardProps> = ({
@@ -35,7 +41,12 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   titleGradient = 'linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(107, 48, 178, 1) 100%)',
   linkColor = '#6a23d5',
   blurColor = '#a683e5',
+  activityStatus,
+  isLoading,
+  refetchActivities,
+  userId,
 }) => {
+  const [errorMessage, setErrorMessage] = useState("");
   const renderQuestItem = (quest: Quest, index: number) => {
     const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
 
@@ -114,42 +125,16 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 ) : (
                   <Box display="flex" alignItems="center" justifyContent="center" width="112px">
                     <Box display="inline-flex" alignItems="flex-start">
-                      {/*<ActivityButton
-                        activityType={item.activityType as ActvityType}
-                        activityTypeId={item.activityTypeId}
-                        userId={userDetails?.userId as string}
-                        refetchActivity={() => refetchActivities()}
+                      <ActivityButton
+                        activityType={quest.id as ActvityType}
+                        activityTypeId={quest.id}
+                        userId={userId as string}
+                        refetchActivity={() => refetchActivities?.()}
                         usersSingleActivity={activityStatus}
                         setErrorMessage={setErrorMessage}
-                        isLoadingActivity={isLoadingActivities}
+                        isLoadingActivity={isLoading || false}
                         label="Claim"
-                      />*/}
-                      {/*<Button
-                        size="small"
-                        variant="primary"
-                        // disabled={quest.isDisabled}
-                        css={css`
-                          color: #fff;
-                        `}
-                      >
-                        <Box
-                          display="inline-flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          gap="spacing-xxxs"
-                        >
-                          <Text
-                            css={css`
-                              font-size: 12px;
-                              font-weight: 500;
-                              line-height: 16px;
-                              white-space: nowrap;
-                            `}
-                          >
-                            Claim
-                          </Text>
-                        </Box>
-                      </Button>*/}
+                      />
                     </Box>
                   </Box>
                 )}

@@ -8,14 +8,7 @@ import { useVerifyDiscord } from "../hooks/useVerifyDiscord";
 import { useVerifyRewards } from "../hooks/useVerifyRewards";
 
 // helpers
-import {
-  chessRewardsActivities,
-  dailyRewardActivities,
-  emailRewardsActivities,
-  otherRewardActivities,
-  rumorsRewardsActivities,
-  simulateRewardsActivities,
-} from "../utils/activityTypeArray";
+import { otherRewardActivities } from "../utils/activityTypeArray";
 
 // types
 import { ActvityType } from "../../../queries/types";
@@ -47,7 +40,6 @@ export const ActivityVerificationButton = ({
   userId,
   isLoadingActivity,
   label,
-  setCurrentLevel,
   onStartClaim,
 }: ActivityVerificationButtonProps) => {
   const { universalAccount, connectionStatus } = usePushWalletContext();
@@ -73,7 +65,6 @@ export const ActivityVerificationButton = ({
       refetchActivity,
       setErrorMessage,
       activityTypeIndex,
-      setCurrentLevel,
       onStartClaim,
     });
 
@@ -99,26 +90,11 @@ export const ActivityVerificationButton = ({
     }
 
     if (
-      otherRewardActivities.includes(activityType) ||
-      chessRewardsActivities.includes(activityType) ||
-      emailRewardsActivities.includes(activityType) ||
-      rumorsRewardsActivities.includes(activityType) ||
-      simulateRewardsActivities.includes(activityType)
+      otherRewardActivities.includes(activityType)
     ) {
       return {
         isLoading: verifyingRewards,
         label: "Claim",
-        action: handleRewardsVerification,
-        isVerificationComplete:
-          rewardsActivityStatus == "Claimed" ||
-          rewardsActivityStatus == "Pending",
-      };
-    }
-
-    if (dailyRewardActivities.includes(activityType)) {
-      return {
-        isLoading: verifyingRewards,
-        label: "Check In",
         action: handleRewardsVerification,
         isVerificationComplete:
           rewardsActivityStatus == "Claimed" ||

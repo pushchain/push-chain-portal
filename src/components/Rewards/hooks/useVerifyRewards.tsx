@@ -18,7 +18,6 @@ export type UseVerifyRewardsParams = {
   setErrorMessage: (errorMessage: string) => void;
   refetchActivity: () => void;
   activityTypeIndex?: string;
-  setCurrentLevel?: (currentLevel) => void;
   onStartClaim?: () => void;
 };
 
@@ -107,9 +106,9 @@ const useVerifyRewards = ({
         onSuccess: (response) => {
           if (response.status === "COMPLETED") {
             setRewardsActivityStatus("Claimed");
-            if (setCurrentLevel) {
-              setCurrentLevel(activityTypeId);
-            }
+            // if (setCurrentLevel) {
+            //   setCurrentLevel(activityTypeId);
+            // }
             refetchActivity();
             refetchUserDetails();
             setVerifyingRewards(false);

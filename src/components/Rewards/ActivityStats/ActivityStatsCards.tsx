@@ -1,8 +1,22 @@
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import { Box } from '../../../blocks';
-import { useGetQuests } from '../../../queries';
+import { useGetQuests, useGetRewardActivityStatus, useGetUserRewardsDetails } from '../../../queries';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+
 import AppQuestCard from './AppQuestCard';
 
 const ActivityStatsCards = () => {
+  const { universalAccount } = usePushWalletContext();
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userDetails } = useGetUserRewardsDetails({
+    caip10WalletAddress,
+  })
 
   const { data: lastOneQuests } = useGetQuests({
     appId: "lastone"
@@ -12,48 +26,62 @@ const ActivityStatsCards = () => {
     appId: "ramen-swap"
   });
 
-  console.log(lastOneQuests, ramenSwapQuests, 'one one');
+  const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
+  const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
 
-  const degenChessQuests = [
-    {
-      title: 'Play 1 live game',
-      xp: 150,
-      isCompleted: false,
-      isDisabled: true,
-    },
-    {
-      title: 'Watch 1 live game (7+ mins)',
-      xp: 200,
-      progress: 0,
-      maxProgress: 1,
-      isCompleted: false,
-      isDisabled: false,
-    },
-    {
-      title: 'Play 3 matches',
-      xp: 150,
-      progress: 0,
-      maxProgress: 3,
-      isCompleted: false,
-      isDisabled: false,
-    },
-    {
-      title: 'Achieve ELO rating of 100',
-      xp: 250,
-      progress: 0,
-      maxProgress: 100,
-      isCompleted: false,
-      isDisabled: false,
-    },
-    {
-      title: 'Create or join a public match',
-      xp: 150,
-      progress: 0,
-      maxProgress: 1,
-      isCompleted: false,
-      isDisabled: false,
-    },
+  const allActivityIds = [
+    ...lastOneQuestIds,
+    ...ramenSwapQuestIds,
   ];
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+    {
+      userId: userDetails?.userId as string,
+      activities: allActivityIds,
+    },
+    !!userDetails?.userId
+  );
+
+  // const degenChessQuests = [
+  //   {
+  //     title: 'Play 1 live game',
+  //     xp: 150,
+  //     isCompleted: false,
+  //     isDisabled: true,
+  //   },
+  //   {
+  //     title: 'Watch 1 live game (7+ mins)',
+  //     xp: 200,
+  //     progress: 0,
+  //     maxProgress: 1,
+  //     isCompleted: false,
+  //     isDisabled: false,
+  //   },
+  //   {
+  //     title: 'Play 3 matches',
+  //     xp: 150,
+  //     progress: 0,
+  //     maxProgress: 3,
+  //     isCompleted: false,
+  //     isDisabled: false,
+  //   },
+  //   {
+  //     title: 'Achieve ELO rating of 100',
+  //     xp: 250,
+  //     progress: 0,
+  //     maxProgress: 100,
+  //     isCompleted: false,
+  //     isDisabled: false,
+  //   },
+  //   {
+  //     title: 'Create or join a public match',
+  //     xp: 150,
+  //     progress: 0,
+  //     maxProgress: 1,
+  //     isCompleted: false,
+  //     isDisabled: false,
+  //   },
+  // ];
 
   const uniMarketQuests = [
     {
@@ -109,6 +137,12 @@ const ActivityStatsCards = () => {
         description="Complete quests on degenchess.fun and claim to level up and earn rewards"
         resetTime="New Quests in 6D 23H"
         quests={lastOneQuests?.data.quests}
+        activityStatus={activityStatuses}
+        isLoading={isLoadingActivities}
+        refetchActivities={refetchActivities}
+        userId={userDetails?.userId}
+
+
       />
 
       <AppQuestCard
