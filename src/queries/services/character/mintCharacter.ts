@@ -4,9 +4,12 @@ import { mintCharacterModel } from '../../models';
 import { CharacterMintParams } from '../../types';
 import { getSeasonThreeBaseURL } from '../../baseURL';
 
-export const mintCharacter = ({ walletAddress }: CharacterMintParams) =>
+export const mintCharacter = ({ userWallet, characterId  }: CharacterMintParams) =>
   axios({
     method: 'POST',
     url: `${getSeasonThreeBaseURL()}/api/v3/character/mint`,
-    data: { walletAddress },
+    data: {
+      userWallet,
+      characterId
+    },
   }).then((response) => mintCharacterModel(response.data));

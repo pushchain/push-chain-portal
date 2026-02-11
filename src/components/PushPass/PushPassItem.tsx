@@ -9,6 +9,7 @@ import {
   useReshuffleCharacter,
   useMintCharacter,
 } from "../../queries";
+import { CharacterInfoResponse } from "../../queries/types/character";
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
 import { Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
@@ -21,7 +22,7 @@ type PassState = "loading" | "unopened" | "opened" | "minted";
 const getPassState = (
   isLoading: boolean,
   characterId: string | undefined,
-  data?: { eligible: boolean; assigned: boolean; characters: any[] }
+  data?: CharacterInfoResponse
 ): PassState => {
   if (isLoading) return "loading";
   if (!characterId || characterId === "open") return "unopened";
@@ -49,18 +50,33 @@ export const PushPassItem = () => {
     walletAddress: caip10WalletAddress,
   });
 
-  const generateCharacter = useGenerateCharacter();
-  const reshuffleCharacter = useReshuffleCharacter();
-  const mintCharacter = useMintCharacter();
+  const {
+    mutate: generate,
+    isPending: isGenerating,
+    isError: isGenerateError,
+  } = useGenerateCharacter();
+
+  const {
+    mutate: reshuffle,
+    isPending: isReshuffling,
+    isError: isReshuffleError,
+  } = useReshuffleCharacter();
+
+  const {
+    mutate: mint,
+    isPending: isMinting,
+    isError: isMintError,
+  } = useMintCharacter();
 
   const passState = getPassState(isLoading, characterId, characterInfo);
   const character = characterInfo?.characters?.find((c) => c.characterId === characterId);
   const isMinted = character?.status === "MINTED";
+  const isActionLoading = isGenerating || isReshuffling || isMinting;
 
   const handleOpenPass = () => {
-    if (!universalAccount?.address) return;
-    generateCharacter.mutate(
-      { walletAddress: universalAccount.address },
+    if (!caip10WalletAddress) return;
+    generate(
+      { walletAddress: caip10WalletAddress },
       {
         onSuccess: (data) => {
           refetch();
@@ -73,9 +89,12 @@ export const PushPassItem = () => {
   };
 
   const handleReshuffle = () => {
-    if (!universalAccount?.address) return;
-    reshuffleCharacter.mutate(
-      { walletAddress: universalAccount.address },
+    if (!caip10WalletAddress) return;
+    reshuffle(
+      {
+        userWallet: caip10WalletAddress,
+        characterId: characterId
+      },
       {
         onSuccess: () => {
           refetch();
@@ -85,9 +104,12 @@ export const PushPassItem = () => {
   };
 
   const handleMint = () => {
-    if (!universalAccount?.address) return;
-    mintCharacter.mutate(
-      { walletAddress: universalAccount.address },
+    if (!caip10WalletAddress) return;
+    mint(
+      {
+        userWallet: caip10WalletAddress,
+        characterId: characterId
+      },
       {
         onSuccess: () => {
           refetch();
@@ -95,9 +117,6 @@ export const PushPassItem = () => {
       }
     );
   };
-
-  const isActionLoading =
-    generateCharacter.isPending || reshuffleCharacter.isPending || mintCharacter.isPending;
 
   return (
     <Box
@@ -150,6 +169,7 @@ export const PushPassItem = () => {
         </Box>
       </Button>
 
+      {/* Loading character info */}
       {passState === "loading" && (
         <Box
           display="flex"
@@ -165,6 +185,7 @@ export const PushPassItem = () => {
         </Box>
       )}
 
+      {/* No character yet — show Open Pass button to generate */}
       {passState === "unopened" && (
         <>
           <Box
@@ -211,23 +232,12 @@ export const PushPassItem = () => {
             <Button
               variant="primary"
               onClick={handleOpenPass}
-              disabled={isActionLoading}
+              disabled={isGenerating}
             >
-              {generateCharacter.isPending ? <Spinner size="small" /> : "Open Pass"}
+              {isGenerating ? <Spinner size="small" /> : "Open Pass"}
             </Button>
 
-            {/*{!characterInfo?.eligible && (
-              <Text
-                variant="bs-regular"
-                css={css`
-                  color: rgba(255, 255, 255, 0.5);
-                `}
-              >
-                You are not eligible to open this pass yet.
-              </Text>
-            )}*/}
-
-            {generateCharacter.isError && (
+            {isGenerateError && (
               <Text
                 variant="bs-regular"
                 css={css`
@@ -241,6 +251,7 @@ export const PushPassItem = () => {
         </>
       )}
 
+      {/* Character revealed — show mint & reshuffle options */}
       {(passState === "opened" || passState === "minted") && characterId && (
         <>
           <Box
@@ -318,7 +329,7 @@ export const PushPassItem = () => {
                     min-width: 140px;
                   `}
                 >
-                  {isActionLoading ? <Spinner size="small" /> : "Confirm & Claim Pass"}
+                  {isMinting ? <Spinner size="small" /> : "Confirm & Claim Pass"}
                 </Button>
 
                 <Button
@@ -329,20 +340,19 @@ export const PushPassItem = () => {
                     min-width: 140px;
                   `}
                 >
-                  {!isActionLoading && <Twitter width={20} height={20} />}
-                  {isActionLoading ? <Spinner size="small" /> : "Tweet to Reroll"}
+                  {isReshuffling ? <Spinner size="small" /> : <><Twitter width={20} height={20} /> Tweet to Reroll</>}
                 </Button>
               </Box>
             )}
 
-            {(reshuffleCharacter.isError || mintCharacter.isError) && (
+            {(isReshuffleError || isMintError) && (
               <Text
                 variant="bs-regular"
                 css={css`
                   color: #ff6b6b;
                 `}
               >
-                {reshuffleCharacter.isError ? "Failed to reshuffle." : "Failed to mint."} Please try
+                {isReshuffleError ? "Failed to reshuffle." : "Failed to mint."} Please try
                 again.
               </Text>
             )}

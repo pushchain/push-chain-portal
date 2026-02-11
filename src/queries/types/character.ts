@@ -9,11 +9,13 @@ export interface CharacterGenerateParams {
 }
 
 export interface CharacterMintParams {
-  walletAddress: string;
+  userWallet: string;
+  characterId: string;
 }
 
 export interface CharacterReshuffleParams {
-  walletAddress: string;
+  userWallet: string;
+  characterId: string;
 }
 
 type CharacterDetails = {
@@ -50,6 +52,7 @@ export interface CharacterEligibleParams {
 
 export interface CharacterEligibleResponse {
   eligible: boolean;
+  rareActiveCount: number;
 }
 
 export type RarePassHistoryItem = {

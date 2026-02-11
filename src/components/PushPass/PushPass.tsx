@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetCharacterEligible, useGetCharacterInfo, useGetSeasonThreeUserByWallet } from '../../queries';
+import { useGetCharacterEligible, useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import PushPassTabs from './Tabs/PushPassTabs';
@@ -33,60 +33,42 @@ const PushPass = () => {
 
   const { data: isUserEligible } = useGetCharacterEligible({
     userWallet: caip10WalletAddress
-  })
+  });
 
-  const rareActiveCount = userDetails?.rareActiveCount ?? 0;
-  const isEligible = rareActiveCount >= 1;
+  const { data: rarePassHistory } = useGetRarePassHistory({
+    userId: userDetails?.userId ?? '',
+  });
+
+  const claimableCount = isUserEligible?.rareActiveCount ?? 0;
   const characters = userCharacterInfo?.characters || [];
   const hasUnmintedPass = characters?.some((c) => c.status === 'UNMINTED');
-  // const hasMintedPass = characters.some((c) => c.status === 'MINTED');
 
-  // console.log(isUserEligible);
+  const historyItems = rarePassHistory?.history ?? [];
 
+  let claimableAssigned = 0;
+  const passes = historyItems.map((item, index) => {
+    const level = (item.details as { level?: number })?.level;
+    const isDormant = item.activityTypeId === 'rare_pass_dormant_grant';
 
-  const passes = [
-    {
-      id: 1,
-      isLocked: !isEligible && !hasUnmintedPass,
-      lockMessage: hasUnmintedPass ? 'View Pass' : isEligible ? 'Open Now' : 'Not Eligible',
+    if (isDormant) {
+      return {
+        id: index + 1,
+        isLocked: true,
+        lockMessage: `Unlocks at Lv. ${level}`,
+      };
+    }
+
+    // Active pass — check if user can still claim
+    const canClaim = claimableAssigned < claimableCount;
+    if (canClaim) claimableAssigned++;
+
+    return {
+      id: index + 1,
+      isLocked: !canClaim && !hasUnmintedPass,
+      lockMessage: hasUnmintedPass ? 'View Pass' : canClaim ? 'Open Now' : 'Not Eligible',
       character: characters.find((c) => c.status === 'UNMINTED'),
-    },
-    {
-      id: 2,
-      isLocked: true,
-      lockMessage: 'Spin to Unlock'
-    },
-    {
-      id: 3,
-      isLocked: true,
-      lockMessage: 'Unlocks at Lv. 15'
-    },
-    {
-      id: 4,
-      isLocked: true,
-      lockMessage: 'Unlocks at Lv. 25'
-    },
-    {
-      id: 5,
-      isLocked: true,
-      lockMessage: 'Unlocks at Lv. 40'
-    },
-    {
-      id: 6,
-      isLocked: true,
-      lockMessage: 'Unlocks at Lv. 50'
-    },
-    {
-      id: 7,
-      isLocked: true,
-      lockMessage: 'Complete Boss Quest'
-    },
-    {
-      id: 8,
-      isLocked: true,
-      lockMessage: 'Complete Boss Quest'
-    },
-  ];
+    };
+  });
 
 
   return (

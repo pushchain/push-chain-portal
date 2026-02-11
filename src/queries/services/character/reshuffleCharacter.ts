@@ -4,9 +4,12 @@ import { reshuffleCharacterModel } from '../../models';
 import { CharacterReshuffleParams } from '../../types';
 import { getSeasonThreeBaseURL } from '../../baseURL';
 
-export const reshuffleCharacter = ({ walletAddress }: CharacterReshuffleParams) =>
+export const reshuffleCharacter = ({ userWallet, characterId }: CharacterReshuffleParams) =>
   axios({
     method: 'POST',
     url: `${getSeasonThreeBaseURL()}/api/v3/character/reshuffle`,
-    data: { walletAddress },
+    data: {
+      userWallet,
+      characterId
+    },
   }).then((response) => reshuffleCharacterModel(response.data));

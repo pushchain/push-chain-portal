@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import OpenPassImage from '../../../../static/assets/website/pushpass/OpenPass.webp';
 import OpenPassLockedImage from '../../../../static/assets/website/pushpass/OpenPassLocked.webp';
 
-type PassCardProps = {
+type RarePassCardProps = {
   isLocked: boolean;
   lockMessage?: string;
   backgroundImage?: string;
@@ -13,7 +13,7 @@ type PassCardProps = {
   characterId?: string;
 };
 
-const PassCard: FC<PassCardProps> = ({
+const RarePassCard: FC<RarePassCardProps> = ({
   isLocked,
   lockMessage = 'Locked',
   id,
@@ -21,7 +21,7 @@ const PassCard: FC<PassCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleNavigation = () => {
+  const handleClick = () => {
     if (characterId) {
       navigate(`/rewards/pushpass/${characterId}`);
     } else {
@@ -94,7 +94,7 @@ const PassCard: FC<PassCardProps> = ({
               <Button
                 size="medium"
                 variant="primary"
-                onClick={handleNavigation}
+                onClick={handleClick}
                 css={css`
                   min-width: 100px;
                   height: 48px;
@@ -119,7 +119,7 @@ const PassCard: FC<PassCardProps> = ({
                       color: #fff;
                     `}
                   >
-                    Open Pass
+                    {lockMessage || 'Open Pass'}
                   </Text>
                 </Box>
               </Button>
@@ -131,4 +131,4 @@ const PassCard: FC<PassCardProps> = ({
   );
 };
 
-export default PassCard;
+export default RarePassCard;
