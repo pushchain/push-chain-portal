@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetCharacterInfo, useGetSeasonThreeUserByWallet } from '../../queries';
+import { useGetCharacterEligible, useGetCharacterInfo, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import PushPassTabs from './Tabs/PushPassTabs';
@@ -31,11 +31,17 @@ const PushPass = () => {
     walletAddress: caip10WalletAddress,
   });
 
+  const { data: isUserEligible } = useGetCharacterEligible({
+    userWallet: caip10WalletAddress
+  })
+
   const rareActiveCount = userDetails?.rareActiveCount ?? 0;
   const isEligible = rareActiveCount >= 1;
   const characters = userCharacterInfo?.characters || [];
   const hasUnmintedPass = characters?.some((c) => c.status === 'UNMINTED');
   // const hasMintedPass = characters.some((c) => c.status === 'MINTED');
+
+  // console.log(isUserEligible);
 
 
   const passes = [

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { getCharacterEligibleModel } from "../../models";
-import { CharacterEligibleParams } from "../../types/character";
+import { CharacterEligibleParams } from "../../types";
 import { getSeasonThreeBaseURL } from "../../baseURL";
 
 export const getCharacterEligible = ({ userWallet }: CharacterEligibleParams) =>

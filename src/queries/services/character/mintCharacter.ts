@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { mintCharacterModel } from '../../models';
-import { CharacterMintParams } from '../../types/character';
+import { CharacterMintParams } from '../../types';
 import { getSeasonThreeBaseURL } from '../../baseURL';
 
 export const mintCharacter = ({ walletAddress }: CharacterMintParams) =>

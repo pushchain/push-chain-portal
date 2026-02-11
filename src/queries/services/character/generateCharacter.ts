@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import { generateCharacterModel } from '../../models';
-import { CharacterGenerateParams } from '../../types/character';
+import { CharacterGenerateParams } from '../../types';
 import { getSeasonThreeBaseURL } from '../../baseURL';
+import { generateCharacterModel } from '../../models';
 
 export const generateCharacter = ({ walletAddress }: CharacterGenerateParams) =>
   axios({

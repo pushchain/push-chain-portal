@@ -1,5 +1,5 @@
 import { CharacterEligibleResponse } from "../../types/character";
 
 export const getCharacterEligibleModel = (
-  response: any
+  response: CharacterEligibleResponse
 ): CharacterEligibleResponse => response;

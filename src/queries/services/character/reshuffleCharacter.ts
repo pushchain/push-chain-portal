@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { reshuffleCharacterModel } from '../../models';
-import { CharacterReshuffleParams } from '../../types/character';
+import { CharacterReshuffleParams } from '../../types';
 import { getSeasonThreeBaseURL } from '../../baseURL';
 
 export const reshuffleCharacter = ({ walletAddress }: CharacterReshuffleParams) =>

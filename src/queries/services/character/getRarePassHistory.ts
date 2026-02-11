@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getRarePassHistoryModel } from '../../models/character/getRarePassHistoryModel';
+import { getRarePassHistoryModel } from '../../models';
 import { GetRarePassHistoryParams, GetRarePassHistoryResponse } from '../../types/character';
 import { getRewardsBaseURL } from '../../baseURL';
 

@@ -101,7 +101,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
           }
         `}
       >
-        {passes.map((pass) => (
+        {passes?.map((pass) => (
           <PassCard
             key={pass.id}
             isLocked={pass.isLocked}
