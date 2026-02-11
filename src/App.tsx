@@ -276,16 +276,16 @@ function App() {
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
            >
-              <RewardsContextProvider>
-                  <QueryClientProvider client={queryClient}>
-                    <AuthHeadersProvider>
-                    <Router basename={basename}>
+              <QueryClientProvider client={queryClient}>
+                <RewardsContextProvider>
+                  <AuthHeadersProvider>
+                      <Router basename={basename}>
                       <AppContent />
                     </Router>
                     <ReactQueryDevtools initialIsOpen={false} />
-                    </AuthHeadersProvider>
-                  </QueryClientProvider>
-              </RewardsContextProvider>
+                  </AuthHeadersProvider>
+                </RewardsContextProvider>
+              </QueryClientProvider>
       </PushUniversalWalletProvider>
     </ThemeProviderWrapper>
   );

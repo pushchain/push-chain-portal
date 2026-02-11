@@ -27,8 +27,7 @@ import { css } from "styled-components";
 import { ActivityButton } from "./ActivityButton";
 import { RewardsActivityIcon } from "./RewardsActivityIcon";
 import { RewardsActivityTitle } from "./RewardsActivityTitle";
-import useLockedStatus from "./hooks/useLockedStatus";
-import { walletToFullCAIP10 } from "../../helpers/web3helper";
+import { useRewardsContext } from "../../../context/rewardsContext";
 
 export type RewardActivitiesListItemProps = {
   userId: string;
@@ -70,8 +69,7 @@ const RewardsActivitiesListItem: FC<RewardActivitiesListItemProps> = ({
   const isLoading = isAllActivitiesLoading;
 
   const [errorMessage, setErrorMessage] = useState("");
-  const { refetchRecentActivities, getLockStatus, statusRecentActivities } =
-    useLockedStatus();
+  const { refetchActivityStatus } = useRewardsContext();
 
   const isRewardsLocked = useMemo(() => {
     return (
@@ -95,22 +93,8 @@ const RewardsActivitiesListItem: FC<RewardActivitiesListItemProps> = ({
 
   const updateActivities = () => {
     refetchActivity();
-    refetchRecentActivities();
+    refetchActivityStatus();
   };
-
-  // if activityType is twitter or discord, then re-call check lock status fn
-  useEffect(() => {
-    if (
-      activity.activityType == "follow_push_on_discord" ||
-      activity.activityType == "follow_push_on_twitter"
-    ) {
-      getLockStatus();
-    }
-  }, [
-    usersSingleActivity?.status,
-    activity.activityType,
-    statusRecentActivities,
-  ]);
 
   return (
     <Skeleton isLoading={isLoadingItem}>

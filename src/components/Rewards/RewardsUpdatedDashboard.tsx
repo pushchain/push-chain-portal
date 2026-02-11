@@ -8,10 +8,14 @@ import {
 import { Box, Text, ArrowDown, GlowStreaks } from "../../blocks";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
+import { useRewardsContext } from "../../context/rewardsContext";
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext();
   const isWalletConnected = Boolean(universalAccount?.address);
+  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+
+  console.log(isLocked, isLockedStatusLoading);
 
   const renderLoggedOutState = () => (
     <Box
@@ -161,6 +165,8 @@ export const RewardsUpdatedDashboard = () => {
   const renderLoggedInVerifiedState = () => (
     <RenderLoggedInVerifiedState />
   );
+
+  if(isWalletConnected && !isLocked && !isLockedStatusLoading) return renderLoggedInVerifiedState();
 
   if(isWalletConnected) return renderLoggedInUnverifiedState()
 

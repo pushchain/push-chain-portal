@@ -4,18 +4,18 @@ import { usePushWalletContext } from "@pushchain/ui-kit"
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
-import { useAdvancedSybilCheck, useGetRewardActivityStatus, useGetUserRewardsDetails } from "../../../queries"
-import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper"
+import { useGetRewardActivityStatus, useGetUserRewardsDetails } from "../../../queries"
+import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
+import { useRewardsContext } from "../../../context/rewardsContext"
 
-import { Alert, ArrowDown, Box, Button, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
+import { Alert, ArrowDown, Box, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
 
 
 export const RenderLoggedInUnverifiedState = () => {
   const { universalAccount } = usePushWalletContext();
-  const { chainId } = parseCAIP(universalAccount?.chain);
-  const [isUserEligible, setIsUserEligible] = useState<boolean | null>(null);
+  const { isSybilEligible, isSybilCheckPending, refetchActivityStatus } = useRewardsContext();
   const [errorMessage, setErrorMessage] = useState("");
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -27,7 +27,7 @@ export const RenderLoggedInUnverifiedState = () => {
     caip10WalletAddress,
   });
 
-  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+  const { data: activityStatuses, isLoading: isLoadingActivities } = useGetRewardActivityStatus(
     {
       userId: userDetails?.userId as string,
       activities: ["follow_push_on_twitter", "follow_push_on_discord"],
@@ -55,25 +55,6 @@ export const RenderLoggedInUnverifiedState = () => {
       activityTypeId: "link_an_active_wallet",
     },
   ];
-
-  const { mutate: advancedSybilCheck, isPending: isVerifying } = useAdvancedSybilCheck();
-
-  const handleVerifyAccount = () => {
-    advancedSybilCheck(
-      {
-        address: universalAccount?.address,
-        chainId: parseInt(chainId),
-      },
-      {
-        onSuccess: (response) => {
-          setIsUserEligible(response?.eligible);
-        },
-        onError: (error: any) => {
-          console.log("Error", error);
-        },
-      }
-    );
-  };
 
   return (
     <Box
@@ -244,7 +225,7 @@ export const RenderLoggedInUnverifiedState = () => {
                       activityType={item.activityType as ActvityType}
                       activityTypeId={item.activityTypeId}
                       userId={userDetails?.userId as string}
-                      refetchActivity={() => refetchActivities()}
+                      refetchActivity={() => refetchActivityStatus()}
                       usersSingleActivity={activityStatus}
                       setErrorMessage={setErrorMessage}
                       isLoadingActivity={isLoadingActivities}
@@ -284,22 +265,34 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Text>
               </Box>
 
-              {isUserEligible === null && (
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  disabled={isVerifying}
+              {isSybilEligible === null && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  gap="spacing-xxs"
+                  padding="spacing-xs spacing-md"
                   css={css`
-                    color: #fff !important;
                     margin-left: auto;
                   `}
-                  onClick={handleVerifyAccount}
                 >
-                  {isVerifying ? "Verifying..." : "Link Account to Verify"}
-                </Button>
+                  <Text
+                    color="#17181B"
+                    css={css`
+                      white-space: nowrap;
+                      leading-trim: both;
+                      font-size: 14px;
+                      font-style: normal;
+                      font-weight: 600;
+                      line-height: 16px;
+                    `}
+                  >
+                    {isSybilCheckPending ? "Verifying..." : "Pending Verification"}
+                  </Text>
+                </Box>
               )}
 
-              {isUserEligible === true && (
+              {isSybilEligible === true && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -327,7 +320,7 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Box>
               )}
 
-              {isUserEligible === false && (
+              {isSybilEligible === false && (
                 <Box
                   display="flex"
                   flexDirection="row"
