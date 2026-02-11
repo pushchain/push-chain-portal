@@ -1,5 +1,15 @@
 export type RarePassHistoryItem = {
-  [key: string]: unknown;
+  activityId: string;
+  activityTypeId: string;
+  source: string;
+  sourceLabel: string;
+  type: 'acquisition' | 'consumption';
+  rewardType?: string;
+  quantity: number;
+  status: string;
+  timestamp: string;
+  createdAt: string;
+  details: Record<string, unknown>;
 };
 
 export type RarePassBalanceSummary = {

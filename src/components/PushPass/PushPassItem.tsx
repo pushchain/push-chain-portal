@@ -13,7 +13,7 @@ import {
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
 import { Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
-import { OtterCharacter } from "./OtterCharacter";
+import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 type PassState = "loading" | "unopened" | "opened" | "minted";
@@ -298,7 +298,7 @@ export const PushPassItem = () => {
                 overflow: 'hidden';
               `}
             >
-              <OtterCharacter characterId={characterId} width={248} height={318} />
+              <CharacterImage characterId={characterId} width={248} height={318} />
             </Box>
 
             {!isMinted && (
