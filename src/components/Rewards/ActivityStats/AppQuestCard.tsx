@@ -51,7 +51,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   setErrorMessage,
 }) => {
   const renderQuestItem = (quest: any, index: number) => {
-    const isCompleted = completedMap[quest.id] ?? true;
+    const isCompleted = completedMap[quest.id] ?? false;
     // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
 
     return (
@@ -138,6 +138,8 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                         setErrorMessage={setErrorMessage}
                         isLoadingActivity={isLoading || false}
                         label="Claim"
+                        buttonVariant='primary'
+                        buttonSize='small'
                       />
                     </Box>
                   </Box>
@@ -172,7 +174,16 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" width="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-start"
+      position="relative"
+      width="100%"
+      css={css`
+        flex: 1;
+        min-width: 0;
+        `}>
       <Box
         display="flex"
         flexDirection="column"
@@ -310,6 +321,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
         gap="spacing-xs"
         position="relative"
         alignSelf="stretch"
+        width="100%"
         css={css`
           margin-top: -29px;
           z-index: 0;
@@ -325,6 +337,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
           borderRadius="radius-none radius-none radius-lg radius-lg"
           border="none"
           gap="spacing-none"
+          width="100%"
           css={css`
             margin: -1px;
             background: rgba(0, 0, 0, 0.1);
