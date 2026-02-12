@@ -23,6 +23,8 @@ export type ActvityType =
   | "ramen_swap_stablecoin_to_push"
   | "ramen_swap_five_swaps"
   | "ramen_swap_hold_three_chain_tokens"
+  | "boss_complete_all_5_app_quests"
+  | "boss_hold_5_rare_passes"
 
 
 export type Activity = {

@@ -7,7 +7,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 // helpers
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
@@ -61,8 +61,8 @@ const useVerifyRewards = ({
     handleVerify(userId);
   };
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();

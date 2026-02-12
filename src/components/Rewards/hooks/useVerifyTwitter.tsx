@@ -15,7 +15,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 // hooks
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 
 // helpers
@@ -51,8 +51,8 @@ const useVerifyTwitter = ({
     universalAccount?.chain,
   );
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   useEffect(() => {

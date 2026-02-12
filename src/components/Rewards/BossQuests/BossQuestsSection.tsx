@@ -1,8 +1,35 @@
 import { css } from 'styled-components';
+import { usePushWalletContext } from '@pushchain/ui-kit';
 import { Box, Quests, Text } from '../../../blocks';
 import BossQuestCard from './BossQuestCard';
+import { useGetQuests, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 const BossQuestsSection = () => {
+  const { universalAccount } = usePushWalletContext();
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: bossQuests } = useGetQuests({
+    appId:'boss-quests'
+  })
+
+  const bossQuestIds = bossQuests?.data?.quests?.map((q) => q.id) || [];
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+    {
+      userId: userDetails?.userId as string,
+      activities: bossQuestIds,
+    },
+    !!userDetails?.userId && bossQuestIds.length > 0
+  );
   return (
     <Box
       display="inline-flex"
@@ -110,7 +137,7 @@ const BossQuestsSection = () => {
             ctaText="10x Weekly winners on @PushChain"
           />
 
-          <BossQuestCard
+          {/*<BossQuestCard
             title="Complete and Claim 25 App Quests"
             description="Earn a Rare Pass by completing 25 quests on any apps"
             resetTime="Resets in 29D 23H"
@@ -130,7 +157,25 @@ const BossQuestsSection = () => {
             unlocks={{ rarePass: true }}
             isLocked={true}
             ctaText="Locked"
-          />
+          />*/}
+          {bossQuests?.data.quests.map((item) => (
+            <BossQuestCard
+              key={item.id}
+              questId={item.id}
+              title={item?.title}
+              description={item.description}
+              resetTime="Resets in 29D 23H"
+              progress={0}
+              maxProgress={25}
+              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: item?.baseXP }}
+              isLocked={true}
+              ctaText="Locked"
+              activityStatus={activityStatuses}
+              isLoadingActivity={isLoadingActivities}
+              refetchActivities={refetchActivities}
+              userId={userDetails?.userId}
+            />
+          ))}
         </Box>
       </Box>
     </Box>

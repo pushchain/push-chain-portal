@@ -8,7 +8,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import appConfig from "../../../config";
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 
 // helpers
@@ -51,8 +51,8 @@ const useVerifyDiscord = ({
     setErrorMessage("");
   }, [setErrorMessage]);
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();

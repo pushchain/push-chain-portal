@@ -4,7 +4,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit"
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
-import { useGetRewardActivityStatus, useGetUserRewardsDetails } from "../../../queries"
+import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from "../../../queries"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
@@ -23,8 +23,8 @@ export const RenderLoggedInUnverifiedState = () => {
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress,
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   const { data: activityStatuses, isLoading: isLoadingActivities } = useGetRewardActivityStatus(

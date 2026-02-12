@@ -12,8 +12,8 @@ import {
   RewardActivityStatus,
   RewardActivityStatusResponse,
   useGetRewardActivityStatus,
-  useGetUserRewardsDetails,
   useAdvancedSybilCheck,
+  useGetSeasonThreeUserByWallet,
 } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 
@@ -60,7 +60,9 @@ export const RewardsContextProvider = ({
   const {
     data: userDetails,
     isLoading: isLoadingUserDetails,
-  } = useGetUserRewardsDetails({ caip10WalletAddress });
+  } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  });
 
   const {
     data: activityStatus,

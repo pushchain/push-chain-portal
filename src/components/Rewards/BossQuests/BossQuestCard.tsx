@@ -1,8 +1,11 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { css } from 'styled-components';
 import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, XP } from '../../../blocks';
+import { ActvityType } from '../../../queries';
+import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
 type BossQuestCardProps = {
+  questId?: string;
   title: string;
   description: string;
   resetTime: string;
@@ -16,9 +19,14 @@ type BossQuestCardProps = {
   ctaText: string;
   icon?: string;
   onClaim?: () => void;
+  activityStatus?: any;
+  isLoadingActivity?: boolean;
+  refetchActivities?: () => void;
+  userId?: string;
 };
 
 const BossQuestCard: FC<BossQuestCardProps> = ({
+  questId,
   title,
   description,
   resetTime,
@@ -29,7 +37,12 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   ctaText,
   icon,
   onClaim,
+  activityStatus,
+  isLoadingActivity,
+  refetchActivities,
+  userId,
 }) => {
+  const [errorMessage, setErrorMessage] = useState("");
   const showProgress = maxProgress > 0;
 
   return (
@@ -232,7 +245,21 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             alignItems="flex-start"
             alignSelf="stretch"
           >
-            {isLocked ? (
+            {questId && userId ? (
+              <ActivityButton
+                activityType={questId as ActvityType}
+                activityTypeId={questId}
+                userId={userId}
+                refetchActivity={() => refetchActivities?.()}
+                usersSingleActivity={activityStatus}
+                setErrorMessage={setErrorMessage}
+                isLoadingActivity={isLoadingActivity || false}
+                label="Claim"
+                css={css`
+                  width: 100%;
+                  `}
+              />
+            ) : isLocked ? (
               <Button
                 size="small"
                 variant="tertiary"
