@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { css } from 'styled-components';
 import { ArrowUpRight, Box, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
@@ -28,6 +28,8 @@ type AppQuestCardProps = {
   isLoading?: boolean;
   refetchActivities?: any;
   userId?: string;
+  completedMap?: Record<string, boolean>;
+  setErrorMessage?: (errorMessage: string) => void;
 };
 
 const AppQuestCard: FC<AppQuestCardProps> = ({
@@ -45,10 +47,12 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   isLoading,
   refetchActivities,
   userId,
+  completedMap = {},
+  setErrorMessage,
 }) => {
-  const [errorMessage, setErrorMessage] = useState("");
-  const renderQuestItem = (quest: Quest, index: number) => {
-    const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
+  const renderQuestItem = (quest: any, index: number) => {
+    const isCompleted = completedMap[quest.id] ?? false;
+    // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
 
     return (
       <Box
@@ -113,10 +117,10 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 justifyContent={{ tb: 'space-between' }}
 
               >
-                {showProgress ? (
+                {!isCompleted ? (
                   <Box width="112px" height="8px">
                     <ProgressBar
-                      progress={(20) || null}
+                      progress={(0) || null}
                       max={100}
                       size="large"
                       progressIcon={<RewardsStarGradient size={35} />}

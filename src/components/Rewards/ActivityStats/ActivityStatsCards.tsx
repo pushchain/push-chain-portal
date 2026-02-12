@@ -1,12 +1,15 @@
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Box } from '../../../blocks';
-import { useGetQuests, useGetRewardActivityStatus, useGetUserRewardsDetails } from '../../../queries';
+import { Alert, Box } from '../../../blocks';
+import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
+import { css } from 'styled-components';
+import { useState } from 'react';
 
 const ActivityStatsCards = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext();
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -14,8 +17,8 @@ const ActivityStatsCards = () => {
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress,
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   })
 
   const { data: lastOneQuests } = useGetQuests({
@@ -24,6 +27,16 @@ const ActivityStatsCards = () => {
 
   const { data: ramenSwapQuests } = useGetQuests({
     appId: "ramen-swap"
+  });
+
+  const { data: lastOneQuestsProgress } = useGetQuestsProgress({
+    appId: "lastone",
+    userId: userDetails?.userId
+  });
+
+  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
+    appId: "ramen-swap",
+    userId: userDetails?.userId
   });
 
   const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
@@ -42,7 +55,24 @@ const ActivityStatsCards = () => {
     !!userDetails?.userId
   );
 
+  const lastOneCompletedMap: Record<string, boolean> = {};
+  lastOneQuestsProgress?.data?.quests?.forEach((q) => {
+    lastOneCompletedMap[q.questId] = q.completed;
+  });
+
+  const ramenSwapCompletedMap: Record<string, boolean> = {};
+  ramenSwapQuestsProgress?.data?.quests?.forEach((q) => {
+    ramenSwapCompletedMap[q.questId] = q.completed;
+  });
+
   return (
+    <Box
+      width="100%">
+      {errorMessage &&
+        <Box position='relative'>
+          <Alert variant='error' description={ errorMessage } />
+        </Box>}
+
     <Box
       display="flex"
       gap="spacing-md"
@@ -50,21 +80,21 @@ const ActivityStatsCards = () => {
       flexDirection={{ initial: 'row', tb: 'column' }}
     >
       <AppQuestCard
-        appName="Degen Chess"
-        appUrl="degenchess.fun"
-        description="Complete quests on degenchess.fun and claim to level up and earn rewards"
+        appName="Last One"
+        appUrl="lastone.fun"
+        description="Complete quests on lastone.fun and claim to level up and earn rewards"
         resetTime="New Quests in 6D 23H"
         quests={lastOneQuests?.data.quests}
         activityStatus={activityStatuses}
         isLoading={isLoadingActivities}
         refetchActivities={refetchActivities}
         userId={userDetails?.userId}
-
-
+        completedMap={lastOneCompletedMap}
+        setErrorMessage={setErrorMessage}
       />
 
       <AppQuestCard
-        appName="Uni Market"
+        appName="Ramen Swap"
         appUrl="unimarket.xyz"
         description="Complete quests on unimarket.xyz and claim to level up and earn rewards"
         resetTime="New Quests in 6D 23H"
@@ -73,11 +103,14 @@ const ActivityStatsCards = () => {
         isLoading={isLoadingActivities}
         refetchActivities={refetchActivities}
         userId={userDetails?.userId}
+        completedMap={ramenSwapCompletedMap}
+        setErrorMessage={setErrorMessage}
         gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
         titleGradient="linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(34, 132, 68, 1) 100%)"
         linkColor="#0d663b"
         blurColor="#40ee8b"
       />
+      </Box>
     </Box>
   );
 };

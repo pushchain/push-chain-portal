@@ -23,6 +23,7 @@ type BossQuestCardProps = {
   isLoadingActivity?: boolean;
   refetchActivities?: () => void;
   userId?: string;
+  completedMap?: Record<string, boolean>;
 };
 
 const BossQuestCard: FC<BossQuestCardProps> = ({
@@ -41,6 +42,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   isLoadingActivity,
   refetchActivities,
   userId,
+  completedMap = {},
 }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const showProgress = maxProgress > 0;

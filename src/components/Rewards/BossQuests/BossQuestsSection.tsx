@@ -2,7 +2,7 @@ import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import { Box, Quests, Text } from '../../../blocks';
 import BossQuestCard from './BossQuestCard';
-import { useGetQuests, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 const BossQuestsSection = () => {
@@ -30,6 +30,17 @@ const BossQuestsSection = () => {
     },
     !!userDetails?.userId && bossQuestIds.length > 0
   );
+
+  const { data: bossQuestsProgress } = useGetQuestsProgress({
+    appId: "boss-quests",
+    userId: userDetails?.userId,
+  });
+
+  const bossCompletedMap: Record<string, boolean> = {};
+  bossQuestsProgress?.data?.quests?.forEach((q) => {
+    bossCompletedMap[q.questId] = q.completed;
+  });
+
   return (
     <Box
       display="inline-flex"
@@ -174,6 +185,7 @@ const BossQuestsSection = () => {
               isLoadingActivity={isLoadingActivities}
               refetchActivities={refetchActivities}
               userId={userDetails?.userId}
+              completedMap={bossCompletedMap}
               icon={true}
             />
           ))}

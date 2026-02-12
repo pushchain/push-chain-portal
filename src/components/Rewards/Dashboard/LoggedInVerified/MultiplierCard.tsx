@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
 import { Box, Text } from '../../../../blocks';
-import { useGetUserRewardsDetails } from '../../../../queries';
+import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import TotalMultiplierBg from '../../../../../static/assets/website/rewards/total-multiplier-bg.webp';
@@ -13,8 +13,8 @@ export const MultiplierCard: FC = () => {
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
   });
 
   return (
