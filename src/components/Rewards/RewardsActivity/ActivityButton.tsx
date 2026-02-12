@@ -1,5 +1,6 @@
 // React and other libraries
 import React, { FC } from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 //Queries
 import { ActvityType, UsersActivity } from "../../../queries";
@@ -20,6 +21,9 @@ type ActivityButtonProps = {
   currentLevel?: string;
   setCurrentLevel?: (currentLevel: string) => void;
   onStartClaim?: () => void;
+  buttonVariant?: "primary" | "secondary" | "tertiary" | "outline";
+  buttonSize?: "small" | "medium" | "large";
+  buttonCss?: FlattenSimpleInterpolation;
 };
 
 const ActivityButton: FC<ActivityButtonProps> = ({
@@ -35,6 +39,9 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   // currentLevel,
   // setCurrentLevel,
   onStartClaim,
+  buttonVariant = "tertiary",
+  buttonSize = "small",
+  buttonCss,
 }) => {
   // current finish date
   // const targetDate = "2025-07-31T23:59:59";
@@ -52,7 +59,7 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   //
   if (usersSingleActivity?.status === "COMPLETED") {
     return (
-      <Button variant="tertiary" size="small" disabled>
+      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
         Claimed
       </Button>
     );
@@ -60,7 +67,7 @@ const ActivityButton: FC<ActivityButtonProps> = ({
 
   if (usersSingleActivity?.status === "PENDING") {
     return (
-      <Button variant="tertiary" size="small" disabled>
+      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
         Pending
       </Button>
     );
@@ -80,6 +87,9 @@ const ActivityButton: FC<ActivityButtonProps> = ({
       // currentLevel={currentLevel}
       // setCurrentLevel={setCurrentLevel}
       onStartClaim={onStartClaim}
+      buttonVariant={buttonVariant}
+      buttonSize={buttonSize}
+      buttonCss={buttonCss}
     />
   );
 };

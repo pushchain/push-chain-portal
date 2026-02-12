@@ -249,6 +249,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             display="flex"
             alignItems="flex-start"
             alignSelf="stretch"
+            width="100%"
           >
             {questId && userId && (
               <ActivityButton
@@ -260,6 +261,11 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                 setErrorMessage={setErrorMessage}
                 isLoadingActivity={isLoadingActivity || false}
                 label="Claim"
+                buttonSize="small"
+                buttonVariant="primary"
+                buttonCss={css`
+                  width: 100%;
+                `}
               />
             )}
 

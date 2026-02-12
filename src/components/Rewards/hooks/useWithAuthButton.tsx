@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 // third party libraries
 import { usePushWalletContext } from "@pushchain/ui-kit";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 //Hooks
 import { useCreateRewardsUser } from "./useCreateRewardsUser";
@@ -16,10 +17,16 @@ export const useAuthWithButton = ({
   onSuccess,
   isLoading,
   label = "verify",
+  buttonVariant = "tertiary",
+  buttonSize = "small",
+  buttonCss,
 }: {
   onSuccess: (userDetails: UserRewardsDetailResponse) => void;
   isLoading: boolean;
   label?: string;
+  buttonVariant?: "primary" | "secondary" | "tertiary" | "outline";
+  buttonSize?: "small" | "medium" | "large";
+  buttonCss?: FlattenSimpleInterpolation;
 }) => {
   const [
     isWalletConnectedAndProfileUnlocked,
@@ -84,18 +91,17 @@ export const useAuthWithButton = ({
 
   const authButton = useMemo(
     () => (
-      <>
-        <Button
-          variant="tertiary"
-          size="small"
-          onClick={handleVerifyAction}
-          disabled={isLoading}
-        >
-          {label}
-        </Button>
-      </>
+      <Button
+        variant={buttonVariant}
+        size={buttonSize}
+        css={buttonCss}
+        onClick={handleVerifyAction}
+        disabled={isLoading}
+      >
+        {label}
+      </Button>
     ),
-    [isWalletConnected, isLoading, label],
+    [isWalletConnected, isLoading, label, buttonVariant, buttonSize, buttonCss],
   );
 
   return {

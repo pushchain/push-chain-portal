@@ -1,5 +1,6 @@
 // React and other libraries
 import React, { useMemo } from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 // hooks
 import { useAuthWithButton } from "../hooks/useWithAuthButton";
@@ -29,6 +30,9 @@ type ActivityVerificationButtonProps = {
   currentLevel?: string;
   setCurrentLevel?: (currentLevel: string) => void;
   onStartClaim?: () => void;
+  buttonVariant?: "primary" | "secondary" | "tertiary" | "outline";
+  buttonSize?: "small" | "medium" | "large";
+  buttonCss?: FlattenSimpleInterpolation;
 };
 
 export const ActivityVerificationButton = ({
@@ -41,6 +45,9 @@ export const ActivityVerificationButton = ({
   isLoadingActivity,
   label,
   onStartClaim,
+  buttonVariant = "tertiary",
+  buttonSize = "small",
+  buttonCss,
 }: ActivityVerificationButtonProps) => {
   const { universalAccount, connectionStatus } = usePushWalletContext();
   const isWalletConnected = Boolean(universalAccount?.address);
@@ -118,13 +125,17 @@ export const ActivityVerificationButton = ({
       connectionStatus === "authenticating",
     onSuccess: (userDetails) => activityData?.action(userDetails?.userId),
     label: label,
+    buttonVariant,
+    buttonSize,
+    buttonCss,
   });
 
   if (isAuthenticated && isWalletConnected) {
     return (
       <Button
-        variant="tertiary"
-        size="small"
+        variant={buttonVariant}
+        size={buttonSize}
+        css={buttonCss}
         loading={
           activityData?.isLoading || activityData?.isVerificationComplete
         }
