@@ -26,3 +26,33 @@ export type QuestsResponse = {
 export type GetQuestsParams = {
   appId: string;
 };
+
+export type GetQuestsProgressParams = {
+  appId: string;
+  userId: string;
+};
+
+export type QuestProgress = {
+  questId: string;
+  questIndex: number;
+  title: string;
+  description: string;
+  baseXP: number;
+  basePoints: number;
+  frequency: "ONCE" | "REPEATABLE";
+  status: "ENABLED" | "DISABLED";
+  completed: boolean;
+  completionCount: number;
+};
+
+export type GetQuestsProgressResponse = {
+  success: boolean;
+  data: {
+    appId: string;
+    appName: string;
+    appStatus: string;
+    quests: QuestProgress[];
+    totalCompleted: number;
+    totalQuests: number;
+  };
+};

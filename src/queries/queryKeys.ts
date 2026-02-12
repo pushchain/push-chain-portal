@@ -50,4 +50,5 @@ export const squadsPendingInvites = "squadsPendingInvites";
 export const resolveWallet = "resolveWallet";
 export const levelProgress = "levelProgress";
 export const quests = "quests";
+export const questsProgress = "questsProgress";
 export const rarePassHistory = "rarePassHistory";

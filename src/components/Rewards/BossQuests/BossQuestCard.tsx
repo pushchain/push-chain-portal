@@ -245,7 +245,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             alignItems="flex-start"
             alignSelf="stretch"
           >
-            {questId && userId ? (
+            {questId && userId && (
               <ActivityButton
                 activityType={questId as ActvityType}
                 activityTypeId={questId}
@@ -255,11 +255,10 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                 setErrorMessage={setErrorMessage}
                 isLoadingActivity={isLoadingActivity || false}
                 label="Claim"
-                css={css`
-                  width: 100%;
-                  `}
               />
-            ) : isLocked ? (
+            )}
+
+            {!questId && isLocked && (
               <Button
                 size="small"
                 variant="tertiary"
@@ -283,7 +282,9 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                   </Text>
                 </Box>
               </Button>
-            ) : (
+            )}
+
+            {!questId && !isLocked && (
               <Button
                 size="small"
                 variant="tertiary"

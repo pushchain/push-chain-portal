@@ -167,13 +167,14 @@ const BossQuestsSection = () => {
               resetTime="Resets in 29D 23H"
               progress={0}
               maxProgress={25}
-              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: item?.baseXP }}
+              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: (item.baseXP > 0 && item?.baseXP) }}
               isLocked={true}
               ctaText="Locked"
               activityStatus={activityStatuses}
               isLoadingActivity={isLoadingActivities}
               refetchActivities={refetchActivities}
               userId={userDetails?.userId}
+              icon={true}
             />
           ))}
         </Box>
