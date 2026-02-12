@@ -62,9 +62,9 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     <Box
       display="flex"
       flexDirection="column"
-      gap="spacing-md"
       padding="spacing-md"
       borderRadius="radius-md"
+      justifyContent="space-between"
       height="100%"
       css={css`
         border: 1px solid rgba(171, 70, 248, 0.40);
@@ -73,6 +73,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
         backdrop-filter: blur(10px);
         box-sizing: border-box;
+        min-width: 0;
       `}
     >
       <Box
@@ -113,7 +114,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 
             {canClaimRewards && (
               <Button
-                variant="tertiary"
+                variant="primary"
                 size="small"
                 onClick={handleClaimRewards}
                 disabled={isClaimingRewards}
@@ -150,35 +151,11 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         gap={{ ml: "spacing-xs", initial: "spacing-xxs" }}
         css={css`
           grid-template-columns: repeat(7, minmax(0, 1fr));
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
 
           @media (max-width: 1200px) {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            .item:last-child {
-              grid-column: span 2;
-              display: grid;
-              grid-template-columns: repeat(2, minmax(0, 1fr));
-
-              .day-text {
-                margin: 0 0 auto 0;
-              }
-
-              .count-text {
-                margin: auto 0 0 0;
-              }
-            }
-
-            .item:last-child .inner-item {
-              grid-row: span 2;
-
-              span {
-                width: 85%;
-                height: 85%;
-                svg {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
-            }
+            grid-template-columns: repeat(7, minmax(80px, 1fr));
           }
 
           @media (max-width: 700px) {

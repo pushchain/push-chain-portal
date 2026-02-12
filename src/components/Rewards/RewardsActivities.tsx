@@ -24,6 +24,9 @@ const RewardsActivities = () => {
         height={{ initial: '230px', tb: 'auto' }}
         css={css`
         box-sizing: border-box;
+        & > * {
+          min-width: 0;
+        }
         `}>
         <LevelUp />
         <StreakDays />

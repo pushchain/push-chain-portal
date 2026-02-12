@@ -86,6 +86,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             justifyContent="center"
             gap="spacing-xs"
             alignSelf="stretch"
+            css={css`
+              min-width: 0;
+            `}
           >
             <Box
               display="flex"
@@ -104,6 +107,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 css={css`
                   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
                   white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  min-width: 0;
                 `}
               >
                 {quest.title}
@@ -147,10 +153,12 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
 
                 <Box
                   display="flex"
-                  width="100px"
                   alignItems="center"
                   justifyContent="flex-end"
                   gap="spacing-md"
+                  css={css`
+                    flex-shrink: 0;
+                  `}
                 >
                   <Box
                     display="inline-flex"
