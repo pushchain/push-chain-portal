@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
 import { Box, RarePassIcon, Text } from '../../../blocks';
-import PassCard from './PassCard';
+import RarePassCard from './RarePassCard';
 import { device } from '../../../config/globals';
 
 type Pass = {
@@ -81,9 +81,12 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
           Collect and open as many passes as possible before the burn event. More Rare Pass = Higher Chance to score a Shiny
         </Text>
       </Box>
-    </Box>
+      </Box>
 
-      <Box
+      {!passes.length && <Box>new</Box>}
+
+      {passes.length &&
+       <Box
         gap="spacing-md"
         width="100%"
         css={css`
@@ -102,7 +105,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
         `}
       >
         {passes?.map((pass) => (
-          <PassCard
+          <RarePassCard
             key={pass.id}
             isLocked={pass.isLocked}
             lockMessage={pass.lockMessage}
@@ -110,7 +113,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
             characterId={pass.character?.characterId}
           />
         ))}
-      </Box>
+      </Box>}
     </Box>
   );
 };

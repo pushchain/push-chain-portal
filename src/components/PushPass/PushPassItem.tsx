@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,8 +38,8 @@ const getPassState = (
 export const PushPassItem = () => {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
-  const isOpenRoute = routeId === "open";
-  const characterId = isOpenRoute ? undefined : routeId;
+  const [generatedCharacterId, setGeneratedCharacterId] = useState<string>();
+  const characterId = generatedCharacterId || (routeId === "open" ? undefined : routeId);
   const { universalAccount } = usePushWalletContext();
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -76,13 +77,13 @@ export const PushPassItem = () => {
   const handleOpenPass = () => {
     if (!caip10WalletAddress) return;
     generate(
-      { walletAddress: caip10WalletAddress },
+      { userWallet: caip10WalletAddress },
       {
         onSuccess: (data) => {
-          refetch();
           if (data?.characterId) {
-            navigate(`/rewards/pushpass/${data.characterId}`, { replace: true });
+            setGeneratedCharacterId(data.characterId);
           }
+          refetch();
         },
       }
     );

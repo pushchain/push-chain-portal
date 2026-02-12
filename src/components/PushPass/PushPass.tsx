@@ -39,36 +39,42 @@ const PushPass = () => {
     userId: userDetails?.userId ?? '',
   });
 
-  const claimableCount = isUserEligible?.rareActiveCount ?? 0;
+  const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
+  const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
   const characters = userCharacterInfo?.characters || [];
-  const hasUnmintedPass = characters?.some((c) => c.status === 'UNMINTED');
+  const unmintedCharacters = characters.filter((c) => c.status === 'UNMINTED');
 
-  const historyItems = rarePassHistory?.history ?? [];
+  // Use history to get lock messages (level info) for dormant passes
+  const dormantHistory = (rarePassHistory?.history ?? [])
+    .filter((item) => item.activityTypeId === 'rare_pass_dormant_grant')
+    .slice(0, rareDormantCount);
 
-  let claimableAssigned = 0;
-  const passes = historyItems.map((item, index) => {
-    const level = (item.details as { level?: number })?.level;
-    const isDormant = item.activityTypeId === 'rare_pass_dormant_grant';
+  const passes = [
+    // Cards for unminted characters (already generated, waiting to be minted)
+    ...unmintedCharacters.map((char, index) => ({
+      id: index + 1,
+      isLocked: false,
+      lockMessage: 'View Pass',
+      character: char,
+    })),
 
-    if (isDormant) {
+    // Cards for active passes the user can claim (not yet generated)
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
+      id: unmintedCharacters.length + index + 1,
+      isLocked: false,
+      lockMessage: 'Open Now',
+    })),
+
+    // Cards for dormant (locked) passes
+    ...dormantHistory.map((item, index) => {
+      const level = (item.details as { level?: number })?.level;
       return {
-        id: index + 1,
+        id: unmintedCharacters.length + rareActiveCount + index + 1,
         isLocked: true,
         lockMessage: `Unlocks at Lv. ${level}`,
       };
-    }
-
-    // Active pass — check if user can still claim
-    const canClaim = claimableAssigned < claimableCount;
-    if (canClaim) claimableAssigned++;
-
-    return {
-      id: index + 1,
-      isLocked: !canClaim && !hasUnmintedPass,
-      lockMessage: hasUnmintedPass ? 'View Pass' : canClaim ? 'Open Now' : 'Not Eligible',
-      character: characters.find((c) => c.status === 'UNMINTED'),
-    };
-  });
+    }),
+  ];
 
 
   return (

@@ -5,7 +5,7 @@ export interface CharacterInfoParams {
 }
 
 export interface CharacterGenerateParams {
-  walletAddress: string;
+  userWallet: string;
 }
 
 export interface CharacterMintParams {
