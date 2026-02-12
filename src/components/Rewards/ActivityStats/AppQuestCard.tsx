@@ -51,7 +51,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   setErrorMessage,
 }) => {
   const renderQuestItem = (quest: any, index: number) => {
-    const isCompleted = completedMap[quest.id] ?? false;
+    const isCompleted = completedMap[quest.id] ?? true;
     // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
 
     return (

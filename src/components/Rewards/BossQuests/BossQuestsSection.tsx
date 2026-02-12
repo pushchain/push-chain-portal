@@ -1,11 +1,13 @@
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
-import { Box, Quests, Text } from '../../../blocks';
+import { Alert, Box, Quests, Text } from '../../../blocks';
 import BossQuestCard from './BossQuestCard';
 import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+import { useState } from 'react';
 
 const BossQuestsSection = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext();
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -42,6 +44,12 @@ const BossQuestsSection = () => {
   });
 
   return (
+    <Box width={"100%"}>
+      {errorMessage &&
+        <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
+          <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
+        </Box>}
+
     <Box
       display="inline-flex"
       flexDirection="column"
@@ -187,10 +195,12 @@ const BossQuestsSection = () => {
               userId={userDetails?.userId}
               completedMap={bossCompletedMap}
               icon={true}
+              setErrorMessage={setErrorMessage}
             />
           ))}
         </Box>
       </Box>
+     </Box>
     </Box>
   );
 };

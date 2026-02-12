@@ -65,19 +65,24 @@ const ActivityStatsCards = () => {
     ramenSwapCompletedMap[q.questId] = q.completed;
   });
 
+  console.log(errorMessage)
+
   return (
     <Box
       width="100%">
       {errorMessage &&
-        <Box position='relative'>
-          <Alert variant='error' description={ errorMessage } />
+        <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
+          <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
         </Box>}
 
     <Box
       display="flex"
       gap="spacing-md"
       width="100%"
-      flexDirection={{ initial: 'row', tb: 'column' }}
+        flexDirection={{ initial: 'row', tb: 'column' }}
+        css={css`
+          box-sizing: border-box;
+          `}
     >
       <AppQuestCard
         appName="Last One"
@@ -103,7 +108,7 @@ const ActivityStatsCards = () => {
         isLoading={isLoadingActivities}
         refetchActivities={refetchActivities}
         userId={userDetails?.userId}
-        completedMap={ramenSwapCompletedMap}
+        // completedMap={ramenSwapCompletedMap}
         setErrorMessage={setErrorMessage}
         gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
         titleGradient="linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(34, 132, 68, 1) 100%)"

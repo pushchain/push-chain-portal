@@ -24,6 +24,7 @@ type BossQuestCardProps = {
   refetchActivities?: () => void;
   userId?: string;
   completedMap?: Record<string, boolean>;
+  setErrorMessage?: (errorMessage: string) => void;
 };
 
 const BossQuestCard: FC<BossQuestCardProps> = ({
@@ -43,9 +44,11 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   refetchActivities,
   userId,
   completedMap = {},
+  setErrorMessage
 }) => {
-  const [errorMessage, setErrorMessage] = useState("");
   const showProgress = maxProgress > 0;
+  const isCompleted = completedMap[questId] ?? true;
+
 
   return (
     <Box
