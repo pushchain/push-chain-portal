@@ -83,7 +83,27 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
       </Box>
       </Box>
 
-      {!passes.length && <Box>new</Box>}
+      {!passes.length &&
+      <Box
+        width="100%"
+        css={css`
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          min-height: 125px;
+        `}
+      >
+        <Text
+          variant="bm-semibold"
+          textAlign="center"
+          css={css`
+            color: rgba(255, 255, 255, 0.25);
+          `}
+        >
+          Play Spins, Level up or complete quests for a chance to win Rare Pass.
+        </Text>
+      </Box>}
 
       {passes.length &&
        <Box

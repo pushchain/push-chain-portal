@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, LevelBadge, Text } from '../../../../blocks';
+import { Box, LevelBadge, Skeleton, Text } from '../../../../blocks';
 import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
@@ -12,7 +12,7 @@ export const LevelCard: FC = () => {
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userDetails, isLoading } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
 
@@ -43,20 +43,22 @@ export const LevelCard: FC = () => {
         `}>
         <LevelBadge />
       </Box>
-      <Box display="flex" flexDirection="column" alignItems="center" width="100%">
-        <Text
-          variant="h5-semibold"
-          color="text-tertiary"
-          textAlign="center">
-          Noobie
-        </Text>
-        <Text
-          variant="h1-bold"
-          color="text-primary"
-          textAlign="center">
-          Lv. {userDetails?.level || 1}
-        </Text>
-      </Box>
+      <Skeleton isLoading={ isLoading }>
+        <Box display="flex" flexDirection="column" alignItems="center" width="100%">
+          <Text
+            variant="h5-semibold"
+            color="text-tertiary"
+            textAlign="center">
+            Noobie
+          </Text>
+          <Text
+            variant="h1-bold"
+            color="text-primary"
+            textAlign="center">
+            Lv. {userDetails?.level || '-'}
+          </Text>
+          </Box>
+      </Skeleton>
     </Box>
   );
 };

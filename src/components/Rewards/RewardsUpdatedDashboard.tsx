@@ -15,8 +15,6 @@ export const RewardsUpdatedDashboard = () => {
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
-  console.log(isLocked, isLockedStatusLoading);
-
   const renderLoggedOutState = () => (
     <Box
       display="flex"

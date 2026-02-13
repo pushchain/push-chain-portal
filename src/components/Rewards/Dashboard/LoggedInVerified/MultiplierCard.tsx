@@ -13,7 +13,7 @@ export const MultiplierCard: FC = () => {
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userDetails, isLoading } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
 
@@ -65,7 +65,7 @@ export const MultiplierCard: FC = () => {
 
       <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" css={css`z-index: 1;`}>
         <Text variant="h1-bold" color="text-primary">
-          1.2x
+          { userDetails?.permaMultiplier }x
         </Text>
         <Text variant="h5-semibold" color="text-tertiary">
           XP

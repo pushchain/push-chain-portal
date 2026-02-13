@@ -1,11 +1,31 @@
 import { FC } from 'react';
-import { css } from 'styled-components';
-import { Box, HoverableSVG, Refresh, Text } from '../../../../blocks';
+import { css, keyframes } from 'styled-components';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import { device } from '../../../../config/globals';
+import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
+import { useGetSeasonThreeUserByWallet } from '../../../../queries';
+
+import { Box, HoverableSVG, Refresh, Text } from '../../../../blocks';
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
 
 export const DashboardHeader: FC = () => {
   const isMobile = useMediaQuery(device.mobileL);
+  const { universalAccount } = usePushWalletContext();
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { isFetching, refetch } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  });
+
   return (
     <Box
       display="flex"
@@ -39,6 +59,7 @@ export const DashboardHeader: FC = () => {
         alignItems="center"
         cursor="pointer"
         gap="spacing-xxs"
+        onClick={()=> refetch()}
         css={css`
           border-radius: 24px;
           border: 1px solid rgba(255, 255, 255, 0.10);
@@ -51,7 +72,16 @@ export const DashboardHeader: FC = () => {
           hoverBackground="#FBE8FF"
           padding="spacing-xxxs"
           borderRadius="radius-sm"
-          icon={<Refresh color="icon-brand-medium" />}
+          icon={
+            <Box
+              css={css`
+                display: flex;
+                ${isFetching && css`animation: ${spin} 0.5s linear infinite;`}
+              `}
+            >
+              <Refresh color="icon-brand-medium" />
+            </Box>
+          }
         ></HoverableSVG>
         <Box margin="spacing-none spacing-none spacing-none spacing-xxxs">
           <Text variant="bs-semibold" color="text-tertiary">
