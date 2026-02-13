@@ -5,7 +5,7 @@ import {
   usePushWalletContext,
 } from "@pushchain/ui-kit";
 
-import { Box, Text, ArrowDown, GlowStreaks } from "../../blocks";
+import { Box, Text, ArrowDown, GlowStreaks, Skeleton } from "../../blocks";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardsContext } from "../../context/rewardsContext";
@@ -14,6 +14,8 @@ export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext();
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
   const renderLoggedOutState = () => (
     <Box
@@ -164,7 +166,26 @@ export const RewardsUpdatedDashboard = () => {
     <RenderLoggedInVerifiedState />
   );
 
-  if(isWalletConnected && !isLocked && !isLockedStatusLoading) return renderLoggedInVerifiedState();
+  if (isWalletConnected && isLockedStatusLoading) {
+    return (
+      <Skeleton isLoading={isLockedStatusLoading} css={css`
+        z-index: 999;
+        `}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          width="100%"
+          css={css`
+            min-height: 340px;
+          `}
+        >
+          </Box>
+      </Skeleton>
+    );
+  }
+
+  if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 
   if(isWalletConnected) return renderLoggedInUnverifiedState()
 

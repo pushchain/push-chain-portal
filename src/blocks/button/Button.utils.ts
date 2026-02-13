@@ -223,8 +223,10 @@ export const getButtonVariantStyles = (
           !loading &&
           `&:disabled {
              border: none;
-             background-color: var(--components-button-tertiary-background-disabled);
-             color: var(--components-button-outline-text-disabled);
+             opacity: 0.7;
+             color: var(--components-button-outline-stroke-default);
+             background-color: var(--components-button-outline-background-default);
+             border: var(--border-sm) solid var(--components-button-outline-stroke-default);
           }`
         };
       `;

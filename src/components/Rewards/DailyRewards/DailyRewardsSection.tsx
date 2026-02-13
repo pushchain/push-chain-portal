@@ -4,16 +4,14 @@ import { css } from "styled-components";
 
 // hooks
 import { useRewardsContext } from "../../../context/rewardsContext";
-import { useCountdown } from "../hooks/useCountdown";
 
 // type
-import { ActvityType, useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
+import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
 
 // components
-import { Alert, Box, Button, Text } from "../../../blocks";
+import { Alert, Box, Button, Lock, Skeleton, Text } from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
-import { ActivityVerificationButton } from "../RewardsActivity/ActivityVerificationButton";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
 
 export type DailyRewardsSectionProps = Record<string, never>;
@@ -21,15 +19,10 @@ export type DailyRewardsSectionProps = Record<string, never>;
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders } = useAuthHeaders();
+  const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
-  const { isLocked } = useRewardsContext();
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-  // current finish date
-  const targetDate = "2025-07-31T23:59:59";
-  const { isExpired } = useCountdown(targetDate);
-
-
-  const hasRewardsExpired = isExpired;
 
   const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards } = useGetDailyCheckInDetails(authHeaders);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
@@ -91,28 +84,29 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
           </Text>
         </Box>
 
-        {/* daily checkIn button state */}
-        {/*{!isLocked && (
-          <Button variant="tertiary" size="small" disabled>
+        {rewardsLocked && (
+          <Button
+            variant="outline"
+            size="small"
+            leadingIcon={< Lock />}
+            disabled
+          >
             Locked
           </Button>
-        )}*/}
+        )}
 
-        {/*{hasRewardsExpired && (
-          <Button variant="tertiary" size="small" disabled>
-            Ended
-          </Button>
-        )}*/}
-
-        {(
+        {!rewardsLocked && (
           <>
             {!canClaimRewards && (
-              <Button variant="tertiary" size="small" disabled>
-                Claimed
-              </Button>
+              <Skeleton isLoading={isLockedStatusLoading}>
+                <Button variant="tertiary" size="small" disabled>
+                  Claimed
+                </Button>
+              </Skeleton>
             )}
 
             {canClaimRewards && (
+              <Skeleton isLoading={isLockedStatusLoading}>
               <Button
                 variant="primary"
                 size="small"
@@ -121,16 +115,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
                 loading={isClaimingRewards}
               >
                 Claim
-              </Button>
-              // <ActivityVerificationButton
-              //   activityType={activeItem?.activityType as ActvityType}
-              //   userId={userDetails?.userId as string}
-              //   activityTypeId={activeItem?.id as string}
-              //   refetchActivity={() => refetchSendActivities()}
-              //   setErrorMessage={setErrorMessage}
-              //   isLoadingActivity={false}
-              //   label="Claim"
-              // />
+                </Button>
+              </Skeleton>
             )}
           </>
         )}

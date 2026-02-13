@@ -251,7 +251,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             alignSelf="stretch"
             width="100%"
           >
-            {questId && userId && (
+            {!isLocked && questId && userId && (
               <ActivityButton
                 activityType={questId as ActvityType}
                 activityTypeId={questId}
@@ -269,29 +269,17 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
               />
             )}
 
-            {!questId && isLocked && (
+            {isLocked && (
               <Button
+                variant="outline"
                 size="small"
-                variant="tertiary"
+                leadingIcon={< Lock />}
                 css={css`
                   width: 100%;
-                  border: 1px solid var(--stroke-tertiary);
-                  background: none;
-                `}
+                  `}
+                disabled
               >
-                <Box display="inline-flex" alignItems="center" justifyContent="center" gap="spacing-xxxs">
-                  <Lock size={24} color="icon-tertiary" />
-                  <Text color="text-tertiary"
-                    css={css`
-                        font-family: "FK Grotesk Neue-Medium", Helvetica;
-                        font-size: 14px;
-                        font-weight: 500;
-                        line-height: 16px;
-                        white-space: nowrap;
-                    `}>
-                    Locked
-                  </Text>
-                </Box>
+                Locked
               </Button>
             )}
 

@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import RewardsActivities from "./RewardsActivities";
 import Footer from "../../structure/Footer";
-import { useRewardsContext } from "../../context/rewardsContext";
 import { RewardsUpdatedDashboard } from "./RewardsUpdatedDashboard";
 
 const Rewards: FC = () => {

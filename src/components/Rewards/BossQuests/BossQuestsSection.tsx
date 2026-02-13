@@ -1,14 +1,20 @@
+import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
-import { Alert, Box, Quests, Text } from '../../../blocks';
+
 import BossQuestCard from './BossQuestCard';
 import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
-import { useState } from 'react';
+import { useRewardsContext } from '../../../context/rewardsContext';
+
+import { Alert, Box, Quests, Text } from '../../../blocks';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext();
+  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -154,29 +160,8 @@ const BossQuestsSection = () => {
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
-          />
+            />
 
-          {/*<BossQuestCard
-            title="Complete and Claim 25 App Quests"
-            description="Earn a Rare Pass by completing 25 quests on any apps"
-            resetTime="Resets in 29D 23H"
-            progress={0}
-            maxProgress={25}
-            unlocks={{ rarePass: true, xp: 250 }}
-            isLocked={true}
-            ctaText="Locked"
-          />
-
-          <BossQuestCard
-            title="Obtain & Scratch a total of 5 Rare Passes"
-            description="Earn a Rare Pass by scratching 5 Rare Passes during Season 3"
-            resetTime="Resets in 29D 23H"
-            progress={0}
-            maxProgress={5}
-            unlocks={{ rarePass: true }}
-            isLocked={true}
-            ctaText="Locked"
-          />*/}
           {bossQuests?.data.quests.map((item) => (
             <BossQuestCard
               key={item.id}
@@ -187,7 +172,7 @@ const BossQuestsSection = () => {
               progress={0}
               maxProgress={25}
               unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: (item.baseXP > 0 && item?.baseXP) }}
-              isLocked={true}
+              isLocked={rewardsLocked}
               ctaText="Locked"
               activityStatus={activityStatuses}
               isLoadingActivity={isLoadingActivities}

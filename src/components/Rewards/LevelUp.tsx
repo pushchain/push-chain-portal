@@ -4,10 +4,14 @@ import { useAuthHeaders } from "../../context/authHeadersContext";
 import { useGetLevelProgress } from "../../queries";
 
 import { Box, Button, LevelUpIcon, Lock, ProgressBar, RewardsStarGradient, Text } from "../../blocks"
+import { useRewardsContext } from "../../context/rewardsContext";
 
 export const LevelUp = () => {
   const { authHeaders } = useAuthHeaders();
   const { data: levelProgress } = useGetLevelProgress(authHeaders);
+  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
   return(
     <Box
@@ -61,33 +65,18 @@ export const LevelUp = () => {
               size="large"
               progressIcon={<RewardsStarGradient size={35} />}
             />
-          </Box>
+      </Box>
 
-
-          <Button
-            size="small"
-            variant="tertiary"
-            css={css`
-              width: 100%;
-              border: 1px solid var(--stroke-tertiary);
-              background: none;
-            `}
-          >
-            <Box display="inline-flex" alignItems="center" justifyContent="center" gap="spacing-xxxs">
-              <Lock size={24} color="icon-tertiary" />
-            <Text color="text-tertiary"
-                css={css`
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 16px;
-                    white-space: nowrap;
-                `}>
-                Locked
-              </Text>
-            </Box>
-          </Button>
-
-
+      {rewardsLocked && (
+        <Button
+          variant="outline"
+          size="small"
+          leadingIcon={< Lock />}
+          disabled
+        >
+          Locked
+        </Button>
+      )}
     </Box>
   )
 }
