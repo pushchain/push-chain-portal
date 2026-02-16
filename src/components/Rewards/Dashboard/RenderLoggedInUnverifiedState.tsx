@@ -4,7 +4,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit"
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
-import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet, useAdvancedSybilCheck } from "../../../queries"
+import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet, useAdvancedSybilCheck, usePushWalletSybilCheck } from "../../../queries"
 import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
@@ -18,8 +18,10 @@ export const RenderLoggedInUnverifiedState = () => {
   const { refetchActivityStatus } = useRewardsContext();
   const [errorMessage, setErrorMessage] = useState("");
   const [localSybilEligible, setLocalSybilEligible] = useState<boolean | null>(null);
-  const { mutate: localSybilCheck, isPending: isLocalSybilCheckPending } = useAdvancedSybilCheck();
+  const { mutate: evmSybilCheck, isPending: isEvmPending } = useAdvancedSybilCheck();
+  const { mutate: pushWalletSybilCheck, isPending: isPushWalletPending } = usePushWalletSybilCheck();
   const { chainId } = parseCAIP(universalAccount?.chain);
+  const isLocalSybilCheckPending = isEvmPending || isPushWalletPending;
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -41,7 +43,9 @@ export const RenderLoggedInUnverifiedState = () => {
   const handleVerifyWallet = () => {
     if (!universalAccount?.address || !chainId) return;
 
-    localSybilCheck(
+    const mutate = chainId === "42101" ? pushWalletSybilCheck : evmSybilCheck;
+
+    mutate(
       {
         address: universalAccount.address,
         chainId: parseInt(chainId),

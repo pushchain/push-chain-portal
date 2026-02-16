@@ -13,6 +13,7 @@ import {
   RewardActivityStatusResponse,
   useGetRewardActivityStatus,
   useAdvancedSybilCheck,
+  usePushWalletSybilCheck,
   useGetSeasonThreeUserByWallet,
 } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
@@ -76,7 +77,10 @@ export const RewardsContextProvider = ({
     !!userDetails?.userId,
   );
 
-  const { mutate: sybilCheckMutate, isPending: isSybilCheckPending } = useAdvancedSybilCheck();
+  const { mutate: evmSybilCheck, isPending: isEvmSybilPending } = useAdvancedSybilCheck();
+  const { mutate: pushWalletSybilCheck, isPending: isPushWalletSybilPending } = usePushWalletSybilCheck();
+
+  const isSybilCheckPending = isEvmSybilPending || isPushWalletSybilPending;
 
   const hasSybilCheckRun = useRef(false);
 
@@ -85,7 +89,9 @@ export const RewardsContextProvider = ({
 
     hasSybilCheckRun.current = true;
 
-    sybilCheckMutate(
+    const mutate = chainId === "42101" ? pushWalletSybilCheck : evmSybilCheck;
+
+    mutate(
       {
         address: account,
         chainId: parseInt(chainId),
@@ -99,7 +105,7 @@ export const RewardsContextProvider = ({
         },
       }
     );
-  }, [account, chainId, sybilCheckMutate]);
+  }, [account, chainId, evmSybilCheck, pushWalletSybilCheck]);
 
   const isLockedStatusLoading = isLoadingUserDetails || isLoadingActivityStatus;
 
