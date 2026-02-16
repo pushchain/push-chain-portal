@@ -4,19 +4,22 @@ import { usePushWalletContext } from "@pushchain/ui-kit"
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
-import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from "../../../queries"
-import { walletToFullCAIP10 } from "../../../helpers/web3helper"
+import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet, useAdvancedSybilCheck } from "../../../queries"
+import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
 import { useRewardsContext } from "../../../context/rewardsContext"
 
-import { Alert, ArrowDown, Box, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
+import { Alert, ArrowDown, Box, Button, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
 
 
 export const RenderLoggedInUnverifiedState = () => {
   const { universalAccount } = usePushWalletContext();
-  const { isSybilEligible, isSybilCheckPending, refetchActivityStatus } = useRewardsContext();
+  const { refetchActivityStatus } = useRewardsContext();
   const [errorMessage, setErrorMessage] = useState("");
+  const [localSybilEligible, setLocalSybilEligible] = useState<boolean | null>(null);
+  const { mutate: localSybilCheck, isPending: isLocalSybilCheckPending } = useAdvancedSybilCheck();
+  const { chainId } = parseCAIP(universalAccount?.chain);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -34,6 +37,25 @@ export const RenderLoggedInUnverifiedState = () => {
     },
     !!userDetails?.userId
   );
+
+  const handleVerifyWallet = () => {
+    if (!universalAccount?.address || !chainId) return;
+
+    localSybilCheck(
+      {
+        address: universalAccount.address,
+        chainId: parseInt(chainId),
+      },
+      {
+        onSuccess: (response) => {
+          setLocalSybilEligible(response?.eligible);
+        },
+        onError: () => {
+          setLocalSybilEligible(false);
+        },
+      }
+    );
+  };
 
   const activityList = [
     {
@@ -265,34 +287,7 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Text>
               </Box>
 
-              {isSybilEligible === null && (
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  alignItems="center"
-                  gap="spacing-xxs"
-                  padding="spacing-xs spacing-md"
-                  css={css`
-                    margin-left: auto;
-                  `}
-                >
-                  <Text
-                    color="#17181B"
-                    css={css`
-                      white-space: nowrap;
-                      leading-trim: both;
-                      font-size: 14px;
-                      font-style: normal;
-                      font-weight: 600;
-                      line-height: 16px;
-                    `}
-                  >
-                    {isSybilCheckPending ? "Verifying..." : "Pending Verification"}
-                  </Text>
-                </Box>
-              )}
-
-              {isSybilEligible === true && (
+              {localSybilEligible === true && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -320,7 +315,7 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Box>
               )}
 
-              {isSybilEligible === false && (
+              {localSybilEligible === false && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -345,6 +340,23 @@ export const RenderLoggedInUnverifiedState = () => {
                   >
                     Not Eligible
                   </Text>
+                </Box>
+              )}
+
+              {localSybilEligible === null && (
+                <Box
+                  css={css`
+                    margin-left: auto;
+                  `}
+                >
+                  <Button
+                    variant="tertiary"
+                    size="small"
+                    onClick={handleVerifyWallet}
+                    disabled={isLocalSybilCheckPending}
+                  >
+                    {isLocalSybilCheckPending ? "Verifying..." : "Link Account to Verify"}
+                  </Button>
                 </Box>
               )}
             </Box>
