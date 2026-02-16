@@ -23,3 +23,4 @@ export * from './createSeasonThreeUserModel';
 export * from './getDailyCheckInDetailsModel';
 export * from './claimDailyRewardsSeasonThreeModel';
 export * from './getLevelProgressModel';
+export * from './pushWalletSybilCheckModel';
