@@ -4,3 +4,4 @@ export * from './generateCharacterModel';
 export * from './mintCharacterModel';
 export * from './reshuffleCharacterModel';
 export * from './getRarePassHistoryModel';
+export * from './getNextReshuffleFeeModel';

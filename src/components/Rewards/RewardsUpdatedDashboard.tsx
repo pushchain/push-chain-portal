@@ -168,8 +168,11 @@ export const RewardsUpdatedDashboard = () => {
 
   if (isWalletConnected && isLockedStatusLoading) {
     return (
-      <Skeleton isLoading={isLockedStatusLoading} css={css`
-        z-index: 999;
+      <Skeleton
+        isLoading={isLockedStatusLoading}
+        css={css`
+          z-index: 999;
+          border-radius: 24px;
         `}>
         <Box
           display="flex"

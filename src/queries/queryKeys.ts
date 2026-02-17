@@ -53,3 +53,4 @@ export const quests = "quests";
 export const questsProgress = "questsProgress";
 export const rarePassHistory = "rarePassHistory";
 export const pushWalletSybilCheck = "pushWalletSybilCheck";
+export const nextReshuffleFee = "nextReshuffleFee";

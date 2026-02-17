@@ -16,6 +16,8 @@ export interface CharacterMintParams {
 export interface CharacterReshuffleParams {
   userWallet: string;
   characterId: string;
+  feeType?: 'tweet' | 'PC';
+  feeProof?: string;
 }
 
 type CharacterDetails = {
@@ -44,6 +46,22 @@ export interface CharacterReshuffleResponse {
   success: boolean;
   newCharacterId: string;
   status: CharacterStatus;
+  reshuffleCount: number;
+  nextReshuffleFee?: number;
+  nextReshuffleFeeType?: 'tweet' | 'PC';
+}
+
+export interface GetNextReshuffleFeeParams {
+  characterId: string;
+}
+
+export interface GetNextReshuffleFeeResponse {
+  reshuffleCount: number;
+  nextReshuffleNumber: number;
+  nextReshuffleFee: number | null;
+  nextReshuffleFeeType: 'tweet' | 'PC' | null;
+  maxReshufflesPerIssue: number;
+  canReshuffle: boolean;
 }
 
 export interface CharacterEligibleParams {
