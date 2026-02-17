@@ -18,7 +18,7 @@ jobs:
           echo "VITE_PR_PREVIEW_BASE=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           echo "VITE_APP_NODE_ENV=production" >> $GITHUB_ENV
           echo "VITE_APP_DEPLOY_ENV=PREVIEW" >> $GITHUB_ENV
-          echo "VITE_APP_PUBLIC_URL=https://push-protocol.github.io/" >> $GITHUB_ENV
+          echo "VITE_APP_PUBLIC_URL=https://pushchain.github.io/" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
 
