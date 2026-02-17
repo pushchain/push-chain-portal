@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { css } from "styled-components";
-import { usePushWalletContext } from "@pushchain/ui-kit";
+import { usePushWalletContext, usePushChainClient } from "@pushchain/ui-kit";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { device } from "../../config/globals";
@@ -9,6 +9,7 @@ import {
   useGenerateCharacter,
   useReshuffleCharacter,
   useMintCharacter,
+  useGetNextReshuffleFee,
 } from "../../queries";
 import { CharacterInfoResponse } from "../../queries/types/character";
 
@@ -39,8 +40,11 @@ export const PushPassItem = () => {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const [generatedCharacterId, setGeneratedCharacterId] = useState<string>();
+  const [isPaying, setIsPaying] = useState(false);
+  const [payError, setPayError] = useState("");
   const characterId = generatedCharacterId || (routeId === "open" ? undefined : routeId);
   const { universalAccount } = usePushWalletContext();
+  const { pushChainClient } = usePushChainClient();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -49,6 +53,10 @@ export const PushPassItem = () => {
 
   const { data: characterInfo, isLoading, refetch } = useGetCharacterInfo({
     walletAddress: caip10WalletAddress,
+  });
+
+  const { data: reshuffleFeeData, refetch: refetchFee } = useGetNextReshuffleFee({
+    characterId: characterId as string,
   });
 
   const {
@@ -72,7 +80,15 @@ export const PushPassItem = () => {
   const passState = getPassState(isLoading, characterId, characterInfo);
   const character = characterInfo?.characters?.find((c) => c.characterId === characterId);
   const isMinted = character?.status === "MINTED";
-  const isActionLoading = isGenerating || isReshuffling || isMinting;
+  const isActionLoading = isGenerating || isReshuffling || isMinting || isPaying;
+
+  const canReshuffle = reshuffleFeeData?.canReshuffle ?? false;
+  const reshuffleCount = reshuffleFeeData?.reshuffleCount ?? 0;
+  const maxReshuffles = reshuffleFeeData?.maxReshufflesPerIssue ?? 5;
+  const nextFeeType = reshuffleFeeData?.nextReshuffleFeeType;
+  const nextFee = reshuffleFeeData?.nextReshuffleFee;
+
+  const PC_TOKEN_RECIPIENT = "0xD91D61bd2841839eA8c37581F033C9a91Be6a5A6";
 
   const handleOpenPass = () => {
     if (!caip10WalletAddress) return;
@@ -89,19 +105,72 @@ export const PushPassItem = () => {
     );
   };
 
-  const handleReshuffle = () => {
-    if (!caip10WalletAddress) return;
-    reshuffle(
-      {
-        userWallet: caip10WalletAddress,
-        characterId: characterId
-      },
-      {
-        onSuccess: () => {
-          refetch();
+  const handleReshuffle = async () => {
+    if (!caip10WalletAddress || !characterId || !canReshuffle) return;
+    setPayError("");
+
+    if (nextFeeType === 'tweet') {
+      const tweetText = encodeURIComponent("I just rerolled my Rare Pass on @pushchain! 🎲✨");
+      window.open(`https://x.com/intent/tweet?text=${tweetText}`, '_blank');
+
+      reshuffle(
+        {
+          userWallet: caip10WalletAddress,
+          characterId,
+          feeType: 'tweet',
         },
+        {
+          onSuccess: (data) => {
+            if (data?.newCharacterId) {
+              setGeneratedCharacterId(data.newCharacterId);
+            }
+            refetch();
+            refetchFee();
+          },
+        }
+      );
+    }
+
+    if (nextFeeType === 'PC') {
+      if (!pushChainClient || nextFee == null) return;
+
+      try {
+        setIsPaying(true);
+        const feeInWei = BigInt(nextFee) * BigInt(10 ** 18);
+
+        const txResponse = await pushChainClient.universal.sendTransaction({
+          to: PC_TOKEN_RECIPIENT as `0x${string}`,
+          value: feeInWei,
+        });
+
+        const txHash = txResponse.hash;
+
+        reshuffle(
+          {
+            userWallet: caip10WalletAddress,
+            characterId,
+            feeType: 'PC',
+            feeProof: txHash,
+          },
+          {
+            onSuccess: (data) => {
+              if (data?.newCharacterId) {
+                setGeneratedCharacterId(data.newCharacterId);
+              }
+              refetch();
+              refetchFee();
+            },
+            onSettled: () => {
+              setIsPaying(false);
+            },
+          }
+        );
+      } catch (error) {
+        console.error("PC token transfer failed:", error);
+        setPayError("PC token transfer failed. Please try again.");
+        setIsPaying(false);
       }
-    );
+    }
   };
 
   const handleMint = () => {
@@ -316,45 +385,70 @@ export const PushPassItem = () => {
             {!isMinted && (
               <Box
                 display="flex"
-                flexDirection="row"
-                gap="spacing-md"
+                flexDirection="column"
+                alignItems="center"
+                gap="spacing-sm"
                 css={css`
                   margin-top: 24px;
                 `}
               >
-                <Button
-                  variant="outline"
-                  onClick={handleMint}
-                  disabled={isActionLoading}
-                  css={css`
-                    min-width: 140px;
-                  `}
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="spacing-md"
                 >
-                  {isMinting ? <Spinner size="small" /> : "Confirm & Claim Pass"}
-                </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleMint}
+                    disabled={isActionLoading}
+                    css={css`
+                      min-width: 140px;
+                    `}
+                  >
+                    {isMinting ? <Spinner size="small" /> : "Confirm & Claim Pass"}
+                  </Button>
 
-                <Button
-                  variant="primary"
-                  onClick={handleReshuffle}
-                  disabled={isActionLoading}
+                  {canReshuffle && (
+                    <Button
+                      variant="primary"
+                      onClick={handleReshuffle}
+                      disabled={isActionLoading}
+                      css={css`
+                        min-width: 140px;
+                      `}
+                    >
+                      {isReshuffling || isPaying ? (
+                        <Spinner size="small" />
+                      ) : nextFeeType === 'tweet' ? (
+                        <><Twitter width={20} height={20} /> Tweet to Reroll</>
+                      ) : nextFeeType === 'PC' ? (
+                        <>Reroll ({nextFee} PC)</>
+                      ) : (
+                        "Reroll"
+                      )}
+                    </Button>
+                  )}
+                </Box>
+
+                <Text
+                  variant="bs-regular"
                   css={css`
-                    min-width: 140px;
+                    color: rgba(255, 255, 255, 0.5);
                   `}
                 >
-                  {isReshuffling ? <Spinner size="small" /> : <><Twitter width={20} height={20} /> Tweet to Reroll</>}
-                </Button>
+                  {reshuffleCount}/{maxReshuffles} reshuffles used
+                </Text>
               </Box>
             )}
 
-            {(isReshuffleError || isMintError) && (
+            {(isReshuffleError || isMintError || payError) && (
               <Text
                 variant="bs-regular"
                 css={css`
                   color: #ff6b6b;
                 `}
               >
-                {isReshuffleError ? "Failed to reshuffle." : "Failed to mint."} Please try
-                again.
+                {payError || (isReshuffleError ? "Failed to reshuffle." : "Failed to mint.") + " Please try again."}
               </Text>
             )}
           </Box>
