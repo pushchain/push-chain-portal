@@ -234,6 +234,7 @@ function App() {
     <ThemeProviderWrapper>
       {/* Global style */}
       <GlobalStyle />
+      <Router basename={basename}>
       <PushUniversalWalletProvider
              config={walletConfig}
              themeMode={PushUI.CONSTANTS.THEME.DARK}
@@ -245,14 +246,13 @@ function App() {
         <AccountProvider>
           <RewardsContextProvider>
             <QueryClientProvider client={queryClient}>
-              <Router basename={basename}>
                 <AppContent />
-              </Router>
               <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
           </RewardsContextProvider>
         </AccountProvider>
-      </PushUniversalWalletProvider>
+        </PushUniversalWalletProvider>
+      </Router>
     </ThemeProviderWrapper>
   );
 }
