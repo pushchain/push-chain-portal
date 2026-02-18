@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, PCTokens, RewardsCoin, SeasonThreePoints, Text } from "../../blocks";
+import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../blocks";
 
 import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
 
@@ -8,7 +8,7 @@ export type LevelUpReward = {
   id: number;
   value: string;
   label: string;
-  type: 'pc_tokens' | 'points' | 'xp_boost';
+  type: 'pc_tokens' | 'points' | 'xp_boost' | string;
 };
 
 type LevelUpModalProps = {
@@ -100,7 +100,10 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
             >
               <Box
                 css={css`
-                        position: relative;
+                        position: absolute;
+                        top: 0px;
+                        left: 50%;
+                        transform: translateX(-50%);
                         z-index: 1;
                         width: 88px;
                         height: 88px;
@@ -109,18 +112,18 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
                         justify-content: center;
                         filter: drop-shadow(0 11.858px 20.159px rgba(0, 0, 0, 0.50));
                     `}>
-                        {reward.type === 'pc_tokens' && <RewardsCoin width={50} height={50} />}
+                        {reward.type === 'pc_tokens' && <RewardsCoin width={60} height={60} />}
                         {reward.type === 'points' && <SeasonThreePoints width={50} height={50} />}
                         {reward.type === 'xp_boost' && <Multiplier width={50} height={50} />}
               </Box>
 
               <Box
-                position="absolute"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="flex-end"
                 css={css`
+                  position: absolute;
                   bottom: -15px;
                   left: 0;
                   right: 0;
@@ -162,6 +165,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
           onClick={onClose}
           css={css`
             width: 100%;
+            margin-top: 24px;
           `}
         >
           Close

@@ -4,9 +4,10 @@ import { css } from "styled-components";
 import { useAuthHeaders } from "../../context/authHeadersContext";
 import { useGetLevelProgress } from "../../queries";
 
-import { Box, LevelUpIcon, ProgressBar, RewardsStarGradient, Text } from "../../blocks"
+import { Box, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text } from "../../blocks"
 import { useRewardsContext } from "../../context/rewardsContext";
 import LevelUpModal from "./LevelUpModal";
+import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
 
 interface UserLevelConfigItem {
   level: number;
@@ -80,11 +81,9 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
 export const LevelUp = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { authHeaders } = useAuthHeaders();
-    const { data: levelProgress } = useGetLevelProgress(authHeaders);
-    const { isLocked, isLockedStatusLoading } = useRewardsContext();
+    const { data: levelProgress, isLoading } = useGetLevelProgress(authHeaders);
+    const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, authHeaders?.walletAddress);
 
-
-    const rewardsLocked = isLocked && !isLockedStatusLoading;
 
     const xpNeededToLevelUp =
       levelProgress?.nextLevelConfig?.xpNeeded - levelProgress?.xp;
@@ -111,11 +110,11 @@ export const LevelUp = () => {
         label: "Points",
         type: "points"
       },
-      ...(currentLevelConfig.milestones?.questXPMultiplier
+      ...(currentLevelConfig?.milestones?.questXPMultiplier
            ? [
                {
                  id: 3,
-                 value: `+${currentLevelConfig.milestones.questXPMultiplier}%`,
+                 value: `+${currentLevelConfig?.milestones.questXPMultiplier}%`,
                  label: "XP 24h",
                  type: "xp_boost",
                },
@@ -151,19 +150,23 @@ export const LevelUp = () => {
 
       <Box>
           <Box display="flex" flexDirection="row" justifyContent="center" gap="spacing-xs" alignItems="center">
-            <LevelUpIcon />
-              <Text variant="h2-semibold">Lv. { levelProgress?.level } </Text>
+          <LevelUpIcon />
+              <Skeleton isLoading={isLoading}>
+                <Text variant="h2-semibold">Lv. {levelProgress?.level} </Text>
+              </Skeleton>
             </Box>
 
-            <Text
-              variant="bs-semibold"
-              textAlign="center"
-              css={css`
-                color: rgba(255, 255, 255, 0.75);
-                margin: 8px;
-              `}>
-              Earn { xpNeededToLevelUp || '-' } XP to level up
-            </Text>
+            <Skeleton isLoading={isLoading}>
+                <Text
+                  variant="bs-semibold"
+                  textAlign="center"
+                  css={css`
+                    color: rgba(255, 255, 255, 0.75);
+                    margin: 8px;
+                  `}>
+                  Earn { xpNeededToLevelUp || '-' } XP to level up
+              </Text>
+            </Skeleton>
       </Box>
 
         <Box
@@ -186,22 +189,10 @@ export const LevelUp = () => {
             />
       </Box>
 
-          <Box>
-              <Text
-                variant="bs-semibold"
-                textAlign="center"
-                css={css`
-                  cursor: pointer;
-                `}
-                onClick={() => setIsModalOpen(true)}
-              >
-                View Level Rewards
-              </Text>
-          </Box>
 
       <LevelUpModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isModalOpen || hasLevelledUp}
+        onClose={() => { setIsModalOpen(false); dismiss(); }}
         level={levelProgress?.level || 0}
         rewards={levelUpRewards}
       />
