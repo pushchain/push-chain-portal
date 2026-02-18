@@ -9,12 +9,11 @@ import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 
 type SquadHeaderProps = {
-  onInviteMembers?: () => void;
   squadData?: any;
 }
 
 
-export const SquadHeader = ({ squadData, onInviteMembers }: SquadHeaderProps) => {
+export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const { universalAccount } = usePushWalletContext();

@@ -5,17 +5,23 @@ import { fullCAIP10ToWallet, shortenText } from "../../../helpers/web3helper";
 
 type MemberRowProps = {
   member: any;
+  isHighlighted: boolean;
   onCopyAddress?: (address: string) => void;
 }
 
-const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
+const MemberRow = ({ member, isHighlighted, onCopyAddress }: MemberRowProps) => {
   return (
     <Box
       display="flex"
       alignItems="center"
       gap="spacing-xs"
       width="100%"
-      padding="spacing-xs spacing-none"
+      padding="spacing-none"
+      css={css`
+        &:hover .copy-icon {
+          opacity: 1;
+        }
+      `}
     >
       <Box
         display="flex"
@@ -40,7 +46,7 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
           <Text
             variant="bs-semibold"
             css={css`
-              color: ${member.isCurrentUser ? 'var(--text-brand-medium)' : '#fff'};
+              color: ${isHighlighted ? '#C742DD' : '#fff'};
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -53,16 +59,19 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
             <span>{shortenText(fullCAIP10ToWallet(member.user.userWallet), 9)}</span>
           </Text>
 
-          {member.isCurrentUser && (
             <Box
+              className="copy-icon"
               display="flex"
               alignItems="center"
               cursor="pointer"
-              onClick={() => onCopyAddress?.(member.memberId)}
+              onClick={() => onCopyAddress?.(member.user.userWallet)}
+              css={css`
+                opacity: 0;
+                transition: opacity 0.15s ease;
+              `}
             >
               <Copy size={16} color="icon-brand-medium" />
             </Box>
-          )}
         </Box>
       </Box>
 
@@ -114,10 +123,12 @@ const MemberRow = ({ member, onCopyAddress }: MemberRowProps) => {
 
 type SquadMembersTableProps = {
   members: SquadMember[];
+  leaderId?: string;
+  currentUserId?: string;
   onCopyAddress?: (address: string) => void;
 }
 
-export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableProps) => {
+export const SquadMembersTable = ({ members, leaderId, currentUserId, onCopyAddress }: SquadMembersTableProps) => {
   const handleCopy = (address: string) => {
     navigator.clipboard.writeText(address);
     onCopyAddress?.(address);
@@ -187,6 +198,7 @@ export const SquadMembersTable = ({ members, onCopyAddress }: SquadMembersTableP
           <MemberRow
             key={index}
             member={member}
+            isHighlighted={member.userId === leaderId || member.userId === currentUserId}
             onCopyAddress={handleCopy}
           />
         ))}

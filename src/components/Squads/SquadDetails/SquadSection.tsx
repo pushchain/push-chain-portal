@@ -6,8 +6,10 @@ import { SquadLevelCard } from "./SquadLevelCard"
 import { SquadStatsRow } from "./SquadStatsRow"
 import { SquadMembersTable } from "./SquadMembersTable"
 import { device } from "../../../config/globals"
-import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite } from "../../../queries"
+import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite, useGetSeasonThreeUserByWallet } from "../../../queries"
 import { useAuthHeaders } from "../../../context/authHeadersContext"
+import { usePushWalletContext } from "@pushchain/ui-kit"
+import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 
 type SquadMember = {
   memberId: string;
@@ -27,7 +29,17 @@ type SquadSectionProps = {
 
 export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetchSquadsDetails }: SquadSectionProps) => {
   const { authHeaders } = useAuthHeaders();
+  const { universalAccount } = usePushWalletContext();
   const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: seasonThreeUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
 
   const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites(authHeaders);
   const { mutate: acceptInvite, isPending: isAccepting } = useAcceptSquadInvite();
@@ -208,6 +220,8 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetc
 
         <SquadMembersTable
           members={squadData?.data.squadMembers}
+          leaderId={squadData?.data.leaderId}
+          currentUserId={seasonThreeUserDetails?.userId}
           onCopyAddress={onCopyAddress}
         />
      </>}
