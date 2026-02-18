@@ -119,7 +119,7 @@ export const RenderLoggedInUnverifiedState = () => {
         <Box
           css={css`
             position: absolute;
-            bottom: -50px;
+            bottom: 0;
             left: -50px;
             width: 230px;
             height: 230px;
@@ -133,42 +133,18 @@ export const RenderLoggedInUnverifiedState = () => {
         <Box
           css={css`
             position: absolute;
-            bottom: -50px;
+            bottom: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            height: 50%;
+            display: flex;
+            justify-content: space-evenly;
             pointer-events: none;
             z-index: 0;
           `}
         >
           <GlowStreaks />
-        </Box>
-
-        <Box
-          css={css`
-            position: absolute;
-            bottom: -50px;
-            left: 150px;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          `}
-        >
           <GlowStreaks />
-        </Box>
-
-        <Box
-          css={css`
-            position: absolute;
-            bottom: -50px;
-            left: 300px;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          `}
-        >
           <GlowStreaks />
         </Box>
 
