@@ -38,8 +38,10 @@ const getLevelProgress = (level: number, totalXp: number) => {
   const xpNeededForLevel = nextLevelXP - currentLevelXP;
   const xpInLevel = totalXp - currentLevelXP;
   const progressPercent = xpNeededForLevel > 0
-    ? Math.min((xpInLevel / xpNeededForLevel) * 100, 100)
+    ? Math.min((totalXp / xpNeededForLevel) * 100, 100)
     : 0;
+
+  console.log(xpNeededForLevel, xpInLevel, progressPercent)
 
   return {
     xpInLevel,
@@ -56,8 +58,12 @@ type SquadLevelCardProps = {
   totalXp: number;
 }
 
+
 export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProps) => {
-  const {  xpNeededForLevel, progressPercent, isMaxLevel } = getLevelProgress(level, totalXp);
+  const { xpNeededForLevel, progressPercent, isMaxLevel } = getLevelProgress(level, totalXp);
+
+  const remainingXP = xpNeededForLevel - totalXp;
+
 
   return (
     <Box
@@ -119,7 +125,7 @@ export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProp
           >
             {isMaxLevel
               ? "Max Level Reached"
-              : `Earn ${xpNeededForLevel?.toLocaleString()} XP to level up`}
+              : `Earn ${remainingXP?.toLocaleString()} XP to level up`}
           </Text>
 
           <Box width="100%" height="8px" margin="spacing-sm spacing-none">

@@ -167,12 +167,14 @@ export const Squads = () => {
         <Text
           variant='h5-regular'
           textAlign='center'>
-            Find and Join a squad on #s3squad channel via
+            {seasonThreeDetails?.userId === squadsDetails?.data?.leaderId
+              ? 'Recruit squad members by checking out #s3squad channel on '
+              : 'Find and Join a squad on #s3squad channel via '}
             <Link
               to="https://discord.com/invite/pushchain"
               textProps={{ variant: "bm-semibold", color: "#C742DD" }}
             >
-              {' '}Push Chain Discord{' '}
+              Push Chain Discord
             </Link>
         </Text>
       </Box>

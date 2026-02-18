@@ -194,14 +194,16 @@ export const SquadMembersTable = ({ members, leaderId, currentUserId, onCopyAddr
         gap="spacing-xxxs"
         css={css`padding-top: var(--spacing-xs);`}
       >
-        {members?.map((member, index) => (
-          <MemberRow
-            key={index}
-            member={member}
-            isHighlighted={member.userId === leaderId || member.userId === currentUserId}
-            onCopyAddress={handleCopy}
-          />
-        ))}
+        {[...(members || [])]
+          .sort((a, b) => (a.userId === leaderId ? -1 : b.userId === leaderId ? 1 : 0))
+          .map((member, index) => (
+            <MemberRow
+              key={index}
+              member={member}
+              isHighlighted={member.userId === leaderId || member.userId === currentUserId}
+              onCopyAddress={handleCopy}
+            />
+          ))}
       </Box>
     </Box>
   );
