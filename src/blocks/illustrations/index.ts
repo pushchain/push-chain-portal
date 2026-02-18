@@ -54,9 +54,12 @@ export { default as GreyBonusActivitySubscribers } from "./components/GreyBonusA
 
 export { default as GlowStreaks } from "./components/GlowStreaks";
 
+export { default as LevelBadge } from "./components/LevelBadge";
+
+export { default as LevelUpCart } from "./components/LevelUpCart";
+
 export { default as LevelUpIcon } from "./components/LevelUpIcon";
 
-export { default as LevelBadge } from "./components/LevelBadge";
 
 export { default as Linea } from "./components/Linea";
 
