@@ -276,15 +276,15 @@ function App() {
                '--pw-core-font-family': "'DM Sans', sans-serif",
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
-           >
-        <AccountProvider>
+        >
+          <QueryClientProvider client={queryClient}>
           <RewardsContextProvider>
-            <QueryClientProvider client={queryClient}>
+            <AuthHeadersProvider>
                 <AppContent />
               <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
-          </RewardsContextProvider>
-        </AccountProvider>
+            </AuthHeadersProvider>
+            </RewardsContextProvider>
+          </QueryClientProvider>
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>
