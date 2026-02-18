@@ -1,7 +1,7 @@
 import HeroBannerCards from './HeroBanner/HeroBannerCards';
 import ActivityStatsCards from './ActivityStats/ActivityStatsCards';
 import BossQuestsSection from './BossQuests/BossQuestsSection';
-import { Box, Lock, LockFilled, Text } from '../../blocks';
+import { Box, LockFilled, Text } from '../../blocks';
 import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
 import { css } from 'styled-components';

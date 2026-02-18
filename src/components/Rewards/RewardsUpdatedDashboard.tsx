@@ -5,7 +5,7 @@ import {
   usePushWalletContext,
 } from "@pushchain/ui-kit";
 
-import { Box, Text, ArrowDown, GlowStreaks, Skeleton, Spinner } from "../../blocks";
+import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardsContext } from "../../context/rewardsContext";
