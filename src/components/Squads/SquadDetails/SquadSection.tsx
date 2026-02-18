@@ -22,9 +22,10 @@ type SquadSectionProps = {
   squadData: any;
   onInviteMembers?: () => void;
   onCopyAddress?: (address: string) => void;
+  refetchSquadsDetails: () => void;
 }
 
-export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: SquadSectionProps) => {
+export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetchSquadsDetails }: SquadSectionProps) => {
   const { authHeaders } = useAuthHeaders();
   const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
 
@@ -40,6 +41,7 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
         onSuccess: () => {
           setActiveInviteId(null);
           refetchPendingInvites();
+          refetchSquadsDetails();
         },
         onError: () => {
           setActiveInviteId(null);
@@ -56,6 +58,7 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress }: Squa
         onSuccess: () => {
           setActiveInviteId(null);
           refetchPendingInvites();
+          refetchSquadsDetails();
         },
         onError: () => {
           setActiveInviteId(null);

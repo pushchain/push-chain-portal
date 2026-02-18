@@ -9,7 +9,6 @@ import { device } from "../../config/globals"
 import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
-import { useEffect } from "react"
 
 
 export const Squads = () => {
@@ -24,7 +23,7 @@ export const Squads = () => {
     walletAddress: caip10WalletAddress
   });
 
-  const { data: squadsDetails } = useGetSquadsDetails(authHeaders);
+  const { data: squadsDetails, refetch: refetchSquadsDetails } = useGetSquadsDetails(authHeaders);
   const { data: inviteCodeDetails, refetch } = useGetAllInvites(authHeaders);
   const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
@@ -153,6 +152,7 @@ export const Squads = () => {
           squadData={squadsDetails}
           onInviteMembers={handleInviteMembers}
           onCopyAddress={handleCopyAddress}
+          refetchSquadsDetails={refetchSquadsDetails}
         />
       </Box>
 
