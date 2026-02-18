@@ -7,15 +7,15 @@ const GuestModeWalletAddress =
   "eip155:0x0000000000000000000000000000000000000001";
 
 export const useGetUserEligibilityForPreLaunch = (options?: UserEligibilityForPreLaunchParams) => {
+  const address = options?.address;
   const isInvalidAddress =
-    !options?.address ||
-    options.address === GuestModeWalletAddress ||
-    options.address.includes("undefined");
+    !address ||
+    address === GuestModeWalletAddress ||
+    address.includes("undefined") ||
+    address.includes("0x0000000000000000000000000000000000000001");
 
   return useQuery({
-    queryKey: isInvalidAddress
-      ? undefined
-      : [eligibleForPreLaunch, options.address],
+    queryKey: [eligibleForPreLaunch, address ?? ""],
     queryFn: () => getUserEligibilityForPreLaunch(options!),
     retry: false,
     enabled: !isInvalidAddress,

@@ -268,6 +268,7 @@ function App() {
     <ThemeProviderWrapper>
       {/* Global style */}
       <GlobalStyle />
+      <Router basename={basename}>
       <PushUniversalWalletProvider
              config={walletConfig}
              themeMode={PushUI.CONSTANTS.THEME.DARK}
@@ -276,17 +277,16 @@ function App() {
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
            >
-              <QueryClientProvider client={queryClient}>
-                <RewardsContextProvider>
-                  <AuthHeadersProvider>
-                      <Router basename={basename}>
-                      <AppContent />
-                    </Router>
-                    <ReactQueryDevtools initialIsOpen={false} />
-                  </AuthHeadersProvider>
-                </RewardsContextProvider>
-              </QueryClientProvider>
-      </PushUniversalWalletProvider>
+        <AccountProvider>
+          <RewardsContextProvider>
+            <QueryClientProvider client={queryClient}>
+                <AppContent />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+          </RewardsContextProvider>
+        </AccountProvider>
+        </PushUniversalWalletProvider>
+      </Router>
     </ThemeProviderWrapper>
   );
 }
