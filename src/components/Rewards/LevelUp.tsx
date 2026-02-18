@@ -13,6 +13,12 @@ export const LevelUp = () => {
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
+  console.log(levelProgress, 'level');
+
+  const xpNeededToLevelUp = levelProgress?.nextLevelConfig.xpNeeded - levelProgress?.xp
+  const progressPercentage = (levelProgress?.xp / levelProgress?.nextLevelConfig.xpNeeded) * 100;
+
+
   return(
     <Box
       borderRadius="radius-md"
@@ -39,44 +45,42 @@ export const LevelUp = () => {
             }
         `}>
 
+      <Box>
           <Box display="flex" flexDirection="row" justifyContent="center" gap="spacing-xs" alignItems="center">
             <LevelUpIcon />
-        <Text variant="h2-semibold">Lv. { levelProgress?.level } </Text>
-          </Box>
+              <Text variant="h2-semibold">Lv. { levelProgress?.level } </Text>
+            </Box>
 
-          <Box
+            <Text
+              variant="bs-semibold"
+              textAlign="center"
+              css={css`
+                color: rgba(255, 255, 255, 0.75);
+                margin: 8px;
+              `}>
+              Earn { xpNeededToLevelUp || '-' } XP to level up
+            </Text>
+      </Box>
+
+        <Box
             display="flex"
             flexDirection="column"
             gap="spacing-xs"
             width="100%"
             css={css`
               box-sizing: border-box;
+              padding-bottom: 24px;
             `}
           >
-            <Text variant="bs-semibold" textAlign="center" css={css`
-              color: rgba(255, 255, 255, 0.75);
-              `}>
-              Earn { levelProgress?.xpProgress.xpNeededForNextLevel } XP to level up
-            </Text>
+
 
             <ProgressBar
-              progress={(levelProgress?.xpProgress.progressPercentage) || null}
+              progress={(progressPercentage) || null}
               max={100}
               size="large"
               progressIcon={<RewardsStarGradient size={35} />}
             />
       </Box>
-
-      {rewardsLocked && (
-        <Button
-          variant="outline"
-          size="small"
-          leadingIcon={< Lock />}
-          disabled
-        >
-          Locked
-        </Button>
-      )}
     </Box>
   )
 }

@@ -28,6 +28,8 @@ export const StreakDays = () => {
             box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
             backdrop-filter: blur(10px);
             box-sizing: border-box;
+            z-index: 3;
+
 
             &::before {
               content: '';
@@ -45,14 +47,15 @@ export const StreakDays = () => {
         <Box
           css={css`
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 1px;
+            right: 1px;
             width: 65%;
             height: 65%;
             background: url(${getDailyCheckInDetails?.streak > 0 ? ActiveStreakBg : StreakBg}) no-repeat bottom right;
             background-size: contain;
             pointer-events: none;
             z-index: 0;
+            border-radius: inherit;
           `}
         />
 

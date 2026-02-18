@@ -9,7 +9,7 @@ import { useRewardsContext } from "../../../context/rewardsContext";
 import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
 
 // components
-import { Alert, Box, Button, Lock, Skeleton, Text } from "../../../blocks";
+import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text } from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
@@ -42,14 +42,16 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 }
 
   const dailyRewardsActivities = [
-    { id: 1, text: "Day 1" },
-    { id: 2, text: "Day 2" },
-    { id: 3, text: "Day 3" },
-    { id: 4, text: "Day 4" },
-    { id: 5, text: "Day 5" },
-    { id: 6, text: "Day 6" },
-    { id: 7, text: "Day 7" },
+    { id: 1, text: "Day 1", points: 100 },
+    { id: 2, text: "Day 2", points: 130 },
+    { id: 3, text: "Day 3", points: 160 },
+    { id: 4, text: "Day 4", points: 200 },
+    { id: 5, text: "Day 5", points: 240 },
+    { id: 6, text: "Day 6", points: 280 },
+    { id: 7, text: "Day 7", points: 300 },
   ];
+
+  console.log(getDailyCheckInDetails)
 
   return (
     <Box
@@ -79,9 +81,37 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
           <Text variant="h4-semibold" color="text-primary">
             Daily Check-In
           </Text>
-          <Text variant="bm-regular" color="text-tertiary">
+          <Text variant="bs-regular" color="text-tertiary">
             Stack your streak bonus, check-in daily
           </Text>
+        </Box>
+
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+          gap="spacing-md"
+        >
+
+
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+          gap="spacing-md"
+          >
+            {dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.points && <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="spacing-xxs"
+            >
+              <SeasonThreePoints width={28} height={28} />
+              <Text variant="bm-bold">{ dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.points }</Text>
+          </Box>}
         </Box>
 
         {rewardsLocked && (
@@ -119,7 +149,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
               </Skeleton>
             )}
           </>
-        )}
+          )}
+        </Box>
       </Box>
 
       {errorMessage && (
