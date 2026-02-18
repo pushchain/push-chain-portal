@@ -122,16 +122,14 @@ const MemberRow = ({ member, isHighlighted, onCopyAddress }: MemberRowProps) => 
 };
 
 type SquadMembersTableProps = {
-  members: SquadMember[];
+  members: any;
   leaderId?: string;
   currentUserId?: string;
-  onCopyAddress?: (address: string) => void;
 }
 
-export const SquadMembersTable = ({ members, leaderId, currentUserId, onCopyAddress }: SquadMembersTableProps) => {
+export const SquadMembersTable = ({ members, leaderId, currentUserId }: SquadMembersTableProps) => {
   const handleCopy = (address: string) => {
     navigator.clipboard.writeText(address);
-    onCopyAddress?.(address);
   };
 
   return (

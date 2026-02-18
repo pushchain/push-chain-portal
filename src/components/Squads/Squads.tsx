@@ -49,16 +49,6 @@ export const Squads = () => {
   }
 
 
-  const handleCopyAddress = (address: string) => {
-    console.log(`Copied address: ${address}`);
-    // You can add toast notification here
-  };
-
-  const handleInviteMembers = () => {
-    console.log('Invite members clicked');
-    // You can open a modal or navigate to invite page
-  };
-
   return (
     <Box
       display="flex"
@@ -150,8 +140,6 @@ export const Squads = () => {
       >
         <SquadSection
           squadData={squadsDetails}
-          onInviteMembers={handleInviteMembers}
-          onCopyAddress={handleCopyAddress}
           refetchSquadsDetails={refetchSquadsDetails}
         />
       </Box>

@@ -6,7 +6,7 @@ import { useGetAllInvites } from "../../../queries";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { device } from "../../../config/globals";
 
-import { Box, Text, Copy, Button } from "../../../blocks"
+import { Box, Text, Copy, Button, Spinner } from "../../../blocks"
 
 
 type InviteCodeRowProps = {
@@ -199,9 +199,24 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
         gap="spacing-xs"
         css={css`
             flex: 1;
+            width: 100%;
           `}
       >
-        {!inviteCodeDetails?.data?.invites?.length && !isLoading  && connectionStatus === "connected" ? (
+        {isLoading &&
+            <Box
+              width="100%"
+              height="100%"
+              alignItems="center"
+              justifyContent="center"
+              css={css`
+                  margin: auto auto;
+                  flex: 1;
+              `}>
+                <Spinner variant="primary" size="extraLarge" css={css`margin: auto auto;`} />
+          </Box>
+          }
+
+        {!isLoading && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && (
           <Button
             variant="outline"
             size="extraSmall"
@@ -215,17 +230,17 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           >
             Get Invite Codes
           </Button>
-        ) : (
-          inviteCodeDetails?.data?.invites?.map((invite, index) => (
-            <InviteCodeRow
-              key={index}
-              code={invite.code}
-              isUsed={invite.isUsed}
-              copiedCode={copiedCode}
-              onCopy={handleCopy}
-            />
-          ))
         )}
+
+        {!isLoading && inviteCodeDetails?.data?.invites?.map((invite, index) => (
+          <InviteCodeRow
+            key={index}
+            code={invite.code}
+            isUsed={invite.isUsed}
+            copiedCode={copiedCode}
+            onCopy={handleCopy}
+          />
+        ))}
       </Box>
     </Box>
   );

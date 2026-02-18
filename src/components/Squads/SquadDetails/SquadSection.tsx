@@ -11,23 +11,13 @@ import { useAuthHeaders } from "../../../context/authHeadersContext"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 
-type SquadMember = {
-  memberId: string;
-  joinDate: string;
-  xpCollected: number;
-  isCurrentUser?: boolean;
-}
-
-
 
 type SquadSectionProps = {
   squadData: any;
-  onInviteMembers?: () => void;
-  onCopyAddress?: (address: string) => void;
   refetchSquadsDetails: () => void;
 }
 
-export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetchSquadsDetails }: SquadSectionProps) => {
+export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionProps) => {
   const { authHeaders } = useAuthHeaders();
   const { universalAccount } = usePushWalletContext();
   const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
@@ -86,7 +76,7 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetc
       gap="spacing-md"
       width="100%"
     >
-      <SquadHeader squadData={squadData} onInviteMembers={onInviteMembers} />
+      <SquadHeader squadData={squadData} />
 
       {!squadData &&
         getSquadsPendingInvites?.data?.length > 0 &&
@@ -222,7 +212,6 @@ export const SquadSection = ({ squadData, onInviteMembers, onCopyAddress, refetc
           members={squadData?.data.squadMembers}
           leaderId={squadData?.data.leaderId}
           currentUserId={seasonThreeUserDetails?.userId}
-          onCopyAddress={onCopyAddress}
         />
      </>}
     </Box>
