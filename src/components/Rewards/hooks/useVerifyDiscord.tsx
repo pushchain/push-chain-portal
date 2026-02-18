@@ -68,7 +68,7 @@ const useVerifyDiscord = ({
   const handleConnect = (userId: string) => {
     const clientID = appConfig.discord_client_id;
     const baseURL = import.meta.env.VITE_PR_PREVIEW_BASE // GitHub PR Preview
-      ? `https://push-protocol.github.io/push-website/pr-preview/${import.meta.env.VITE_PR_PREVIEW_BASE}`
+      ? `https://pushchain.github.io/push-chain-portal/pr-preview/${import.meta.env.VITE_PR_PREVIEW_BASE}`
       : window.location.origin;
     const redirectURI = `${baseURL}/discord/verification`;
     const scope = "identify email guilds.members.read";
