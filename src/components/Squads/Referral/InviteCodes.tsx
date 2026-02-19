@@ -118,7 +118,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
 
   const { authHeaders } = useAuthHeaders();
   const { connectionStatus } = usePushWalletContext();
-  const { data: inviteCodeDetails, isLoading } = useGetAllInvites(authHeaders);
+  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(authHeaders);
 
   const handleCopy = async (code: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -202,7 +202,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
             width: 100%;
           `}
       >
-        {isLoading &&
+        {(isLoading || !isSuccess) &&
             <Box
               width="100%"
               height="100%"
@@ -216,7 +216,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           </Box>
           }
 
-        {!isLoading && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && (
+        {isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && (
           <Button
             variant="outline"
             size="extraSmall"
@@ -232,7 +232,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           </Button>
         )}
 
-        {!isLoading && inviteCodeDetails?.data?.invites?.map((invite, index) => (
+        {isSuccess && inviteCodeDetails?.data?.invites?.map((invite, index) => (
           <InviteCodeRow
             key={index}
             code={invite.code}
