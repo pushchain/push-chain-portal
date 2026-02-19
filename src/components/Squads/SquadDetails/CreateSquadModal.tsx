@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { css } from "styled-components";
+import { AxiosError } from "axios";
 import { useCreateSquad, useGetSquadsDetails } from "../../../queries/hooks";
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
@@ -42,7 +43,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
           refetch();
           onClose();
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
           setError(err?.response?.data?.message || "Failed to create squad");
         },
       }

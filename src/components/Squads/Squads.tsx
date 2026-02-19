@@ -41,7 +41,7 @@ export const Squads = () => {
           refetch();
 
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           console.log("Error in creating activity", error);
         },
       },

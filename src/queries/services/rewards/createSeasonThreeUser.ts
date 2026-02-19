@@ -1,8 +1,9 @@
 import axios from "axios";
 import { createSeasonThreeUserModel } from "../../models";
 import { getSeasonThreeBaseURL } from "../../baseURL";
+import { CreateSeasonThreeUserPayload } from "../../types";
 
-export const createSeasonThreeUser = (payload: any) =>
+export const createSeasonThreeUser = (payload: CreateSeasonThreeUserPayload) =>
   axios({
     method: "POST",
     url: `${getSeasonThreeBaseURL()}/v3/users`,

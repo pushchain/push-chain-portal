@@ -2,9 +2,12 @@ import { css } from "styled-components"
 import { Box, Text, Copy } from "../../../blocks"
 import { device } from "../../../config/globals"
 import { fullCAIP10ToWallet, shortenText } from "../../../helpers/web3helper";
+import { SquadsDetailsResponse } from "../../../queries/types/squads";
+
+type SquadMemberItem = SquadsDetailsResponse['data']['squadMembers'][number];
 
 type MemberRowProps = {
-  member: any;
+  member: SquadMemberItem;
   isHighlighted: boolean;
   onCopyAddress?: (address: string) => void;
 }
@@ -122,7 +125,7 @@ const MemberRow = ({ member, isHighlighted, onCopyAddress }: MemberRowProps) => 
 };
 
 type SquadMembersTableProps = {
-  members: any;
+  members: SquadMemberItem[];
   leaderId?: string;
   currentUserId?: string;
 }

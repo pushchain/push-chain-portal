@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
+import { AxiosError } from "axios";
 import { useResolveWallet, useSendSquadInvite } from "../../../queries/hooks";
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
@@ -79,13 +80,13 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
                 setChainId(CHAIN_OPTIONS[0].value);
                 onClose();
               },
-              onError: (err: any) => {
+              onError: (err: AxiosError<{ message?: string }>) => {
                 setError(err?.response?.data?.message || "Failed to send invite");
               },
             }
           );
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
           setError(err?.response?.data?.message || "Could not resolve wallet address");
         },
       }

@@ -26,13 +26,17 @@ export type SquadsDetailsResponse = {
     leader: {
       userId: string;
       userWallet: string;
-      [key: string]: any;
+      xp: number;
     };
     squadMembers: Array<{
       id: string;
       squadId: string;
       userId: string;
-      [key: string]: any;
+      joinedAt: string;
+      user: {
+        userWallet: string;
+        xp: number;
+      };
     }>;
   };
 };

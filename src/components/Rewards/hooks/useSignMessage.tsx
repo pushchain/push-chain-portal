@@ -5,9 +5,20 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
 
+interface SiweMessageData {
+  domain: string;
+  address: string;
+  uri: string;
+  version: string;
+  chainId: string;
+  nonce: string;
+  issuedAt: string;
+  [key: string]: string;
+}
+
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: any;
+  messageToSend?: SiweMessageData;
   error?: string;
   isLoading: boolean;
 }
@@ -18,7 +29,7 @@ export const useSignMessageWithEthereum = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const signMessage = useCallback(
-    async (extraData?: any): Promise<SignMessageResult> => {
+    async (extraData?: Record<string, string>): Promise<SignMessageResult> => {
       setIsLoading(true);
 
       try {

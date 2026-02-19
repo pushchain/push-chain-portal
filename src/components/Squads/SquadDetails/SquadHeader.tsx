@@ -7,9 +7,10 @@ import { InviteMemberModal } from "./InviteMemberModal"
 import { useGetSeasonThreeUserByWallet } from "../../../queries"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
+import { SquadsDetailsResponse } from "../../../queries/types/squads"
 
 type SquadHeaderProps = {
-  squadData?: any;
+  squadData?: SquadsDetailsResponse;
 }
 
 

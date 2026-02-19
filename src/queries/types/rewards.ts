@@ -94,7 +94,7 @@ export type ClaimRewardsActivityProps = {
 
 export type RewardActivityStatusProps = {
   userId: string;
-  activities: any;
+  activities: string[];
 };
 
 export type PointsVaultUserLoginProps = {
@@ -437,6 +437,21 @@ export interface SpinTheWheelResponse {
   };
 }
 
+export type ClaimSeasonThreePayload = {
+  userWallet: string;
+  discordEmail: string;
+  discordUsername: string;
+  data: Record<string, string>;
+  verificationProof: string;
+};
+
+export type ClaimSeasonThreeResponse = {
+  success: boolean;
+  created: boolean;
+  status?: string;
+  user?: UserRewardsDetailResponse;
+};
+
 export type CreateSeasonThreeUserPayload = {
   userWallet: string;
   userUEAWallet?: string;
@@ -444,7 +459,7 @@ export type CreateSeasonThreeUserPayload = {
   inviteCodeUsed?: string;
   phase?: string;
   verificationProof: string;
-  data: any;
+  data: Record<string, string>;
 };
 
 export interface CreateSeasonThreeUserResponse {

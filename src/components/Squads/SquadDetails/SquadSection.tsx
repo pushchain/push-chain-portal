@@ -10,10 +10,10 @@ import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite,
 import { useAuthHeaders } from "../../../context/authHeadersContext"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
-
+import { SquadsDetailsResponse } from "../../../queries/types/squads"
 
 type SquadSectionProps = {
-  squadData: any;
+  squadData?: SquadsDetailsResponse;
   refetchSquadsDetails: () => void;
 }
 
