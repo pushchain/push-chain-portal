@@ -1,5 +1,5 @@
-import { AcceptSquadInviteResponse } from "../../types/squads";
+import { Squad } from "../../types/squads";
 
 export const acceptSquadInviteModel = (
-  response: any
-): AcceptSquadInviteResponse => response;
+  response: Squad
+): Squad => response;

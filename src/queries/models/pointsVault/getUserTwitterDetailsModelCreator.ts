@@ -1,4 +1,4 @@
-import { UserTwitterDetailsModelledResponse, UserTwitterDetailsResponse } from 'queries/types';
+import { UserTwitterDetailsModelledResponse, UserTwitterDetailsResponse } from "../../types";
 
 export const getUserTwitterDetailsModelCreator = (
   response: UserTwitterDetailsResponse

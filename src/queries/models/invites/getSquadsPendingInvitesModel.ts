@@ -1,1 +1,3 @@
-export const getSquadsPendingInvitesModel = (response: any): any => response;
+import { PendingSquadInvite } from "../../types";
+
+export const getSquadsPendingInvitesModel = (response: PendingSquadInvite): PendingSquadInvite => response;

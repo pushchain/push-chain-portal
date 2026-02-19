@@ -41,8 +41,6 @@ const getLevelProgress = (level: number, totalXp: number) => {
     ? Math.min((totalXp / xpNeededForLevel) * 100, 100)
     : 0;
 
-  console.log(xpNeededForLevel, xpInLevel, progressPercent)
-
   return {
     xpInLevel,
     xpNeededForLevel,

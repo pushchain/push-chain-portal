@@ -56,25 +56,86 @@ export type SendSquadInviteResponse = {
   squadId: string;
 };
 
-// Accept Squad Invite
 export type AcceptSquadInviteParams = {
   inviteId: string;
 };
 
-export type AcceptSquadInviteResponse = {
-  success: boolean;
-};
+export interface SquadInvite {
+  id: string;
+  squadId: string;
+  inviterId: string;
+  inviteeId: string;
+  inviter?: {
+    userId: string;
+    userWallet: string;
+  };
+  invitee?: {
+    userId: string;
+    userWallet: string;
+  };
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED' | 'CANCELLED';
+  respondedAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
-// Reject Squad Invite
+export interface PendingSquadInvite extends SquadInvite {
+  squad: {
+    id: string;
+    name: string | null;
+    leaderId: string;
+    memberCount: number;
+    maxMembers: number;
+    isLocked: boolean;
+    status: string;
+    totalXPSquad: number;
+    squadLevel: number;
+    squadLuckProb: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  inviter: {
+    userId: string;
+    userWallet: string;
+  };
+  invitee: {
+    userId: string;
+    userWallet: string;
+  };
+}
+
+export interface Squad {
+  id: string;
+  name: string | null;
+  leaderId: string;
+  leader?: {
+    userId: string;
+    userWallet: string;
+    totalPoints: number;
+  };
+  squadMembers: SquadMember[];
+  memberCount: number;
+  maxMembers: number;
+  isLocked: boolean;
+  totalXP?: number;
+  totalXPSquad?: number; // Sum of all member XP (updated via background job)
+  squadLevel?: number; // Squad level (0-10 based on totalXPSquad and memberCount)
+  squadLuckProb?: number; // Luck probability % (0.5, 0.8, 1.2, 1.5)
+  luckBuffLevel?: number;
+  todayCheckInCount: number;
+  lastCheckInDate: string | null;
+  perfectCheckInDays: number;
+  status: 'ACTIVE' | 'DISBANDED';
+  invites?: SquadInvite[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type RejectSquadInviteParams = {
   inviteId: string;
 };
 
-export type RejectSquadInviteResponse = {
-  success: boolean;
-};
-
-// Squads Leaderboard
 export type SquadsLeaderboardParams = {
   order?: string;
   pageSize?: number;
@@ -91,8 +152,11 @@ export type SquadLeaderboardEntry = {
 };
 
 export type SquadsLeaderboardResponse = {
-  squads: SquadLeaderboardEntry[];
-  page: number;
-  pageSize: number;
-  total: number;
+  squads: Squad[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
 };

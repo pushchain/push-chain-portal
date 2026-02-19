@@ -3,7 +3,11 @@ import { createSquadModel } from "../../models";
 import { AuthHeaders } from "../../types";
 import { getSeasonThreeBaseURL } from "../../baseURL";
 
-export const createSquad = (params, authHeaders: AuthHeaders) =>
+export interface CreateSquadRequest {
+  name?: string;
+}
+
+export const createSquad = (params: CreateSquadRequest, authHeaders: AuthHeaders) =>
   axios({
     method: "POST",
     url: `${getSeasonThreeBaseURL()}/api/v3/user/squads`,

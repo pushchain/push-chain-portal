@@ -1,5 +1,5 @@
-import { GetAllInvitesResponse } from "../../types/invites";
+import { UserInvitesResponse } from "../../types/invites";
 
 export const getAllInvitesModel = (
-  response: any
-): GetAllInvitesResponse => response;
+  response: UserInvitesResponse
+): UserInvitesResponse => response;

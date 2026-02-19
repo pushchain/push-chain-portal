@@ -1,5 +1,5 @@
 import { ClaimDailyRewardsSeasonThreeResponse } from "../../types/rewards";
 
 export const claimDailyRewardsSeasonThreeModel = (
-  response: any
+  response: ClaimDailyRewardsSeasonThreeResponse
 ): ClaimDailyRewardsSeasonThreeResponse => response;

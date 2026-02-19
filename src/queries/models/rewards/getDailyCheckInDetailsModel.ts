@@ -1,5 +1,5 @@
 import { DailyCheckInDetailsResponse } from "../../types/rewards";
 
 export const getDailyCheckInDetailsModel = (
-  response: any
+  response: DailyCheckInDetailsResponse
 ): DailyCheckInDetailsResponse => response;

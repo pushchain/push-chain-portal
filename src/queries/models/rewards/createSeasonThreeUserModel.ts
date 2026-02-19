@@ -1,5 +1,5 @@
 import { CreateSeasonThreeUserResponse } from "../../types/rewards";
 
 export const createSeasonThreeUserModel = (
-  response: any
+  response: CreateSeasonThreeUserResponse
 ): CreateSeasonThreeUserResponse => response;

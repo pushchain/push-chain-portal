@@ -1,5 +1,5 @@
 import { LevelProgressResponse } from "../../types/rewards";
 
 export const getLevelProgressModel = (
-  response: any
+  response: LevelProgressResponse
 ): LevelProgressResponse => response;

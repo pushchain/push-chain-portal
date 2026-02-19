@@ -1,5 +1,5 @@
-import { RequestInviteCodeResponse } from "../../types/invites";
+import { RequestInviteCodesResponse } from "../../types/invites";
 
 export const requestInviteCodeModel = (
-  response: any
-): RequestInviteCodeResponse => response;
+  response: RequestInviteCodesResponse
+): RequestInviteCodesResponse => response;

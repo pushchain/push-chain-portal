@@ -1,5 +1,5 @@
-import { CreateSquadResponse } from "../../types/squads";
+import { Squad } from "../../types";
 
 export const createSquadModel = (
-  response: any
-): CreateSquadResponse => response;
+  response: Squad
+): Squad => response;

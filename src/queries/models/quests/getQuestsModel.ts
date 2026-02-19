@@ -1,5 +1,5 @@
 import { QuestsResponse } from "../../types/quests";
 
 export const getQuestsModel = (
-  response: any
+  response: QuestsResponse
 ): QuestsResponse => response;

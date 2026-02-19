@@ -1,19 +1,23 @@
-export type Quest = {
+export type AppStatus = 'ENABLED' | 'DISABLED';
+export type QuestStatus = 'ENABLED' | 'DISABLED';
+export type QuestFrequency = 'ONCE' | 'REPEATABLE';
+
+export interface Quest {
   id: string;
   appId: string;
   questIndex: number;
   title: string;
-  description: string;
+  description?: string | null;
   baseXP: number;
   basePoints: number;
   verificationHandler: string;
-  frequency: "ONCE" | "REPEATABLE";
+  frequency: QuestFrequency;
   requiresUniqueData: boolean;
-  status: "ENABLED" | "DISABLED";
+  status: QuestStatus;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
-};
+}
 
 export type QuestsResponse = {
   success: boolean;

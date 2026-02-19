@@ -22,7 +22,6 @@ type UseDiscordActivityVerificationProps = {
 };
 
 const useVerifySeasonThree = ({
-  activityTypeId,
   setErrorMessage,
 }: UseDiscordActivityVerificationProps) => {
   const token = localStorage.getItem("access_token");

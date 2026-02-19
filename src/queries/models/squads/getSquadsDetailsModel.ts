@@ -1,5 +1,5 @@
-import { SquadsDetailsResponse } from "../../types/squads";
+import { Squad } from "../../types/squads";
 
 export const getSquadsDetailsModel = (
-  response: any
-): SquadsDetailsResponse => response;
+  response: Squad | null
+): Squad | null => response;

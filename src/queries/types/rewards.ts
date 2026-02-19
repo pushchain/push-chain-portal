@@ -1,5 +1,5 @@
 export type AuthHeaders = {
-  message: any;
+  message: string;
   signature: string;
   walletAddress: string;
 };
@@ -402,12 +402,40 @@ export type SpinStatusResponse = {
   userPoints: number;
   totalLifetimeSpins: number;
   rarePassCount: number;
-  squadInfo: any;
+  squadInfo?: {
+    isInSquad: boolean;
+    squadLevel?: number;
+    squadLuckProb?: number;
+  };
   needsReset: boolean;
   resetsAt: string;
 };
 
-export type SpinTheWheelResponse = any;
+export interface SpinTheWheelResponse {
+  success: boolean;
+  spinNumber: number;
+  spinCost: number;
+  slotId: number;
+  rewardType: string;
+  rewardValue: number;
+  rewardLabel: string;
+  rewardDetails?: {
+    xpMultiplierAwarded?: number;
+    xpMultiplierExpiresAt?: string;
+    pointsAwarded?: number;
+    pcTokensAwarded?: number;
+    rarePassAwarded?: boolean;
+  };
+  remainingSpins: number;
+  nextSpinCost: number;
+  userState: {
+    totalPoints: number;
+    cachePCTokens: number;
+    rareActiveCount: number;
+    tempXPMultiplier?: number;
+    tempXPMultiplierExpiresAt?: string;
+  };
+}
 
 export type CreateSeasonThreeUserPayload = {
   userWallet: string;
@@ -419,18 +447,30 @@ export type CreateSeasonThreeUserPayload = {
   data: any;
 };
 
-export type CreateSeasonThreeUserResponse = any;
+export interface CreateSeasonThreeUserResponse {
+  userId: string;
+  userWallet: string;
+  userUEAWallet?: string;
+  phase: string;
+  createdAt: string;
+}
 
-export type DailyCheckInDetailsResponse = {
+export interface DailyCheckInDetailsResponse {
   success: boolean;
   streak: number;
-  lastCheckIn: any | null;
+  lastCheckIn: string;
   canCheckInToday: boolean;
-  nextCheckInAvailable: any | null;
-  [key: string]: any;
-};
+  nextCheckInAvailable: string;
+}
 
-export type ClaimDailyRewardsSeasonThreeResponse = any;
+export interface ClaimDailyRewardsSeasonThreeResponse {
+  success: boolean;
+  streak: number;
+  points: number;
+  xp: number;
+  isStreakReset: boolean;
+  message: string;
+}
 
 export type LevelConfigItem = {
   level: number;

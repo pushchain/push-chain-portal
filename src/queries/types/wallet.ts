@@ -1,3 +1,5 @@
+import { SeasonThreeUserByWalletResponse } from "./rewards";
+
 export type ResolveWalletParams = {
   chainId: string;
   walletAddress: string;
@@ -5,8 +7,5 @@ export type ResolveWalletParams = {
 
 export type ResolveWalletResponse = {
   success: boolean;
-  data: {
-    userId: string;
-    [key: string]: any;
-  };
+  data: SeasonThreeUserByWalletResponse;
 };

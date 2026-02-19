@@ -1,5 +1,5 @@
 import { ResolveWalletResponse } from "../../types/wallet";
 
 export const resolveWalletModel = (
-  response: any
+  response: ResolveWalletResponse
 ): ResolveWalletResponse => response;

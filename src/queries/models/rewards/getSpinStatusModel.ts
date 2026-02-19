@@ -1,5 +1,5 @@
 import { SpinStatusResponse } from "../../types/rewards";
 
 export const getSpinStatusModel = (
-  response: any
+  response: SpinStatusResponse
 ): SpinStatusResponse => response;

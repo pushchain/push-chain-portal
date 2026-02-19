@@ -1,5 +1,5 @@
-import { RejectSquadInviteResponse } from "../../types/squads";
+import { SquadInvite } from "../../types/squads";
 
 export const rejectSquadInviteModel = (
-  response: any
-): RejectSquadInviteResponse => response;
+  response: SquadInvite
+): SquadInvite => response;
