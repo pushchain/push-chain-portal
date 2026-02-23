@@ -106,7 +106,14 @@ export type PointsVaultUserLoginPayload = {
 };
 
 export type ClaimActivitesResponse = {
-  status: "COMPLETED" | "PENDING";
+  success: boolean;
+    data?: {
+      activityId?: string;
+      status?: string;
+      points?: number;
+      multiplier?: number;
+      createdAt?: string;
+    };
 };
 
 export type DiscordDetails = {

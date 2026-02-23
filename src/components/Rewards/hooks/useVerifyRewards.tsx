@@ -104,7 +104,7 @@ const useVerifyRewards = ({
       },
       {
         onSuccess: (response) => {
-          if (response.status === "COMPLETED") {
+          if (response.data.status === "COMPLETED") {
             setRewardsActivityStatus("Claimed");
             // if (setCurrentLevel) {
             //   setCurrentLevel(activityTypeId);
@@ -113,7 +113,7 @@ const useVerifyRewards = ({
             refetchUserDetails();
             setVerifyingRewards(false);
           }
-          if (response.status === "PENDING") {
+          if (response.data.status === "PENDING") {
             setRewardsActivityStatus("Pending");
             refetchActivity();
             setVerifyingRewards(false);
@@ -122,8 +122,8 @@ const useVerifyRewards = ({
         onError: (error: any) => {
           console.log("Error in creating activity", error);
           setVerifyingRewards(false);
-          if (error.name) {
-            setErrorMessage(error.response.data.error);
+          if (error?.name) {
+            setErrorMessage(error?.response?.data?.error);
           }
         },
       },

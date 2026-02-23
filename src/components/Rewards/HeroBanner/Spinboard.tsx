@@ -62,10 +62,17 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
         currentRotation.current = actualRotation;
       }
 
-      const slotAngle = 36;
-      const targetAngle = -(slotId * slotAngle);
+      // 10 slots, 36° each. Position = slotId % 10.
+      // At 0° rotation, stopper points at center of position 0 (RARE PASS / slotId 10).
+      // Wheel rotates clockwise (positive), but stopper moves counter-clockwise through slots,
+      // so to land on position p we need: finalRotation % 360 = (360 - p * 36) % 360
+      const position = slotId % 10;
+      const targetMod = (360 - position * 36) % 360;
+
+      // Round current rotation up to the next multiple of 360, then add targetMod + extra spins
+      const base = Math.ceil(currentRotation.current / 360) * 360;
       const fullSpins = (Math.floor(Math.random() * 2) + 3) * 360;
-      const finalRotation = currentRotation.current + fullSpins + targetAngle;
+      const finalRotation = base + fullSpins + targetMod;
 
       landTween.current = gsap.to(wheelRef.current, {
         rotation: finalRotation,

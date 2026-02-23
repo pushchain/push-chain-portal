@@ -13,7 +13,8 @@ interface SiweMessageData {
   chainId: string;
   nonce: string;
   issuedAt: string;
-  [key: string]: string;
+  discord?: string;
+  discord_token?: string;
 }
 
 interface SignMessageResult {

@@ -134,7 +134,8 @@ const useVerifyDiscord = ({
           },
           {
             onSuccess: (response) => {
-              if (response.status === "COMPLETED") {
+              console.log(response)
+              if (response.data.status === "COMPLETED") {
                 setDiscordActivityStatus("Claimed");
                 refetchActivity();
                 refetchUserDetails();
@@ -145,8 +146,9 @@ const useVerifyDiscord = ({
             onError: (error: any) => {
               console.log("Error in creating activity", error);
               setVerifyingDiscord(false);
-              if (error.name) {
-                setErrorMessage(error.response.data.error);
+              const rawMessage = error?.response?.data?.error?.message;
+              if (rawMessage) {
+                setErrorMessage(rawMessage);
               }
             },
           },

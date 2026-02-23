@@ -3,12 +3,14 @@ import { css } from 'styled-components';
 
 import Spinboard, { SpinboardHandle } from './Spinboard';
 import { useSpinStatus } from '../hooks/useSpinStatus';
-import { useSpinTheWheel } from '../../../queries/hooks';
+import { useGetSeasonThreeUserByWallet, useSpinTheWheel } from '../../../queries/hooks';
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
 import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } from '../../../blocks';
 import { Image } from '../../../css/SharedStyling';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 type SpinToWinModalProps = {
   isOpen: boolean;
@@ -50,9 +52,19 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const [showResult, setShowResult] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
+  const { universalAccount } = usePushWalletContext();
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
   const spinboardRef = useRef<SpinboardHandle>(null);
 
   const { spinStatus, authHeaders, refetch } = useSpinStatus();
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  })
   const { mutate: spin } = useSpinTheWheel();
 
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
@@ -109,6 +121,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
         spinboardRef.current?.landOn(slotId);
         setWonPrize(getPrizeBySlotId(slotId) ?? null);
         refetch();
+        refetchUserDetails();
       },
       onError: () => {
         spinboardRef.current?.stopSpin();
@@ -183,7 +196,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     return {
       label: `Spin The Wheel (${nextSpinCost} Points)`,
       onClick: handleSpinClick,
-      disabled: false };
+      disabled: false
+    };
   };
 
   const buttonConfig = getButtonConfig();
@@ -299,6 +313,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             Check back tomorrow for new spins
           </Text>
         )}
+
       </Box>
     </Modal>
   );

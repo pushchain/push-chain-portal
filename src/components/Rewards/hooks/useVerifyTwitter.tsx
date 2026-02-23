@@ -177,13 +177,13 @@ const useVerifyTwitter = ({
           },
           {
             onSuccess: (response) => {
-              if (response.status === "COMPLETED") {
+              if (response.data.status === "COMPLETED") {
                 setTwitterActivityStatus("Claimed");
                 refetchActivity();
                 refetchUserDetails();
                 setVerifyingTwitter(false);
               }
-              if (response.status === "PENDING") {
+              if (response.data.status === "PENDING") {
                 setTwitterActivityStatus("Pending");
                 refetchActivity();
                 setVerifyingTwitter(false);
@@ -195,9 +195,7 @@ const useVerifyTwitter = ({
 
               const rawMessage = error?.response?.data?.error?.message;
               setErrorMessage(formatTwitterVerificationError(rawMessage));
-              // if (error.name) {
-              //   setErrorMessage(error.response.data.error);
-              // }
+
             },
           },
         );
