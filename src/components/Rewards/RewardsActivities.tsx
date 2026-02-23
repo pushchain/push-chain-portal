@@ -29,7 +29,7 @@ const RewardsActivities = () => {
         margin={{initial: "spacing-sm spacing-none", lp: "spacing-none"}}
         gap="spacing-xxs"
         css={css`
-          z-index: 999;
+          z-index: 99;
 
           &:before,
           &:after {
