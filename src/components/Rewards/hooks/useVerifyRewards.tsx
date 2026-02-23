@@ -104,7 +104,8 @@ const useVerifyRewards = ({
       },
       {
         onSuccess: (response) => {
-          if (response.data.status === "COMPLETED") {
+          // TODO: fix this later
+          if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
             setRewardsActivityStatus("Claimed");
             // if (setCurrentLevel) {
             //   setCurrentLevel(activityTypeId);
@@ -113,7 +114,7 @@ const useVerifyRewards = ({
             refetchUserDetails();
             setVerifyingRewards(false);
           }
-          if (response.data.status === "PENDING") {
+          if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
             setRewardsActivityStatus("Pending");
             refetchActivity();
             setVerifyingRewards(false);
