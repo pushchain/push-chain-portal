@@ -251,7 +251,7 @@ export const PreLaunchHeader = ({
                   )}
                 </Skeleton>
               ) : (
-                       <PushUniversalAccountButton />
+               <PushUniversalAccountButton />
               )}
               </Box>
             </Box>

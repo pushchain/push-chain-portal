@@ -7,8 +7,7 @@ import { PreLaunchBenefits } from "./PreLaunchBenefits"
 import { PreLaunchDivider } from "./PreLaunchDivider"
 import { useVerifySeasonThree } from "../Rewards/hooks/useVerifySeasonThree"
 
-import { useGetSeasonOneUserDetails, useGetUserEligibilityForPreLaunch, useGetUserRewardsDetails } from "../../queries"
-import { walletToFullCAIP10, walletToPCAIP10 } from "../../helpers/web3helper"
+import { useGetUserEligibilityForPreLaunch } from "../../queries"
 
 import { Box, Skeleton } from "../../blocks"
 
@@ -16,26 +15,6 @@ import { Box, Skeleton } from "../../blocks"
 export const PreLaunch = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext();
-
-
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
-
-
-  const p10WalletAddress = walletToPCAIP10(
-    universalAccount?.address as string,
-  );
-
-  const { data: userRewardsDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
-  });
-
-  const { data: userSeasonOneRewardsDetails } = useGetSeasonOneUserDetails({
-    caip10WalletAddress: p10WalletAddress,
-  });
-
 
   const { data: userEligibilityData, isLoading: isLoadingUserEligibility} = useGetUserEligibilityForPreLaunch({
     address: universalAccount?.address
@@ -54,7 +33,7 @@ export const PreLaunch = () => {
   const isUserDataLoading =
     isLoadingUserEligibility;
   const isUserVerified = !isUserDataLoading && (
-    verificationSuccess || userEligibilityData?.discordVerified || userEligibilityData?.discordVerified);
+    verificationSuccess || userEligibilityData?.discordVerified);
   const isUserEligible = !isUserDataLoading &&
     (userEligibilityData?.exists);
 
