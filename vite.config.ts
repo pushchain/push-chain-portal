@@ -17,11 +17,6 @@ export default defineConfig({
     nodePolyfills(),
   ],
 
-  define: {
-    global: "globalThis",
-    historyApiFallback: true,
-  },
-
   server: {
     port: 3000,
   },
