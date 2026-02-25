@@ -10,17 +10,9 @@ import { getPreviewBasePath } from "./basePath";
 
 export default defineConfig({
   plugins: [
-    topLevelAwait(),
     react(),
-    svgr(),
-    viteTsconfigPaths({ root: "./" }),
     nodePolyfills(),
   ],
-
-  define: {
-    global: "globalThis",
-    historyApiFallback: true,
-  },
 
   server: {
     port: 3000,
@@ -32,10 +24,6 @@ export default defineConfig({
     outDir: "build",
     sourcemap: true,
     minify: false,
-
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
 
     rollupOptions: {
       input: {
