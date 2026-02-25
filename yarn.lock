@@ -2321,7 +2321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^2.1.0":
+"@lit/reactive-element@npm:2.1.2":
   version: 2.1.2
   resolution: "@lit/reactive-element@npm:2.1.2"
   dependencies:
@@ -2929,7 +2929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushchain/ui-kit@npm:^4.0.14":
+"@pushchain/ui-kit@npm:^4.1.0":
   version: 4.1.0
   resolution: "@pushchain/ui-kit@npm:4.1.0"
   dependencies:
@@ -12933,7 +12933,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:^4.2.0":
+"lit-element@npm:4.2.2":
   version: 4.2.2
   resolution: "lit-element@npm:4.2.2"
   dependencies:
@@ -12944,7 +12944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^3.3.0":
+"lit-html@npm:3.3.2":
   version: 3.3.2
   resolution: "lit-html@npm:3.3.2"
   dependencies:
@@ -12953,18 +12953,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:3.3.0":
-  version: 3.3.0
-  resolution: "lit@npm:3.3.0"
-  dependencies:
-    "@lit/reactive-element": "npm:^2.1.0"
-    lit-element: "npm:^4.2.0"
-    lit-html: "npm:^3.3.0"
-  checksum: 10c0/27e6d109c04c8995f47c82a546407c5ed8d399705f9511d1f3ee562eb1ab4bc00fae5ec897da55fb50f202b2a659466e23cccd809d039e7d4f935fcecb2bc6a7
-  languageName: node
-  linkType: hard
-
-"lit@npm:^3":
+"lit@npm:3.3.2":
   version: 3.3.2
   resolution: "lit@npm:3.3.2"
   dependencies:
@@ -14924,7 +14913,7 @@ __metadata:
     "@babel/runtime": "npm:^7.26.9"
     "@emotion/react": "npm:^11.14.0"
     "@metamask/eth-sig-util": "npm:^4.0.0"
-    "@pushchain/ui-kit": "npm:^4.0.14"
+    "@pushchain/ui-kit": "npm:^4.1.0"
     "@pushprotocol/push-chain": "npm:^0.1.7"
     "@pushprotocol/restapi": "npm:^1.7.31"
     "@pushprotocol/uiweb": "npm:1.7.1"
