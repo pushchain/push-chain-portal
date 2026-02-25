@@ -9,32 +9,76 @@ import path from "path";
 
 import { getPreviewBasePath } from "./basePath";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     topLevelAwait(),
     react(),
     svgr(),
-    viteTsconfigPaths({
-      root: "./",
-    }),
+    viteTsconfigPaths({ root: "./" }),
     nodePolyfills(),
     vitePluginRequire.default(),
   ],
+
   define: {
     global: "globalThis",
     historyApiFallback: true,
   },
+
+  resolve: {
+    dedupe: [
+      "@walletconnect/ethereum-provider",
+      "@walletconnect/modal",
+      "@walletconnect/sign-client",
+      "@walletconnect/universal-provider",
+      "@walletconnect/core",
+      "@walletconnect/utils",
+      "@walletconnect/jsonrpc-provider",
+      "@walletconnect/jsonrpc-utils",
+
+      "@web3modal/common",
+      "@web3modal/core",
+      "@web3modal/ui",
+
+      "lit",
+      "lit-html",
+      "lit-element",
+      "@lit/reactive-element",
+      "@lit-labs/motion",
+    ],
+  },
+
+  optimizeDeps: {
+    include: [
+      "@walletconnect/ethereum-provider",
+      "@walletconnect/modal",
+      "@walletconnect/sign-client",
+      "@walletconnect/universal-provider",
+      "@walletconnect/core",
+      "@walletconnect/utils",
+
+      "@web3modal/common",
+      "@web3modal/core",
+      "@web3modal/ui",
+
+      "lit",
+      "@lit/reactive-element",
+    ],
+  },
+
   server: {
     port: 3000,
   },
+
   base: getPreviewBasePath() || undefined,
+
   build: {
     outDir: "build",
     sourcemap: false,
+
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "index.html"),
