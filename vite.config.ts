@@ -14,6 +14,47 @@ export default defineConfig({
     nodePolyfills(),
   ],
 
+  resolve: {
+    dedupe: [
+      "@walletconnect/ethereum-provider",
+      "@walletconnect/modal",
+      "@walletconnect/sign-client",
+      "@walletconnect/universal-provider",
+      "@walletconnect/core",
+      "@walletconnect/utils",
+      "@walletconnect/jsonrpc-provider",
+      "@walletconnect/jsonrpc-utils",
+
+      "@web3modal/common",
+      "@web3modal/core",
+      "@web3modal/ui",
+
+      "lit",
+      "lit-html",
+      "lit-element",
+      "@lit/reactive-element",
+      "@lit-labs/motion",
+    ],
+  },
+
+  optimizeDeps: {
+    include: [
+      "@walletconnect/ethereum-provider",
+      "@walletconnect/modal",
+      "@walletconnect/sign-client",
+      "@walletconnect/universal-provider",
+      "@walletconnect/core",
+      "@walletconnect/utils",
+
+      "@web3modal/common",
+      "@web3modal/core",
+      "@web3modal/ui",
+
+      "lit",
+      "@lit/reactive-element",
+    ],
+  },
+
   server: {
     port: 3000,
   },
@@ -24,6 +65,8 @@ export default defineConfig({
     outDir: "build",
     sourcemap: true,
     minify: false,
+
+    commonjsOptions: { transformMixedEsModules: true, },
 
     rollupOptions: {
       input: {
