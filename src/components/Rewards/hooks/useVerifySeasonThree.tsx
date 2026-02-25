@@ -25,13 +25,12 @@ const useVerifySeasonThree = ({
   activityTypeId,
   setErrorMessage,
 }: UseDiscordActivityVerificationProps) => {
-  const token = localStorage.getItem("access_token");
 
   const [seasonThreeActivityStatus, setSeasonThreeActivityStatus] = useState<
     "Claimed" | null
   >(null);
   const [verifyingSeasonThree, setVerifyingSeasonThree] = useState(
-    token ? true : false,
+    false
   );
   const [verificationSuccess, setVerificationSuccess] = useState(false);
 
