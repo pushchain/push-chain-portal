@@ -20,5 +20,12 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        rewards: path.resolve(__dirname, "rewards.html"),
+      },
+    },
   },
 });
