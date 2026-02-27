@@ -118,7 +118,7 @@ const useVerifyDiscord = ({
             return;
           }
           verificationProof = signature;
-          messageToSend = signedMessage;
+          messageToSend = signedMessage as typeof messageToSend;
         }
 
         localStorage.removeItem("access_token");

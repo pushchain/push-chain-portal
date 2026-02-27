@@ -76,7 +76,7 @@ const useVerifyRewards = ({
       chainId == WalletChainType.ETH;
 
     let verificationProof = "abcd";
-    let messageToSend = "";
+    let messageToSend: Record<string, string> | "" = "";
 
     if (isSupportedChain) {
       const {
@@ -92,7 +92,7 @@ const useVerifyRewards = ({
       }
 
       verificationProof = signature;
-      messageToSend = signedMessage;
+      messageToSend = signedMessage as Record<string, string>;
     }
 
     claimRewardsActivity(

@@ -6,6 +6,7 @@ import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
 
 interface SiweMessageData {
+  [key: string]: string | undefined;
   domain: string;
   address: string;
   uri: string;
@@ -15,6 +16,7 @@ interface SiweMessageData {
   issuedAt: string;
   discord?: string;
   discord_token?: string;
+  twitter?: string;
 }
 
 interface SignMessageResult {
