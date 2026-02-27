@@ -77,19 +77,33 @@ export const PreLaunchHeader = ({
           `}
         />
 
+        <>
+        <Box css={css`position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: 150px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
         {!isMobile && (<>
-        <Box css={css`position: absolute; bottom: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;`}>
+        <Box css={css`position: absolute; bottom: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end; justify-content: flex-end;`}>
           <GlowStreaks />
         </Box>
 
-        <Box css={css`position: absolute; bottom: -50px; left: 150px; width: 100%; height: 100%; pointer-events: none; z-index: 0;`}>
+        <Box css={css`position: absolute; bottom: 0; right: 150px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end; justify-content: flex-end;`}>
           <GlowStreaks />
         </Box>
 
-        <Box css={css`position: absolute; bottom: -50px; left: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0;`}>
+        <Box css={css`position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
           <GlowStreaks />
         </Box>
         </>)}
+        </>
 
         <Box
           display="flex"
@@ -251,7 +265,7 @@ export const PreLaunchHeader = ({
                   )}
                 </Skeleton>
               ) : (
-                       <PushUniversalAccountButton />
+               <PushUniversalAccountButton />
               )}
               </Box>
             </Box>

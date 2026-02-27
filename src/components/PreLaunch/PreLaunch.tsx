@@ -22,6 +22,7 @@ export const PreLaunch = () => {
   });
 
 
+
   const {
     verifyingSeasonThree,
     handleSeasonThreeVerification,
@@ -34,7 +35,7 @@ export const PreLaunch = () => {
   const isUserDataLoading =
     isLoadingUserEligibility;
   const isUserVerified = !isUserDataLoading && (
-    verificationSuccess || userEligibilityData?.discordVerified || userEligibilityData?.discordVerified);
+    verificationSuccess || userEligibilityData?.discordVerified);
   const isUserEligible = !isUserDataLoading &&
     (userEligibilityData?.exists);
 
