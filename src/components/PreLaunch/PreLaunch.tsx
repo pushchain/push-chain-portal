@@ -21,8 +21,6 @@ export const PreLaunch = () => {
   });
 
 
-  console.log(universalAccount)
-
 
   const {
     verifyingSeasonThree,
