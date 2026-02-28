@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 // third party libraries
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import {
   getAuth,
   signInWithPopup,
@@ -20,6 +20,8 @@ import {
 
 // helpers
 import appConfig from "../../../config";
+
+const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseConfig) : getApps()[0];
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { WalletChainType } from "../utils/wallet";
@@ -59,10 +61,8 @@ const useVerifyTwitter = ({
     setErrorMessage("");
   }, [setErrorMessage, account]);
 
-  initializeApp(appConfig.firebaseConfig);
-
   const provider = new TwitterAuthProvider();
-  const auth = getAuth();
+  const auth = getAuth(firebaseApp);
 
   const handleTwitterVerification = (userId: string) => {
     setUpdatedId(userId);
