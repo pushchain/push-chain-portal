@@ -1,8 +1,10 @@
 import { css } from "styled-components";
+import Lottie from "lottie-react";
 
 import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../blocks";
 
 import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
+import BoxAnimation from "../../../static/assets/website/rewards/box.json";
 
 export type LevelUpReward = {
   id: number;
@@ -77,7 +79,11 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
         </Box>
 
         <Box margin="spacing-sm spacing-none spacing-none spacing-none">
-          <LevelUpCart />
+            <Lottie
+              animationData={BoxAnimation}
+              loop
+              style={{ width: '220px', height: '220px' }}
+            />
         </Box>
 
         <Box

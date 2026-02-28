@@ -49,6 +49,7 @@
     "firebase": "^10.12.2",
     "formik": "^2.4.9",
     "gsap": "^3.14.1",
+    "lottie-react": "^2.4.1",
     "openpgp": "^5.5.0",
     "rc-pagination": "^5.1.0",
     "react": "^19.0.0",

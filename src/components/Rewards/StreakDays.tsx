@@ -1,4 +1,5 @@
 import { css } from "styled-components"
+import Lottie from "lottie-react"
 
 import { useGetDailyCheckInDetails } from "../../queries";
 import { useAuthHeaders } from "../../context/authHeadersContext";
@@ -6,6 +7,7 @@ import { useAuthHeaders } from "../../context/authHeadersContext";
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"
 import ActiveStreakBg from "../../../static/assets/website/rewards/active-streak.webp"
+import StreakFireAnimation from "../../../static/assets/website/rewards/streak-fire.json"
 
 export const StreakDays = () => {
   const { authHeaders } = useAuthHeaders();
@@ -44,20 +46,36 @@ export const StreakDays = () => {
               mask-composite: exclude;
             }
         `}>
-        <Box
-          css={css`
-            position: absolute;
-            bottom: 1px;
-            right: 1px;
-            width: 65%;
-            height: 65%;
-            background: url(${getDailyCheckInDetails?.streak > 0 ? ActiveStreakBg : StreakBg}) no-repeat bottom right;
-            background-size: contain;
-            pointer-events: none;
-            z-index: 0;
-            border-radius: inherit;
-          `}
-        />
+        {getDailyCheckInDetails?.streak > 0 ? (
+          <Lottie
+            animationData={StreakFireAnimation}
+            loop
+            rendererSettings={{ preserveAspectRatio: 'xMidYMax slice' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+        ) : (
+          <Box
+            css={css`
+              position: absolute;
+              bottom: 1px;
+              right: 1px;
+              width: 65%;
+              height: 65%;
+              background: url(${StreakBg}) no-repeat bottom right;
+              background-size: contain;
+              pointer-events: none;
+              z-index: 0;
+              border-radius: inherit;
+            `}
+          />
+        )}
 
         <Box
           css={css`

@@ -5,7 +5,6 @@ import { useAuthHeaders } from "../../context/authHeadersContext";
 import { useGetLevelProgress } from "../../queries";
 
 import { Box, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text } from "../../blocks"
-import { useRewardsContext } from "../../context/rewardsContext";
 import LevelUpModal from "./LevelUpModal";
 import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
 
