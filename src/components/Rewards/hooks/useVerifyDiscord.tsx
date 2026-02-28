@@ -90,6 +90,12 @@ const useVerifyDiscord = ({
       const token = localStorage.getItem("access_token");
       const username = localStorage.getItem("username");
 
+      if (!username || !token) {
+        setErrorMessage("Discord verification was not completed. Please try again.");
+        setVerifyingDiscord(false);
+        return;
+      }
+
       if (username && token) {
         let verificationProof = "abcd";
         let messageToSend = {
@@ -155,7 +161,7 @@ const useVerifyDiscord = ({
         );
       }
     },
-    [account],
+    [account, chainId, signMessage, claimRewardsActivity, updatedId, activityTypeId],
   );
 
   return {
