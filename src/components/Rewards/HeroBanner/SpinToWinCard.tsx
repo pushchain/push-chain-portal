@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Text } from '../../../blocks';
+import { Box, Button, Lock, Text } from '../../../blocks';
 import SpinToWinModal from './SpinToWinModal';
 import { useSpinStatus } from '../hooks/useSpinStatus';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
+import { useRewardsContext } from '../../../context/rewardsContext';
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { spinStatus } = useSpinStatus();
+  const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
 
   return (
@@ -131,7 +134,23 @@ const SpinToWinCard = () => {
 
           </Box>
 
-          <Button
+          {rewardsLocked && (
+            <Button
+              variant="outline"
+              size="small"
+              leadingIcon={<Lock />}
+              disabled
+              css={css`
+                width: 100%;
+                position: relative;
+                background: #000 !important;
+              `}
+            >
+              Locked
+            </Button>
+          )}
+
+          {!rewardsLocked && (<Button
             size="medium"
             variant="primary"
             onClick={() => {
@@ -143,7 +162,7 @@ const SpinToWinCard = () => {
             `}
           >
             Spin Now
-          </Button>
+          </Button>)}
         </Box>
       </Box>
 

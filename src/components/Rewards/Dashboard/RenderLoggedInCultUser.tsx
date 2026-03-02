@@ -35,7 +35,7 @@ export const RenderLoggedInCultUser = () => {
   );
 
   const discordActivity = {
-    icon: "follow_push_on_discord",
+    icon: "cult_follow_push_on_discord",
     activityTitle: "Join [Push Chain Discord](https://discord.com/invite/pushchain)",
     activityType: "follow_push_on_discord" as ActvityType,
     activityTypeId: "follow_push_on_discord",
