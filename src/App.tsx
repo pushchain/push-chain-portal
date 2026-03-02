@@ -232,10 +232,10 @@ const AppContent = () => {
         </Box>
       </Box>
 
-      {/*<InviteCodeModal
+      <InviteCodeModal
         isOpen={isInviteCodeModalOpen}
         onClose={() => setIsInviteCodeModalOpen(false)}
-      />*/}
+      />
     </Box>
   );
 };
@@ -271,13 +271,6 @@ function App() {
     login: {
       email: false,
       google: false,
-      phone: false,
-      socials: {
-        x: false,
-        github: false,
-        discord: false,
-        bluesky: false
-      },
       wallet: {
         enabled: true,
       },

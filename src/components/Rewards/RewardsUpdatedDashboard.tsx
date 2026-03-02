@@ -9,13 +9,30 @@ import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardsContext } from "../../context/rewardsContext";
+import { useGetUserCultStatus } from "../../queries";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
+import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCultStatus } = useGetUserCultStatus({
+    wallet: caip10WalletAddress
+  });
+
+
   const rewardsLocked = isLocked && !isLockedStatusLoading;
+
+  const isCultUser = userCultStatus == undefined;
+
+  console.log(isCultUser, 'user user');
 
   const renderLoggedOutState = () => (
     <Box
@@ -166,6 +183,10 @@ export const RewardsUpdatedDashboard = () => {
     <RenderLoggedInVerifiedState />
   );
 
+  const renderLoggedInCultUser = () => (
+    <RenderLoggedInCultUser />
+  );
+
   if (isWalletConnected && isLockedStatusLoading) {
     return (
       <Box
@@ -311,6 +332,9 @@ export const RewardsUpdatedDashboard = () => {
 
     );
   }
+
+  if (isWalletConnected && isCultUser)
+    return renderLoggedInCultUser();
 
   if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 
