@@ -36,6 +36,7 @@ import Header from "./structure/Header";
 import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
 import AdminPage from "./pages/AdminPage";
+import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
 import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
@@ -222,6 +223,10 @@ const AppContent = () => {
             <Route
               path="/rewards/leaderboard-s1"
               element={<LeaderBoardPage />}
+            />
+            <Route
+              path="/cult/leaderboard"
+              element={<CultLeaderboardPage />}
             />
             <Route
               path="/discord/verification"

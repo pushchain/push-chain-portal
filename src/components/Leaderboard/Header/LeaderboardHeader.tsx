@@ -6,7 +6,7 @@ import { css } from "styled-components";
 import { Box, Text } from "../../../blocks";
 import { device } from "../../../config/globals";
 
-const LeaderboardHeader: FC = () => {
+const LeaderboardHeader: FC = ({ title }) => {
 
   return (
     <Box
@@ -35,7 +35,7 @@ const LeaderboardHeader: FC = () => {
         font-weight: 700;
         line-height: 48px;
         `}>
-          Top the Leaderboards
+          {title || `Top the Leaderboards`}
       </Text>
 
       <Text variant="h4-regular" textAlign="center" css={css`

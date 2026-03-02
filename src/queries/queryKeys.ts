@@ -52,3 +52,4 @@ export const rarePassHistory = "rarePassHistory";
 export const pushWalletSybilCheck = "pushWalletSybilCheck";
 export const nextReshuffleFee = "nextReshuffleFee";
 export const userCultStatus = "userCultStatus";
+export const cultLeaderboard = "cultLeaderboard";

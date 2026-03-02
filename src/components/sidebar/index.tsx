@@ -51,6 +51,8 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     if (path.startsWith('/rewards/squads')) return 'squads';
     if (path.startsWith('/rewards/leaderboard')) return 'leaderboards';
     if (path.startsWith('/rewards/pre-launch')) return 'pre-launch';
+    if (path.startsWith('/cult/leaderboard')) return 'cult-leaderboard';
+
 
     return 'discover';
   };
@@ -118,7 +120,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
       route: '/cult'
     },
     {
-      id: 'cult-leaderboards',
+      id: 'cult-leaderboard',
       icon: Ranking,
       label: 'Cult Leaderboards',
       route: '/cult/leaderboard'

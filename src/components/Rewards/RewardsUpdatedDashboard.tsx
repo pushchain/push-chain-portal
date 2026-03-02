@@ -30,9 +30,7 @@ export const RewardsUpdatedDashboard = () => {
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-  const isCultUser = userCultStatus == undefined;
-
-  console.log(isCultUser, 'user user');
+  const isCultUser = userCultStatus?.data?.isCultMember;
 
   const renderLoggedOutState = () => (
     <Box
