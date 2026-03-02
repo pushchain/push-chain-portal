@@ -11,7 +11,7 @@ import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverif
 import { useRewardsContext } from "../../context/rewardsContext";
 
 export const RewardsUpdatedDashboard = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
@@ -136,7 +136,7 @@ export const RewardsUpdatedDashboard = () => {
           </Text>
         </Box>
 
-        <PushUniversalAccountButton />
+        <PushUniversalAccountButton uid='wallet1' />
       </Box>
       </Box>
 

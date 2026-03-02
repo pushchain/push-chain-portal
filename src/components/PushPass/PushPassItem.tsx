@@ -43,7 +43,7 @@ export const PushPassItem = () => {
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
   const characterId = generatedCharacterId || (routeId === "open" ? undefined : routeId);
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient();
 
   const caip10WalletAddress = walletToFullCAIP10(

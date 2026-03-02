@@ -11,7 +11,7 @@ export const useFilteredActivities = (
   activityIndexes: string[],
   filterType: "includes" | "startsWith" = "includes", // Default is "includes"
 ) => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
     account,
     universalAccount?.chain,

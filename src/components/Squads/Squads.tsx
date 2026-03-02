@@ -12,7 +12,7 @@ import { Box, Link, Text } from "../../blocks"
 
 
 export const Squads = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders } = useAuthHeaders();
 
   const caip10WalletAddress = walletToFullCAIP10(

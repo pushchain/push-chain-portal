@@ -62,7 +62,7 @@ const RewardsActivitiesListItem: FC<RewardActivitiesListItemProps> = ({
   isAllActivitiesLoading,
   refetchActivity,
 }) => {
-  const { universalAccount, connectionStatus } = usePushWalletContext();
+  const { universalAccount, connectionStatus } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
 
   const usersSingleActivity = allUsersActivity?.[activity?.activityType];

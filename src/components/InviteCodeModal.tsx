@@ -15,8 +15,8 @@ type InviteCodeModalProps = {
 };
 
 export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
-  const { universalAccount } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const { pushChainClient } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
   const { mutate: createUser, isPending } = useCreateSeasonThreeUser();

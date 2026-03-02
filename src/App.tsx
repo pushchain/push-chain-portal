@@ -116,7 +116,7 @@ const queryClient = new QueryClient({});
 
 const AppContent = () => {
   const location = useLocation();
-  const { connectionStatus, universalAccount } = usePushWalletContext();
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isInviteCodeModalOpen, setIsInviteCodeModalOpen] = useState(false);
 
@@ -232,10 +232,10 @@ const AppContent = () => {
         </Box>
       </Box>
 
-      <InviteCodeModal
+      {/*<InviteCodeModal
         isOpen={isInviteCodeModalOpen}
         onClose={() => setIsInviteCodeModalOpen(false)}
-      />
+      />*/}
     </Box>
   );
 };
@@ -243,6 +243,30 @@ const AppContent = () => {
 function App() {
 
   const walletConfig: ProviderConfigProps = {
+    uid: 'wallet1',
+    network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
+    login: {
+      email: false,
+      google: false,
+      wallet: {
+        enabled: true,
+      },
+      appPreview: true,
+    },
+    modal: {
+      loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
+      connectedLayout: PushUI.CONSTANTS.CONNECTED.LAYOUT.HOVER,
+      appPreview: true,
+      connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
+    },
+    chainConfig: {
+      rpcUrls: {
+      },
+    },
+  };
+
+  const linkedWalletConfig: ProviderConfigProps = {
+    uid: 'wallet2',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
       email: false,
@@ -277,6 +301,14 @@ function App() {
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
         >
+        {/*<PushUniversalWalletProvider
+          config={linkedWalletConfig}
+          themeMode={PushUI.CONSTANTS.THEME.DARK}
+          themeOverrides={{
+            '--pw-core-font-family': "'DM Sans', sans-serif",
+            '--pwauth-btn-connected-bg-color': '#D548EC'
+          }}
+        >*/}
           <QueryClientProvider client={queryClient}>
           <RewardsContextProvider>
             <AuthHeadersProvider>
@@ -285,6 +317,7 @@ function App() {
             </AuthHeadersProvider>
             </RewardsContextProvider>
           </QueryClientProvider>
+        {/*</PushUniversalWalletProvider>*/}
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

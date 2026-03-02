@@ -6,7 +6,7 @@ import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 export const LevelCard: FC = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,

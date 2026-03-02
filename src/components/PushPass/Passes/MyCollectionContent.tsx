@@ -8,7 +8,7 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { device } from '../../../config/globals';
 
 const MyCollectionContent = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

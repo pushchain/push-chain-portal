@@ -48,7 +48,7 @@ export const RewardsContextProvider = ({
   const [isXPRefreshCompleted, setIsXPRefreshCompleted] = useState(false);
   const [signature, setSignature] = useState(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const account = universalAccount?.address as string;
   const isWalletConnected = Boolean(universalAccount?.address);
   const { chainId } = parseCAIP(universalAccount?.chain);

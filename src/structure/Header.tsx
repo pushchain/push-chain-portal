@@ -21,7 +21,7 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
   const baseURL = "/";
   const navigate = useNavigate();
-  const { connectionStatus, universalAccount } = usePushWalletContext();
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
 
   const isTablet = useMediaQuery(device.tablet);
   const isLaptop = useMediaQuery(device.laptopL);
@@ -84,7 +84,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
         </Box>)}
 
-        {!isTablet && (<PushUniversalAccountButton />)}
+        {!isTablet && (<PushUniversalAccountButton uid='wallet1' />)}
 
         {isLaptop &&
           (<Box

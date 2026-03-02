@@ -16,7 +16,7 @@ type TabType = 'unopened' | 'collection';
 
 const PushPass = () => {
   const [activeTab, setActiveTab] = useState<TabType>('unopened');
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

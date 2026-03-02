@@ -36,7 +36,7 @@ const useVerifyRewards = ({
 
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { chainId } = parseCAIP(universalAccount?.chain);
   const { signMessage } = useSignMessageWithEthereum();
 

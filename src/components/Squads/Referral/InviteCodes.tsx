@@ -117,7 +117,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const { authHeaders } = useAuthHeaders();
-  const { connectionStatus } = usePushWalletContext();
+  const { connectionStatus } = usePushWalletContext('wallet1');
   const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(authHeaders);
 
   const handleCopy = async (code: string, e: React.MouseEvent) => {

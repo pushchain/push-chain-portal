@@ -14,7 +14,7 @@ import { Box, Skeleton } from "../../blocks"
 
 export const PreLaunch = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
 
   const { data: userEligibilityData, isLoading: isLoadingUserEligibility} = useGetUserEligibilityForPreLaunch({

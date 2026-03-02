@@ -38,7 +38,7 @@ export const ActivityVerificationButton = ({
   buttonSize = "small",
   buttonCss,
 }: ActivityVerificationButtonProps) => {
-  const { universalAccount, handleConnectToPushWallet } = usePushWalletContext();
+  const { universalAccount, handleConnectToPushWallet } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
 
   const { handleTwitterVerification, verifyingTwitter, twitterActivityStatus } =

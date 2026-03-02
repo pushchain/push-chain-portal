@@ -19,7 +19,7 @@ type SquadSectionProps = {
 
 export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionProps) => {
   const { authHeaders } = useAuthHeaders();
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
 
   const caip10WalletAddress = walletToFullCAIP10(

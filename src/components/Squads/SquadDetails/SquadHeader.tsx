@@ -17,7 +17,7 @@ type SquadHeaderProps = {
 export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
 
   const caip10WalletAddress = walletToFullCAIP10(

@@ -27,7 +27,7 @@ interface SignMessageResult {
 }
 
 export const useSignMessageWithEthereum = () => {
-  const { universalAccount, handleSignMessage } = usePushWalletContext();
+  const { universalAccount, handleSignMessage } = usePushWalletContext('wallet1');
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
 

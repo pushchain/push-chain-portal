@@ -43,7 +43,7 @@ const useVerifyTwitter = ({
   >(null);
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
 
   const account = universalAccount?.address;

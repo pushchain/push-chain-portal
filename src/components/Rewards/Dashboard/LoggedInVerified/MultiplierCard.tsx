@@ -7,7 +7,7 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 import TotalMultiplierBg from '../../../../../static/assets/website/rewards/total-multiplier-bg.webp';
 
 export const MultiplierCard: FC = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,

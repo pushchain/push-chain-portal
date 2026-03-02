@@ -53,7 +53,7 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [authHeaders, setAuthHeaders] = useState<AuthHeaders | undefined>();
   const [isSigningMessage, setIsSigningMessage] = useState(false);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
 
   const walletAddress = universalAccount?.address;

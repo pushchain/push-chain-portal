@@ -11,7 +11,7 @@ import { Alert, Box, Quests, Text } from '../../../blocks';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;

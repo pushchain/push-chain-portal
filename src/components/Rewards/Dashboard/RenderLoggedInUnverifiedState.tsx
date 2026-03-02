@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
+
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
@@ -12,15 +13,19 @@ import { useRewardsContext } from "../../../context/rewardsContext"
 
 import { Alert, ArrowDown, Box, Button, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
 
+// const PUSH_CHAIN_IDS = ["42101", "42102"];
 
 export const RenderLoggedInUnverifiedState = () => {
-  const { universalAccount } = usePushWalletContext();
+  // TODO: fix second wallet flow
+  const { universalAccount } = usePushWalletContext('wallet1');
+  // const { universalAccount: linkedAccount, handleConnectToPushWallet: connectLinkedWallet } = usePushWalletContext('wallet2');
   const { refetchActivityStatus } = useRewardsContext();
   const [errorMessage, setErrorMessage] = useState("");
   const [localSybilEligible, setLocalSybilEligible] = useState<boolean | null>(null);
   const { mutate: evmSybilCheck, isPending: isEvmPending } = useAdvancedSybilCheck();
   const { mutate: pushWalletSybilCheck, isPending: isPushWalletPending } = usePushWalletSybilCheck();
   const { chainId } = parseCAIP(universalAccount?.chain);
+  // const isPushWalletUser = PUSH_CHAIN_IDS.includes(chainId);
   const isLocalSybilCheckPending = isEvmPending || isPushWalletPending;
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -40,12 +45,58 @@ export const RenderLoggedInUnverifiedState = () => {
     !!userDetails?.userId
   );
 
+  // Auto-trigger sybil check when wallet2 (linked EVM wallet) connects for Push wallet users
+  // useEffect(() => {
+  //   if (!isPushWalletUser || !linkedAccount?.address || localSybilEligible !== null) return;
+  //   const { chainId: linkedChainId } = parseCAIP(linkedAccount.chain);
+  //   evmSybilCheck(
+  //     { address: linkedAccount.address, chainId: parseInt(linkedChainId) },
+  //     {
+  //       onSuccess: (response) => {
+  //         setLocalSybilEligible(response?.eligible);
+  //         // Remove wallet2 session from localStorage to prevent it from overwriting wallet1 on refresh
+  //         localStorage.removeItem("walletInfo");
+  //       },
+  //       onError: () => {
+  //         setLocalSybilEligible(false);
+  //         localStorage.removeItem("walletInfo");
+  //       },
+  //     }
+  //   );
+  // }, [linkedAccount?.address]);
+
   const handleVerifyWallet = () => {
+    // if (isPushWalletUser) {
+    //   // Push wallet users must link an EVM wallet via wallet2
+    //   if (!linkedAccount?.address) {
+    //     connectLinkedWallet();
+    //     return;
+    //   }
+    //
+    //   const { chainId: linkedChainId } = parseCAIP(linkedAccount.chain);
+    //   evmSybilCheck(
+    //     {
+    //       address: linkedAccount.address,
+    //       chainId: parseInt(linkedChainId),
+    //     },
+    //     {
+    //       onSuccess: (response) => {
+    //         setLocalSybilEligible(response?.eligible);
+    //         // Remove wallet2 session from localStorage to prevent it from overwriting wallet1 on refresh
+    //         localStorage.removeItem("walletInfo");
+    //       },
+    //       onError: () => {
+    //         setLocalSybilEligible(false);
+    //         localStorage.removeItem("walletInfo");
+    //       },
+    //     }
+    //   );
+    //   return;
+    // }
+
     if (!universalAccount?.address || !chainId) return;
 
-    const mutate = chainId === "42101" ? pushWalletSybilCheck : evmSybilCheck;
-
-    mutate(
+    pushWalletSybilCheck(
       {
         address: universalAccount.address,
         chainId: parseInt(chainId),
@@ -188,57 +239,6 @@ export const RenderLoggedInUnverifiedState = () => {
             z-index: 99999;
           `}
         >
-          <Box
-            display="flex"
-            flexDirection={{ initial: "row", tb: "column" }}
-            gap="spacing-sm"
-            width="100%"
-          >
-            {activityList.slice(0, 2).map((item, index) => {
-              const activityStatus = activityStatuses?.activities?.find(
-                (a) => a.activityTypeId === item.activityTypeId
-              );
-
-              return (
-                <Box
-                  key={index}
-                  display="flex"
-                  flexDirection={{ initial: "row", tb: "column" }}
-                  alignItems="center"
-                  padding="spacing-sm spacing-md"
-                  gap="spacing-xs"
-                  css={css`
-                    flex: 1;
-                    border-radius: var(--radius-md, 24px);
-                    border: 1px solid #fff;
-                    background: rgba(255, 255, 255, 0.4);
-                    box-sizing: border-box;
-                  `}
-                >
-                  <RewardsActivityIcon type={item?.icon} />
-                  <RewardsActivityTitle
-                    activityTitle={item.activityTitle}
-                    variant="h4-semibold"
-                    isLoading={false}
-                    color="#17181B"
-                  />
-                  <Box css={css`margin-left: auto;`}>
-                    <ActivityButton
-                      activityType={item.activityType as ActvityType}
-                      activityTypeId={item.activityTypeId}
-                      userId={userDetails?.userId as string}
-                      refetchActivity={() => refetchActivityStatus()}
-                      usersSingleActivity={activityStatus}
-                      setErrorMessage={setErrorMessage}
-                      isLoadingActivity={isLoadingActivities}
-                      label="Verify"
-                    />
-                  </Box>
-                </Box>
-              );
-            })}
-          </Box>
-
           {activityList[2] && (
             <Box
               display="flex"
@@ -266,6 +266,11 @@ export const RenderLoggedInUnverifiedState = () => {
                   Linked wallet will be bound to Push account for Season 3
                 </Text>
               </Box>
+
+
+              {/*<Box>
+                <PushUniversalAccountButton uid='wallet2' />
+              </Box>*/}
 
               {localSybilEligible === true && (
                 <Box
@@ -335,12 +340,68 @@ export const RenderLoggedInUnverifiedState = () => {
                     onClick={handleVerifyWallet}
                     disabled={isLocalSybilCheckPending}
                   >
-                    {isLocalSybilCheckPending ? "Verifying..." : "Link Account to Verify"}
+                    {isLocalSybilCheckPending
+                      ? "Verifying..."
+                      : "Verify"}
                   </Button>
                 </Box>
               )}
             </Box>
           )}
+
+
+          <Box
+            display="flex"
+            flexDirection={{ initial: "row", tb: "column" }}
+            gap="spacing-sm"
+            width="100%"
+          >
+            {activityList.slice(0, 2).map((item, index) => {
+              const activityStatus = activityStatuses?.activities?.find(
+                (a) => a.activityTypeId === item.activityTypeId
+              );
+
+              return (
+                <Box
+                  key={index}
+                  display="flex"
+                  flexDirection={{ initial: "row", tb: "column" }}
+                  alignItems="center"
+                  padding="spacing-sm spacing-md"
+                  gap="spacing-xs"
+                  css={css`
+                    flex: 1;
+                    border-radius: var(--radius-md, 24px);
+                    border: 1px solid #fff;
+                    background: rgba(255, 255, 255, 0.4);
+                    box-sizing: border-box;
+                  `}
+                >
+                  <RewardsActivityIcon type={item?.icon} />
+                  <RewardsActivityTitle
+                    activityTitle={item.activityTitle}
+                    variant="h4-semibold"
+                    isLoading={false}
+                    color="#17181B"
+                  />
+                  <Box css={css`margin-left: auto;`}>
+                    <ActivityButton
+                      activityType={item.activityType as ActvityType}
+                      activityTypeId={item.activityTypeId}
+                      userId={userDetails?.userId as string}
+                      refetchActivity={() => refetchActivityStatus()}
+                      usersSingleActivity={activityStatus}
+                      setErrorMessage={setErrorMessage}
+                      isLoadingActivity={isLoadingActivities}
+                      label="Verify"
+                    />
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+
+
         </Box>
       </Box>
 

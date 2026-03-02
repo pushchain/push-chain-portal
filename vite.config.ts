@@ -26,7 +26,7 @@ export default defineConfig({
     historyApiFallback: true,
   },
   server: {
-    port: 3000,
+    port: 3001,
   },
   base: getPreviewBasePath() || undefined,
   build: {

@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 const ActivityStatsCards = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

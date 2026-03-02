@@ -52,7 +52,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const [showResult, setShowResult] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

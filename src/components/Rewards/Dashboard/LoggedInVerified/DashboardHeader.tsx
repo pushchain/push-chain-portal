@@ -16,7 +16,7 @@ const spin = keyframes`
 
 export const DashboardHeader: FC = () => {
   const isMobile = useMediaQuery(device.mobileL);
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
