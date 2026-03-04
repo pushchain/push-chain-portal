@@ -15,6 +15,7 @@ import {
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { WalletChainType } from "../utils/wallet";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 
 type UseDiscordActivityVerificationProps = {
   activityTypeId: string;
@@ -39,6 +40,7 @@ const useVerifyDiscord = ({
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -90,8 +92,6 @@ const useVerifyDiscord = ({
       const token = localStorage.getItem("access_token");
       const username = localStorage.getItem("username");
 
-      console.log(token, username, 'Discord verification details');
-
       if (!username || !token) {
         setErrorMessage("Discord verification was not completed. Please try again.");
         setVerifyingDiscord(false);
@@ -104,20 +104,27 @@ const useVerifyDiscord = ({
           discord_token: token,
         };
 
-        console.log(verificationProof, 'check0');
+        const isSolana = chainId == WalletChainType.SOLANA;
 
-        const isSupportedChain =
-          chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH || 
-          chainId == WalletChainType.PUSH;
+        if (isSolana) {
+          const {
+            signature,
+            messageToSend: signedMessage,
+            error,
+          } = await signMessageWithSolana({
+            discord_token: token,
+          });
 
-        
-        console.log(chainId, 'chainId');
-        console.log(isSupportedChain, 'isSupportedChain');
+          if (error || !signature) {
+            console.log(error);
+            setErrorMessage(error);
+            setVerifyingDiscord(false);
+            return;
+          }
 
-        if (isSupportedChain) {
-          console.log(verificationProof, 'check1');
-
+          verificationProof = signature; // base58 signature
+          messageToSend = signedMessage as typeof messageToSend;
+        } else {
           const {
             signature,
             messageToSend: signedMessage,
@@ -133,7 +140,6 @@ const useVerifyDiscord = ({
             return;
           }
           verificationProof = signature;
-          console.log(verificationProof, 'check2');
           messageToSend = signedMessage as typeof messageToSend;
         }
 
