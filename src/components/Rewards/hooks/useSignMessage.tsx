@@ -43,8 +43,13 @@ export const useSignMessageWithEthereum = () => {
         const domain = window.location.hostname;
         const nonce = generateNonce();
         const origin = window.location.origin;
-        const address = universalAccount.address;
+        const rawAddress = universalAccount.address;
         const { chainId } = parseCAIP(universalAccount?.chain);
+
+        const address =
+          ethers.utils.isAddress(rawAddress)
+            ? ethers.utils.getAddress(rawAddress)
+            : rawAddress;
 
         const messageToSend = {
           domain,
