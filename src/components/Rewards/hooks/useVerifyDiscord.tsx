@@ -107,6 +107,8 @@ const useVerifyDiscord = ({
           chainId == WalletChainType.ETH;
 
         if (isSupportedChain) {
+          console.log(verificationProof, 'check1');
+
           const {
             signature,
             messageToSend: signedMessage,
@@ -122,6 +124,7 @@ const useVerifyDiscord = ({
             return;
           }
           verificationProof = signature;
+          console.log(verificationProof, 'check2');
           messageToSend = signedMessage as typeof messageToSend;
         }
 
