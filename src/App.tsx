@@ -235,10 +235,10 @@ const AppContent = () => {
               path="/cult/leaderboard"
               element={<CultLeaderboardPage />}
             />
-            {/* <Route
+            <Route
               path="/discord/verification"
               element={<DiscordVerificationPage />}
-            /> */}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
