@@ -108,7 +108,8 @@ const useVerifyDiscord = ({
 
         const isSupportedChain =
           chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH;
+          chainId == WalletChainType.ETH || 
+          chainId == WalletChainType.PUSH;
 
         
         console.log(chainId, 'chainId');
