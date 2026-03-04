@@ -90,6 +90,8 @@ const useVerifyDiscord = ({
       const token = localStorage.getItem("access_token");
       const username = localStorage.getItem("username");
 
+      console.log(token, username, 'Discord verification details');
+
       if (!username || !token) {
         setErrorMessage("Discord verification was not completed. Please try again.");
         setVerifyingDiscord(false);
