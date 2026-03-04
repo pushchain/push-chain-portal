@@ -81,7 +81,7 @@ export const CultHeader = () => {
               width: 100%;
             `}
           >
-						<img src={CultImage} alt="Cult Logo" width="316px" />
+						<img src={CultImage} alt="Cult Logo" width="316px" height="123px" />
 						{isWalletConnected && isCultUser && !isVerified && (
 							<LoggedInCultUser />
 						)}
