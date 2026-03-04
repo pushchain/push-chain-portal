@@ -78,7 +78,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      showCloseButton={false}
       size="small"
       css={css`
         border-radius: var(--radius-lg, 32px);

@@ -99,7 +99,6 @@ const useVerifyDiscord = ({
       if (username && token) {
         let verificationProof = "abcd";
         let messageToSend = {
-          discord: username,
           discord_token: token,
         };
 
@@ -113,7 +112,6 @@ const useVerifyDiscord = ({
             messageToSend: signedMessage,
             error,
           } = await signMessage({
-            discord: username,
             discord_token: token,
           });
 

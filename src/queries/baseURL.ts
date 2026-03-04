@@ -25,9 +25,9 @@ export const getSeasonThreeBaseURL = () => {
     case "staging":
       return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
     case "dev":
-      return `http://localhost:8080`;
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
     default:
-      return `http://localhost:8080`;
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
 
   }
 };

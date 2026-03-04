@@ -20,6 +20,11 @@ import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useRewardsContext } from '../../context/rewardsContext';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+import { walletToFullCAIP10 } from '../../helpers/web3helper';
+import { useGetUserCultStatus } from '../../queries';
+import { useActivityContext } from '../../context/activityContext';
 
 type MenuItem = {
   id: string;
@@ -43,16 +48,35 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { isVerified } = useActivityContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
+
+  const isWalletConnected = Boolean(universalAccount?.address);
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCultStatus } = useGetUserCultStatus({
+    wallet: caip10WalletAddress
+  });
+
+  const isCultUser = userCultStatus?.data?.isCultMember;
+
+  const showCultDashboard = isWalletConnected && isCultUser && isVerified;
+
   const getActiveItemId = (): string => {
     const path = location.pathname;
 
+    if (path === '/') return 'season3';
     if (path === '/rewards' || path === '/rewards/') return 'discover';
     if (path.startsWith('/rewards/pushpass')) return 'push-pass';
     if (path.startsWith('/rewards/squads')) return 'squads';
     if (path.startsWith('/rewards/leaderboard')) return 'leaderboards';
     if (path.startsWith('/rewards/pre-launch')) return 'pre-launch';
     if (path.startsWith('/cult/leaderboard')) return 'cult-leaderboard';
-
+    if (path.startsWith('/cult')) return 'cult';
 
     return 'discover';
   };
@@ -80,12 +104,12 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     //   label: 'Pre-Launch Access',
     //   route: '/rewards/pre-launch'
     // },
-    {
-      id: 'discover',
-      icon: CompassRose,
-      label: 'Discover',
-      route: '/rewards'
-    },
+    // {
+    //   id: 'discover',
+    //   icon: CompassRose,
+    //   label: 'Discover',
+    //   route: '/rewards'
+    // },
     // {
     //   id: 'quests',
     //   icon: CastleTurret,
@@ -95,23 +119,29 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     //     icon: StarFilled,
     //   },
     // },
+    // {
+    //   id: 'push-pass',
+    //   icon: PushPass,
+    //   label: 'Push Pass',
+    //   route: '/rewards/pushpass'
+    // },
+    // {
+    //   id: 'squads',
+    //   icon: SquadsIcon,
+    //   label: 'Invites/Squads',
+    //   route: '/rewards/squads'
+    // },
+    // {
+    //   id: 'leaderboards',
+    //   icon: Ranking,
+    //   label: 'Leaderboards',
+    //   route: '/rewards/leaderboard'
+    // },
     {
-      id: 'push-pass',
-      icon: PushPass,
-      label: 'Push Pass',
-      route: '/rewards/pushpass'
-    },
-    {
-      id: 'squads',
-      icon: SquadsIcon,
-      label: 'Invites/Squads',
-      route: '/rewards/squads'
-    },
-    {
-      id: 'leaderboards',
-      icon: Ranking,
-      label: 'Leaderboards',
-      route: '/rewards/leaderboard'
+      id: 'season3',
+      icon: CompassRose,
+      label: 'Season 3',
+      route: '/'
     },
     {
       id: 'cult',
@@ -119,12 +149,16 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
       label: 'Cult',
       route: '/cult'
     },
-    {
-      id: 'cult-leaderboard',
-      icon: Ranking,
-      label: 'Cult Leaderboards',
-      route: '/cult/leaderboard'
-    },
+    ...(showCultDashboard
+    ? [
+        {
+          id: 'cult-leaderboard',
+          icon: Ranking,
+          label: 'Cult Leaderboards',
+          route: '/cult/leaderboard',
+        },
+      ]
+    : []),
   ];
 
   const bottomMenuItems: MenuItem[] = [

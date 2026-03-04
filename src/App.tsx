@@ -42,6 +42,9 @@ import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
 import { useGetSeasonThreeUserByWallet } from "./queries";
 import { AuthHeadersProvider } from "./context/authHeadersContext";
+import S3CountdownPage from "./pages/S3CountdownPage";
+import CultPage from "./pages/CultPage";
+import { ActivityContextProvider } from "./context/activityContext";
 
 
 const GlobalStyle = createGlobalStyle`
@@ -201,13 +204,13 @@ const AppContent = () => {
           `}
         >
           <Routes>
-            {/*<Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />*/}
-            <Route path="/" element={<Navigate to="/rewards" replace />} />
+            <Route path="/" element={<S3CountdownPage />} />
+            {/* <Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />
             <Route path="/admin/controls" element={<AdminPage />} />
             <Route path="/rewards" element={<RewardsPage />} />
             <Route path="/rewards/pushpass" element={<PushPassPage />} />
             <Route path="/rewards/squads" element={<SquadsPage />} />
-            {/*<Route path="/rewards/pre-launch" element={<PreLaunchPage />} />*/}
+            <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
             <Route
               path="/rewards/pushpass/:id"
               element={<PushPassItemPage />}
@@ -223,15 +226,19 @@ const AppContent = () => {
             <Route
               path="/rewards/leaderboard-s1"
               element={<LeaderBoardPage />}
+            /> */}
+            <Route
+              path="/cult"
+              element={<CultPage />}
             />
             <Route
               path="/cult/leaderboard"
               element={<CultLeaderboardPage />}
             />
-            <Route
+            {/* <Route
               path="/discord/verification"
               element={<DiscordVerificationPage />}
-            />
+            /> */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
@@ -316,10 +323,12 @@ function App() {
         >*/}
           <QueryClientProvider client={queryClient}>
           <RewardsContextProvider>
+            <ActivityContextProvider>
             <AuthHeadersProvider>
                 <AppContent />
               <ReactQueryDevtools initialIsOpen={false} />
             </AuthHeadersProvider>
+            </ActivityContextProvider>
             </RewardsContextProvider>
           </QueryClientProvider>
         {/*</PushUniversalWalletProvider>*/}
