@@ -102,9 +102,15 @@ const useVerifyDiscord = ({
           discord_token: token,
         };
 
+        console.log(verificationProof, 'check0');
+
         const isSupportedChain =
           chainId == WalletChainType.SEPOLIA ||
           chainId == WalletChainType.ETH;
+
+        
+        console.log(chainId, 'chainId');
+        console.log(isSupportedChain, 'isSupportedChain');
 
         if (isSupportedChain) {
           console.log(verificationProof, 'check1');
