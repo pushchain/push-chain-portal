@@ -27,7 +27,7 @@ export const ActivityContextProvider = ({
   children: ReactNode;
 }) => {
 	const { universalAccount } = usePushWalletContext('wallet1');
-	
+
 	const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
@@ -44,7 +44,9 @@ export const ActivityContextProvider = ({
 	} = useGetRewardsActivity(
 		{ userId: userDetails?.userId, activityTypes: ['follow_push_on_discord'] },
 		{ enabled: !!userDetails?.userId },
-	);
+    );
+
+  console.log('dummy');
 
   return (
     <RewardsContext.Provider
