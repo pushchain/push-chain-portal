@@ -75,6 +75,7 @@ export const useSignMessageWithSolana = () => {
     pushChainClientRef.current = pushChainClient;
   }, [pushChainClient]);
 
+
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
 

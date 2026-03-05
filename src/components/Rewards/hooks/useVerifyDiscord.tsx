@@ -69,7 +69,7 @@ const useVerifyDiscord = ({
 
   const handleConnect = (userId: string) => {
     const clientID = appConfig.discord_client_id;
-    const baseURL = import.meta.env.VITE_PR_PREVIEW_BASE // GitHub PR Preview
+    const baseURL = import.meta.env.VITE_PR_PREVIEW_BASE
       ? `https://pushchain.github.io/push-chain-portal/pr-preview/${import.meta.env.VITE_PR_PREVIEW_BASE}`
       : window.location.origin;
     const redirectURI = `${baseURL}/discord/verification`;
@@ -149,9 +149,16 @@ const useVerifyDiscord = ({
           messageToSend = signedMessage;
         }
 
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("expires_in");
+        verificationProof = signature;
+        messageToSend = signedMessage;
+      } else {
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessage({
+          discord_token: token,
+        });
 
         claimRewardsActivity(
           {
@@ -180,8 +187,16 @@ const useVerifyDiscord = ({
               }
             },
           },
-        );
-      }
+          onError: (error: any) => {
+            console.log("Error in creating activity", error);
+            setVerifyingDiscord(false);
+            const rawMessage = error?.response?.data?.error?.message;
+            if (rawMessage) {
+              setErrorMessage(rawMessage);
+            }
+          },
+        },
+      );
     },
     [account, chainId, signMessage, claimRewardsActivity, updatedId, activityTypeId],
   );

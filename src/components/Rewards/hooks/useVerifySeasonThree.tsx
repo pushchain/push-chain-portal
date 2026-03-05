@@ -14,6 +14,7 @@ import {
 // helpers
 import { parseCAIP } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { WalletChainType } from "../utils/wallet";
 
 type UseDiscordActivityVerificationProps = {
@@ -24,17 +25,15 @@ type UseDiscordActivityVerificationProps = {
 const useVerifySeasonThree = ({
   setErrorMessage,
 }: UseDiscordActivityVerificationProps) => {
-
   const [seasonThreeActivityStatus, setSeasonThreeActivityStatus] = useState<
     "Claimed" | null
   >(null);
-  const [verifyingSeasonThree, setVerifyingSeasonThree] = useState(
-    false
-  );
+  const [verifyingSeasonThree, setVerifyingSeasonThree] = useState(false);
   const [verificationSuccess, setVerificationSuccess] = useState(false);
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -43,8 +42,8 @@ const useVerifySeasonThree = ({
     setErrorMessage("");
   }, [setErrorMessage]);
 
-  const { refetch: refetchUserEligibility} = useGetUserEligibilityForPreLaunch({
-    address: account
+  const { refetch: refetchUserEligibility } = useGetUserEligibilityForPreLaunch({
+    address: account,
   });
 
   const { mutate: claimSeasonThree } = useClaimSeasonThree();
@@ -88,20 +87,33 @@ const useVerifySeasonThree = ({
       const username = localStorage.getItem("username");
       const email = localStorage.getItem("discord_email");
 
-      if (username && token) {
-        let verificationProof = "abcd";
-        let messageToSend = {
-          discord: username,
-          discord_email: email,
-          discord_token: token,
-        };
+      if (!username || !token) {
+        setErrorMessage("Discord verification was not completed. Please try again.");
+        setVerifyingSeasonThree(false);
+        return;
+      }
 
+      let verificationProof;
+      let messageToSend: Record<string, string> | string = {
+        discord: username,
+        discord_email: email,
+        discord_token: token,
+      };
 
-        const isSupportedChain =
-          chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH;
+      const isSolana = chainId == WalletChainType.SOLANA;
 
-        if (isSupportedChain) {
+      if (isSolana) {
+        const { signature, error } = await signMessageWithSolana();
+
+        if (error || !signature) {
+          setErrorMessage(error);
+          setVerifyingSeasonThree(false);
+          return;
+        }
+
+        verificationProof = signature;
+      } else {
+
           const {
             signature,
             messageToSend: signedMessage,
@@ -112,56 +124,54 @@ const useVerifySeasonThree = ({
           });
 
           if (error || !signature) {
-            console.log(error);
             setErrorMessage(error);
             setVerifyingSeasonThree(false);
             return;
           }
+
           verificationProof = signature;
           messageToSend = signedMessage;
-        }
-
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("discord_email");
-        localStorage.removeItem("expires_in");
-
-        claimSeasonThree(
-          {
-            userWallet: universalAccount?.address,
-            discordEmail: email,
-            discordUsername: username,
-            data: messageToSend,
-            verificationProof,
-          },
-          {
-            onSuccess: (response) => {
-
-              if (response.status === "COMPLETED" || response.success) {
-                setSeasonThreeActivityStatus("Claimed");
-                setVerificationSuccess(true);
-                refetchUserEligibility()
-                setVerifyingSeasonThree(false);
-                setErrorMessage("");
-              } else {
-                setVerifyingSeasonThree(false);
-              }
-            },
-            onError: (error: any) => {
-              console.log("Error in creating activity", error);
-              setVerifyingSeasonThree(false);
-              setVerificationSuccess(false);
-              if (error.response?.data?.error) {
-                setErrorMessage(error.response.data.error);
-              } else {
-                setErrorMessage('An error occurred. Please try again');
-              }
-            },
-          },
-        );
       }
+
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("username");
+      localStorage.removeItem("discord_email");
+      localStorage.removeItem("expires_in");
+
+      claimSeasonThree(
+        {
+          userWallet: universalAccount?.address,
+          discordEmail: email,
+          discordUsername: username,
+          data: messageToSend,
+          verificationProof,
+        },
+        {
+          onSuccess: (response) => {
+            if (response.status === "COMPLETED" || response.success) {
+              setSeasonThreeActivityStatus("Claimed");
+              setVerificationSuccess(true);
+              refetchUserEligibility();
+              setVerifyingSeasonThree(false);
+              setErrorMessage("");
+            } else {
+              setVerifyingSeasonThree(false);
+            }
+          },
+          onError: (error: any) => {
+            console.log("Error in creating activity", error);
+            setVerifyingSeasonThree(false);
+            setVerificationSuccess(false);
+            if (error.response?.data?.error) {
+              setErrorMessage(error.response.data.error);
+            } else {
+              setErrorMessage("An error occurred. Please try again");
+            }
+          },
+        },
+      );
     },
-    [account],
+    [account, chainId, signMessage, signMessageWithSolana, claimSeasonThree, universalAccount],
   );
 
   return {
