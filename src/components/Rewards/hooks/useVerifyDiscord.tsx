@@ -8,13 +8,14 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import appConfig from "../../../config";
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 
 // helpers
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { WalletChainType } from "../utils/wallet";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 
 type UseDiscordActivityVerificationProps = {
   activityTypeId: string;
@@ -39,6 +40,7 @@ const useVerifyDiscord = ({
 
   const { universalAccount } = usePushWalletContext();
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -51,8 +53,8 @@ const useVerifyDiscord = ({
     setErrorMessage("");
   }, [setErrorMessage]);
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
@@ -67,7 +69,7 @@ const useVerifyDiscord = ({
 
   const handleConnect = (userId: string) => {
     const clientID = appConfig.discord_client_id;
-    const baseURL = import.meta.env.VITE_PR_PREVIEW_BASE // GitHub PR Preview
+    const baseURL = import.meta.env.VITE_PR_PREVIEW_BASE
       ? `https://pushchain.github.io/push-chain-portal/pr-preview/${import.meta.env.VITE_PR_PREVIEW_BASE}`
       : window.location.origin;
     const redirectURI = `${baseURL}/discord/verification`;
@@ -90,70 +92,89 @@ const useVerifyDiscord = ({
       const token = localStorage.getItem("access_token");
       const username = localStorage.getItem("username");
 
-      if (username && token) {
-        let verificationProof = "abcd";
-        let messageToSend = {
-          discord: username,
+      if (!username || !token) {
+        setErrorMessage("Discord verification was not completed. Please try again.");
+        setVerifyingDiscord(false);
+        return;
+      }
+
+      let verificationProof = "abcd";
+      let messageToSend: Record<string, string> | string = {
+        discord_token: token,
+      };
+
+      const isSolana = chainId == WalletChainType.SOLANA;
+
+      if (isSolana) {
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessageWithSolana({
           discord_token: token,
-        };
+        });
 
-        const isSupportedChain =
-          chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH;
-
-        if (isSupportedChain) {
-          const {
-            signature,
-            messageToSend: signedMessage,
-            error,
-          } = await signMessage({
-            discord: username,
-            discord_token: token,
-          });
-
-          if (error || !signature) {
-            console.log(error);
-            setErrorMessage(error);
-            setVerifyingDiscord(false);
-            return;
-          }
-          verificationProof = signature;
-          messageToSend = signedMessage;
+        if (error || !signature) {
+          setErrorMessage(error);
+          setVerifyingDiscord(false);
+          return;
         }
 
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("expires_in");
+        verificationProof = signature;
+        messageToSend = signedMessage;
+      } else {
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessage({
+          discord_token: token,
+        });
 
-        claimRewardsActivity(
-          {
-            userId: updatedId || (userId as string),
-            activityTypeId,
-            data: messageToSend,
-            verificationProof,
-          },
-          {
-            onSuccess: (response) => {
-              if (response.status === "COMPLETED") {
-                setDiscordActivityStatus("Claimed");
-                refetchActivity();
-                refetchUserDetails();
-                setVerifyingDiscord(false);
-                setErrorMessage("");
-              }
-            },
-            onError: (error: any) => {
-              console.log("Error in creating activity", error);
-              setVerifyingDiscord(false);
-              if (error.name) {
-                setErrorMessage(error.response.data.error);
-              }
-            },
-          },
-        );
+        if (error || !signature) {
+          setErrorMessage(error);
+          setVerifyingDiscord(false);
+          return;
+        }
+
+        verificationProof = signature;
+        messageToSend = signedMessage;
       }
+
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("username");
+      localStorage.removeItem("expires_in");
+
+      claimRewardsActivity(
+        {
+          userId: updatedId || (userId as string),
+          activityTypeId,
+          data: messageToSend,
+          verificationProof,
+        },
+        {
+          onSuccess: (response) => {
+            console.log(response);
+            if (response.data.status === "COMPLETED") {
+              setDiscordActivityStatus("Claimed");
+              refetchActivity();
+              refetchUserDetails();
+              setVerifyingDiscord(false);
+              setErrorMessage("");
+            }
+          },
+          onError: (error: any) => {
+            console.log("Error in creating activity", error);
+            setVerifyingDiscord(false);
+            const rawMessage = error?.response?.data?.error?.message;
+            if (rawMessage) {
+              setErrorMessage(rawMessage);
+            }
+          },
+        },
+      );
     },
-    [account],
+    [account, chainId, signMessage, signMessageWithSolana, claimRewardsActivity, updatedId, activityTypeId],
   );
 
   return {
