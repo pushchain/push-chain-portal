@@ -105,7 +105,7 @@ const useVerifyDiscord = ({
       }
 
       if (username && token) {
-        let verificationProof = "abcd";
+        let verificationProof;
         let messageToSend: Record<string, string | undefined> = {
           discord_token: token,
         };
@@ -147,6 +147,10 @@ const useVerifyDiscord = ({
           }
           verificationProof = signature;
           messageToSend = signedMessage;
+        }
+
+        if (!verificationProof) {
+          setErrorMessage('Invalid Verification Proof');
         }
 
         localStorage.removeItem("access_token");
