@@ -100,7 +100,7 @@ const useVerifyDiscord = ({
 
       if (username && token) {
         let verificationProof = "abcd";
-        let messageToSend = {
+        let messageToSend: Record<string, string> | string = {
           discord_token: token,
         };
 
@@ -122,8 +122,8 @@ const useVerifyDiscord = ({
             return;
           }
 
-          verificationProof = signature; // base58 signature
-          messageToSend = signedMessage as typeof messageToSend;
+          verificationProof = signature;
+          messageToSend = signedMessage;
         } else {
           const {
             signature,
@@ -140,7 +140,7 @@ const useVerifyDiscord = ({
             return;
           }
           verificationProof = signature;
-          messageToSend = signedMessage as typeof messageToSend;
+          messageToSend = signedMessage;
         }
 
         localStorage.removeItem("access_token");

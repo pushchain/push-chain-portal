@@ -4,9 +4,11 @@ import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 
 import { Box, Link, Modal, Text, TextInput } from "../blocks";
 import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
-import { useCreateSeasonThreeUser, useGetSeasonThreeUserByWallet } from "../queries";
+import { useCreateSeasonThreeUser, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
-import { walletToFullCAIP10 } from "../helpers/web3helper";
+import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
+import { useSignMessageWithSolana } from "./Rewards/hooks/useSignMessageWithSolana";
+import { WalletChainType } from "./Rewards/utils/wallet";
 
 
 type InviteCodeModalProps = {
@@ -21,6 +23,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const [error, setError] = useState("");
   const { mutate: createUser, isPending } = useCreateSeasonThreeUser();
 
+  const { chainId } = parseCAIP(universalAccount?.chain);
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
@@ -32,10 +35,18 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     walletAddress: caip10WalletAddress,
   });
 
+  const { refetch: refetchCultStatus } = useGetUserCultStatus({
+		wallet: caip10WalletAddress
+	});
+
+	// const isCultUser = userCultStatus?.data?.isCultMember;
+
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
 
+  const isSolana = chainId == WalletChainType.SOLANA;
 
   const handleSubmit = async () => {
     if (!inviteCode.trim()) {
@@ -43,26 +54,33 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       return;
     }
 
-    const { signature, messageToSend: signedMessage } = await signMessage();
+    const { signature, messageToSend, error } = isSolana
+      ? await signMessageWithSolana()
+      : await signMessage();
+
+    if (error || !signature) {
+      setError(error || "Failed to sign message");
+      return;
+    }
 
     createUser(
       {
         userWallet: caip10WalletAddress,
-        userUEAWallet: `eip155:42101:${ ueaAccount }`,
+        userUEAWallet: `eip155:42101:${ueaAccount}`,
         phase: "HYPE",
-        data: signedMessage,
+        data: messageToSend,
         inviteCodeUsed: inviteCode,
-        verificationProof: signature
+        verificationProof: signature,
       },
       {
         onSuccess: (response) => {
           refetch();
+          refetchCultStatus();
           onClose();
-
         },
         onError: (error: any) => {
           console.log("Error in creating activity", error);
-          setError(error?.response?.data.error)
+          setError(error?.response?.data?.error);
         },
       },
     );
@@ -79,6 +97,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       isOpen={isOpen}
       onClose={handleClose}
       size="small"
+      // showCloseButton={false}
       css={css`
         border-radius: var(--radius-lg, 32px);
         outline: none;
@@ -128,6 +147,19 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       </Box>
 
       <Box
+        maxWidth="250px"
+        textAlign="center"
+        css={css`
+          margin: 24px auto 0 auto;
+          `}
+      >
+        <Text textAlign="center" variant="bes-semibold">
+          Chosen Disciples have received a secret invite code in their email.
+        </Text>
+      </Box>
+
+      {/*TODO: for regular season three holders only*/}
+      {/*<Box
         margin="spacing-sm spacing-none spacing-none spacing-none"
         width="100%">
         <Text textAlign="center" variant="bes-semibold">
@@ -148,7 +180,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
             {' '}Discord{' '}
           </Link> for invites.
         </Text>
-      </Box>
+      </Box>*/}
     </Modal>
   );
 };

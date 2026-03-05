@@ -1,14 +1,15 @@
 import { useCallback, useState } from "react";
+import { generateNonce } from "siwe";
 import bs58 from "bs58";
-import { generateNonce } from "siwe"; // nonce generator is fine to reuse
-import { usePushWalletContext } from "@pushchain/ui-kit";
+import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
+import { WalletChainType } from "../utils/wallet";
 
 interface SolanaSignInMessageData {
   [key: string]: string | undefined;
   domain: string;
-  address: string; // base58 pubkey
+  address: string;
   uri: string;
   nonce: string;
   issuedAt: string;
@@ -19,16 +20,14 @@ interface SolanaSignInMessageData {
 }
 
 interface SignMessageResult {
-  signature?: string; // base58
-  messageToSend?: SolanaSignInMessageData;
-  messageToSign?: string;
+  signature?: string;
+  messageToSend?: string;
   error?: string;
   isLoading: boolean;
 }
 
 const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
   const { domain, address, uri, nonce, issuedAt, statement, ...extra } = payload;
-
   const lines: string[] = [
     `${domain} wants you to sign in with your Solana account:`,
     `${address}`,
@@ -40,7 +39,6 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
     `Issued At: ${issuedAt}`,
   ];
 
-  // Optional: include extra fields as key/value lines (keep it stable for verification)
   Object.entries(extra).forEach(([k, v]) => {
     if (v != null) lines.push(`${k}: ${v}`);
   });
@@ -49,21 +47,27 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
 };
 
 export const useSignMessageWithSolana = () => {
-  const { universalAccount, handleSignMessage } = usePushWalletContext("wallet1");
+  const { universalAccount } = usePushWalletContext("wallet1");
+  const { pushChainClient } = usePushChainClient("wallet1");
+
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const signMessage = useCallback(
     async (extraData?: Record<string, string>): Promise<SignMessageResult> => {
       setIsLoading(true);
-
       try {
         if (!universalAccount?.address || !universalAccount?.chain) {
           throw new Error("Push Wallet is not connected");
         }
 
+        if (!pushChainClient?.universal) {
+          throw new Error("Push Chain client universal signer not available");
+        }
+
         const { chainId } = parseCAIP(universalAccount.chain);
-        if (chainId !== "solana") {
+
+        if (chainId !== WalletChainType.SOLANA) {
           throw new Error(`Not a Solana chain: ${chainId}`);
         }
 
@@ -71,25 +75,33 @@ export const useSignMessageWithSolana = () => {
         const nonce = generateNonce();
         const uri = window.location.origin;
 
+        const rawAddress = universalAccount.address.includes(":")
+          ? universalAccount.address.split(":").pop()!
+          : universalAccount.address;
+
         const messageToSend: SolanaSignInMessageData = {
           domain,
-          address: universalAccount.address, // base58
+          address: rawAddress,
           uri,
           nonce,
           issuedAt: new Date().toISOString(),
+          statement: "Sign in to Push.",
           ...extraData,
         };
 
         const messageToSign = buildSolanaSignInMessage(messageToSend);
-
         const messageBytes = new TextEncoder().encode(messageToSign);
-        const signedMessageBytes = await handleSignMessage(messageBytes);
+        const signatureRaw = await pushChainClient.universal.signMessage(messageBytes);
 
-        const signature = bs58.encode(signedMessageBytes);
+        const signature: string =
+          typeof signatureRaw === "string"
+            ? signatureRaw
+            : bs58.encode(Buffer?.from(signatureRaw));
+
         setSignature(signature);
-
-        return { signature, messageToSend, messageToSign, isLoading: false };
+        return { signature, messageToSend: messageToSign, isLoading: false };
       } catch (error) {
+        console.error("Sign error:", error);
         return {
           error: error instanceof Error ? error.message : "Unknown error occurred",
           isLoading: false,
@@ -98,7 +110,7 @@ export const useSignMessageWithSolana = () => {
         setIsLoading(false);
       }
     },
-    [universalAccount, handleSignMessage, setSignature]
+    [universalAccount, pushChainClient, setSignature]
   );
 
   return { signMessage, isLoading };

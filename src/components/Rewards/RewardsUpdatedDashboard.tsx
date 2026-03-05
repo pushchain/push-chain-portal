@@ -331,8 +331,8 @@ export const RewardsUpdatedDashboard = () => {
     );
   }
 
-  if (isWalletConnected && isCultUser)
-    return renderLoggedInCultUser();
+  // if (isWalletConnected && isCultUser)
+  //   return renderLoggedInCultUser();
 
   if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 

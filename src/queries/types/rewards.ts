@@ -466,7 +466,7 @@ export type CreateSeasonThreeUserPayload = {
   inviteCodeUsed?: string;
   phase?: string;
   verificationProof: string;
-  data: Record<string, string>;
+  data: Record<string, string> | string;
 };
 
 export interface CreateSeasonThreeUserResponse {

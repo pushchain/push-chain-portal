@@ -10,7 +10,7 @@ import { device } from "../config/globals";
 
 import { Box, LevelBadge, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
-import { useGetSeasonThreeUserByWallet } from "../queries";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
 
 
@@ -38,6 +38,12 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
   const { data: userSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   })
+
+  const { data: userCultStatus } = useGetUserCultStatus({
+		wallet: caip10WalletAddress
+	});
+
+	const isCultUser = userCultStatus?.data?.isCultMember;
 
   return (
     <Box
@@ -68,7 +74,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
         flexDirection="row"
         alignItems="center"
       >
-        {!isTablet && connectionStatus == 'connected' && userSeasonThreeDetails  &&
+        {!isTablet && connectionStatus == 'connected' && userSeasonThreeDetails && !isCultUser  &&
           (<Box
               display="flex"
               flexDirection="row"
