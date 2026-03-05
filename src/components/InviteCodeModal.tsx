@@ -39,8 +39,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 		wallet: caip10WalletAddress
 	});
 
-	// const isCultUser = userCultStatus?.data?.isCultMember;
-
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
@@ -97,7 +95,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       isOpen={isOpen}
       onClose={handleClose}
       size="small"
-      // showCloseButton={false}
+      showCloseButton={false}
       css={css`
         border-radius: var(--radius-lg, 32px);
         outline: none;
