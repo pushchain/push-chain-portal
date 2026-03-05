@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import { generateNonce } from "siwe";
 import bs58 from "bs58";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
@@ -21,7 +21,7 @@ interface SolanaSignInMessageData {
 
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: string;
+  messageToSend?: Record<string, string | undefined>;
   error?: string;
   isLoading: boolean;
 }
@@ -46,9 +46,34 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
   return lines.join("\n");
 };
 
+const waitForUniversal = (
+  ref: React.MutableRefObject<any>,
+  timeoutMs = 3000,
+): Promise<void> =>
+  new Promise((resolve, reject) => {
+    if (ref.current?.universal) return resolve();
+    let elapsed = 0;
+    const interval = setInterval(() => {
+      elapsed += 200;
+      if (ref.current?.universal) {
+        clearInterval(interval);
+        resolve();
+      } else if (elapsed >= timeoutMs) {
+        clearInterval(interval);
+        reject(new Error("Push Chain client universal signer not available. Please try again."));
+      }
+    }, 200);
+  });
+
 export const useSignMessageWithSolana = () => {
   const { universalAccount } = usePushWalletContext("wallet1");
   const { pushChainClient } = usePushChainClient("wallet1");
+
+  // Ref so the async poll inside signMessage always sees the latest client
+  const pushChainClientRef = useRef(pushChainClient);
+  useEffect(() => {
+    pushChainClientRef.current = pushChainClient;
+  }, [pushChainClient]);
 
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -61,8 +86,8 @@ export const useSignMessageWithSolana = () => {
           throw new Error("Push Wallet is not connected");
         }
 
-        if (!pushChainClient?.universal) {
-          throw new Error("Push Chain client universal signer not available");
+        if (!pushChainClientRef.current?.universal) {
+          await waitForUniversal(pushChainClientRef);
         }
 
         const { chainId } = parseCAIP(universalAccount.chain);
@@ -91,7 +116,7 @@ export const useSignMessageWithSolana = () => {
 
         const messageToSign = buildSolanaSignInMessage(messageToSend);
         const messageBytes = new TextEncoder().encode(messageToSign);
-        const signatureRaw = await pushChainClient.universal.signMessage(messageBytes);
+        const signatureRaw = await pushChainClientRef.current.universal.signMessage(messageBytes);
 
         const signature: string =
           typeof signatureRaw === "string"
@@ -99,7 +124,7 @@ export const useSignMessageWithSolana = () => {
             : bs58.encode(Buffer?.from(signatureRaw));
 
         setSignature(signature);
-        return { signature, messageToSend: messageToSign, isLoading: false };
+        return { signature, messageToSend, isLoading: false };
       } catch (error) {
         console.error("Sign error:", error);
         return {
@@ -110,7 +135,7 @@ export const useSignMessageWithSolana = () => {
         setIsLoading(false);
       }
     },
-    [universalAccount, pushChainClient, setSignature]
+    [universalAccount, setSignature]
   );
 
   return { signMessage, isLoading };

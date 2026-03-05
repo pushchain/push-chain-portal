@@ -79,8 +79,14 @@ const useVerifyDiscord = ({
 
     const newWindow = window.open(authURL, "_blank");
 
+    if (!newWindow) {
+      setErrorMessage("Popup was blocked. Please allow popups for this site and try again.");
+      setVerifyingDiscord(false);
+      return;
+    }
+
     const checkAuth = setInterval(() => {
-      if (newWindow?.closed) {
+      if (newWindow.closed) {
         clearInterval(checkAuth);
         handleVerify(userId);
       }
@@ -100,7 +106,7 @@ const useVerifyDiscord = ({
 
       if (username && token) {
         let verificationProof = "abcd";
-        let messageToSend: Record<string, string> | string = {
+        let messageToSend: Record<string, string | undefined> = {
           discord_token: token,
         };
 
@@ -161,9 +167,9 @@ const useVerifyDiscord = ({
                 setDiscordActivityStatus("Claimed");
                 refetchActivity();
                 refetchUserDetails();
-                setVerifyingDiscord(false);
                 setErrorMessage("");
               }
+              setVerifyingDiscord(false);
             },
             onError: (error: any) => {
               console.log("Error in creating activity", error);
