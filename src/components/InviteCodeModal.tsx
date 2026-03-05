@@ -18,7 +18,7 @@ type InviteCodeModalProps = {
 
 export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { pushChainClient } = usePushChainClient('wallet1');
+  const { pushChainClient, isInitialized } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
   const { mutate: createUser, isPending } = useCreateSeasonThreeUser();
@@ -111,8 +111,8 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         children: "Get Started",
         onClick: handleSubmit,
         block: true,
-        disabled: isPending,
-        loading: isPending
+        disabled: isPending || (isSolana && !isInitialized),
+        loading: isPending || (isSolana && !isInitialized)
         }}
       cancelButtonProps={null}
     >
