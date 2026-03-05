@@ -21,7 +21,8 @@ interface SolanaSignInMessageData {
 
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: Record<string, string | undefined>;
+  messageToSend?: Record<string, string | undefined>; // object — for activity endpoints
+  messageString?: string; // raw signed string — for createUser endpoint
   error?: string;
   isLoading: boolean;
 }
@@ -125,7 +126,7 @@ export const useSignMessageWithSolana = () => {
             : bs58.encode(Buffer?.from(signatureRaw));
 
         setSignature(signature);
-        return { signature, messageToSend, isLoading: false };
+        return { signature, messageToSend, messageString: messageToSign, isLoading: false };
       } catch (error) {
         console.error("Sign error:", error);
         return {

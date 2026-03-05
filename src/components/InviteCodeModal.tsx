@@ -52,7 +52,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       return;
     }
 
-    const { signature, messageToSend, error } = isSolana
+    const { signature, messageToSend, messageString, error } = isSolana
       ? await signMessageWithSolana()
       : await signMessage();
 
@@ -61,12 +61,14 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       return;
     }
 
+    const dataPayload = isSolana ? messageString : messageToSend;
+
     createUser(
       {
         userWallet: caip10WalletAddress,
         userUEAWallet: `eip155:42101:${ueaAccount}`,
         phase: "HYPE",
-        data: messageToSend,
+        data: dataPayload,
         inviteCodeUsed: inviteCode,
         verificationProof: signature,
       },
