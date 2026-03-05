@@ -1,0 +1,117 @@
+import { useCallback, useState } from "react";
+import { generateNonce } from "siwe";
+import bs58 from "bs58";
+import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
+import { useRewardsContext } from "../../../context/rewardsContext";
+import { parseCAIP } from "../../../helpers/web3helper";
+import { WalletChainType } from "../utils/wallet";
+
+interface SolanaSignInMessageData {
+  [key: string]: string | undefined;
+  domain: string;
+  address: string;
+  uri: string;
+  nonce: string;
+  issuedAt: string;
+  statement?: string;
+  discord?: string;
+  discord_token?: string;
+  twitter?: string;
+}
+
+interface SignMessageResult {
+  signature?: string;
+  messageToSend?: string;
+  error?: string;
+  isLoading: boolean;
+}
+
+const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
+  const { domain, address, uri, nonce, issuedAt, statement, ...extra } = payload;
+  const lines: string[] = [
+    `${domain} wants you to sign in with your Solana account:`,
+    `${address}`,
+    ``,
+    statement ?? `Sign in to Push.`,
+    ``,
+    `URI: ${uri}`,
+    `Nonce: ${nonce}`,
+    `Issued At: ${issuedAt}`,
+  ];
+
+  Object.entries(extra).forEach(([k, v]) => {
+    if (v != null) lines.push(`${k}: ${v}`);
+  });
+
+  return lines.join("\n");
+};
+
+export const useSignMessageWithSolana = () => {
+  const { universalAccount } = usePushWalletContext();
+  const { pushChainClient } = usePushChainClient();
+
+  const { setSignature } = useRewardsContext();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const signMessage = useCallback(
+    async (extraData?: Record<string, string>): Promise<SignMessageResult> => {
+      setIsLoading(true);
+      try {
+        if (!universalAccount?.address || !universalAccount?.chain) {
+          throw new Error("Push Wallet is not connected");
+        }
+
+        if (!pushChainClient?.universal) {
+          throw new Error("Push Chain client universal signer not available");
+        }
+
+        const { chainId } = parseCAIP(universalAccount.chain);
+
+        if (chainId !== WalletChainType.SOLANA) {
+          throw new Error(`Not a Solana chain: ${chainId}`);
+        }
+
+        const domain = window.location.hostname;
+        const nonce = generateNonce();
+        const uri = window.location.origin;
+
+        const rawAddress = universalAccount.address.includes(":")
+          ? universalAccount.address.split(":").pop()!
+          : universalAccount.address;
+
+        const messageToSend: SolanaSignInMessageData = {
+          domain,
+          address: rawAddress,
+          uri,
+          nonce,
+          issuedAt: new Date().toISOString(),
+          statement: "Sign in to Push.",
+          ...extraData,
+        };
+
+        const messageToSign = buildSolanaSignInMessage(messageToSend);
+        const messageBytes = new TextEncoder().encode(messageToSign);
+        const signatureRaw = await pushChainClient.universal.signMessage(messageBytes);
+
+        const signature: string =
+          typeof signatureRaw === "string"
+            ? signatureRaw
+            : bs58.encode(Buffer?.from(signatureRaw));
+
+        setSignature(signature);
+        return { signature, messageToSend: messageToSign, isLoading: false };
+      } catch (error) {
+        console.error("Sign error:", error);
+        return {
+          error: error instanceof Error ? error.message : "Unknown error occurred",
+          isLoading: false,
+        };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [universalAccount, pushChainClient, setSignature]
+  );
+
+  return { signMessage, isLoading };
+};
