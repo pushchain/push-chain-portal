@@ -112,6 +112,8 @@ export const ActivityVerificationButton = ({
     activityData?.action(userId);
   };
 
+  console.log(activityData, 'test loading state')
+
   const isLoading = isLoadingActivity || activityData?.isLoading;
   const buttonLabel = activityData?.isComplete
     ? "Verifying..."

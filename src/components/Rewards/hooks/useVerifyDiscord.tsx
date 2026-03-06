@@ -151,6 +151,7 @@ const useVerifyDiscord = ({
 
         if (!verificationProof) {
           setErrorMessage('Invalid Verification Proof');
+          setVerifyingDiscord(false);
         }
 
         localStorage.removeItem("access_token");

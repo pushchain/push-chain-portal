@@ -35,15 +35,17 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
     navigate(baseURL);
   };
 
-  const { data: userSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userSeasonThreeDetails, isLoading: isLoadingSeasonThree } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   })
 
-  const { data: userCultStatus } = useGetUserCultStatus({
+  const { data: userCultStatus, isLoading: isLoadingCultStatus } = useGetUserCultStatus({
 		wallet: caip10WalletAddress
 	});
 
+  const isLoadingUserData = isLoadingSeasonThree || isLoadingCultStatus;
 	const isCultUser = userCultStatus?.data?.isCultMember;
+  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails && !isCultUser;
 
   return (
     <Box
@@ -74,7 +76,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
         flexDirection="row"
         alignItems="center"
       >
-        {!isTablet && connectionStatus == 'connected' && userSeasonThreeDetails && !isCultUser  &&
+        {showStats &&
           (<Box
               display="flex"
               flexDirection="row"
