@@ -149,14 +149,15 @@ const useVerifyDiscord = ({
           messageToSend = signedMessage;
         }
 
-        if (!verificationProof) {
-          setErrorMessage('Invalid Verification Proof');
-          setVerifyingDiscord(false);
-        }
 
         localStorage.removeItem("access_token");
         localStorage.removeItem("username");
         localStorage.removeItem("expires_in");
+
+        if (!verificationProof) {
+          setErrorMessage('Invalid Verification Proof');
+          setVerifyingDiscord(false);
+        }
 
         claimRewardsActivity(
           {
