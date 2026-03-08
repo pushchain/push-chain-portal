@@ -133,6 +133,10 @@ const useVerifySeasonThree = ({
           messageToSend = signedMessage;
       }
 
+        if (!verificationProof) {
+            setErrorMessage('Invalid Verification Proof');
+          }
+
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
       localStorage.removeItem("discord_email");
