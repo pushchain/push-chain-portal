@@ -2,7 +2,7 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 
-import { Box, Link, Modal, Text, TextInput } from "../blocks";
+import { Box, Modal, Text, TextInput } from "../blocks";
 import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
 import { useCreateSeasonThreeUser, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
@@ -139,7 +139,10 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         <TextInput
           placeholder="Enter your code"
           value={inviteCode}
-          onChange={(e) => setInviteCode(e.target.value)}
+          onChange={(e) => {
+            setInviteCode(e.target.value);
+            setError("");
+          }}
           error={!!error}
           errorMessage={error}
           backgroundColor={"rgba(0, 0, 0, 0.25)"}
@@ -150,7 +153,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         maxWidth="250px"
         textAlign="center"
         css={css`
-          margin: 24px auto 0 auto;
+            margin: 24px auto 0 auto;
           `}
       >
         <Text textAlign="center" variant="bes-semibold">
