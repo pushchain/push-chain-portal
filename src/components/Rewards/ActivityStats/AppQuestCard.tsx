@@ -1,27 +1,35 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { ArrowUpRight, Box, Button, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ArrowUpRight, Box, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ActvityType } from '../../../queries';
+import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
-type Quest = {
-  title: string;
-  xp: number;
-  progress?: number;
-  maxProgress?: number;
-  isCompleted: boolean;
-  isDisabled: boolean;
-};
+// type Quest = {
+//   title: string;
+//   xp: number;
+//   progress?: number;
+//   maxProgress?: number;
+//   isCompleted: boolean;
+//   isDisabled: boolean;
+// };
 
 type AppQuestCardProps = {
   appName: string;
   appUrl: string;
   description: string;
   resetTime: string;
-  quests: Quest[];
+  quests: any;
   icon?: string;
   gradient?: string;
   titleGradient?: string;
   linkColor?: string;
   blurColor?: string;
+  activityStatus?: any;
+  isLoading?: boolean;
+  refetchActivities?: any;
+  userId?: string;
+  completedMap?: Record<string, boolean>;
+  setErrorMessage?: (errorMessage: string) => void;
 };
 
 const AppQuestCard: FC<AppQuestCardProps> = ({
@@ -35,9 +43,16 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   titleGradient = 'linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(107, 48, 178, 1) 100%)',
   linkColor = '#6a23d5',
   blurColor = '#a683e5',
+  activityStatus,
+  isLoading,
+  refetchActivities,
+  userId,
+  completedMap = {},
+  setErrorMessage,
 }) => {
-  const renderQuestItem = (quest: Quest, index: number) => {
-    const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
+  const renderQuestItem = (quest: any, index: number) => {
+    const isCompleted = completedMap[quest.id] ?? false;
+    // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
 
     return (
       <Box
@@ -71,6 +86,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             justifyContent="center"
             gap="spacing-xs"
             alignSelf="stretch"
+            css={css`
+              min-width: 0;
+            `}
           >
             <Box
               display="flex"
@@ -89,6 +107,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 css={css`
                   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
                   white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  min-width: 0;
                 `}
               >
                 {quest.title}
@@ -102,10 +123,10 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 justifyContent={{ tb: 'space-between' }}
 
               >
-                {showProgress ? (
+                {!isCompleted ? (
                   <Box width="112px" height="8px">
                     <ProgressBar
-                      progress={(20) || null}
+                      progress={(0) || null}
                       max={100}
                       size="large"
                       progressIcon={<RewardsStarGradient size={35} />}
@@ -114,42 +135,30 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 ) : (
                   <Box display="flex" alignItems="center" justifyContent="center" width="112px">
                     <Box display="inline-flex" alignItems="flex-start">
-                      <Button
-                        size="small"
-                        variant="primary"
-                        // disabled={quest.isDisabled}
-                        css={css`
-                          color: #fff;
-                        `}
-                      >
-                        <Box
-                          display="inline-flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          gap="spacing-xxxs"
-                        >
-                          <Text
-                            css={css`
-                              font-size: 12px;
-                              font-weight: 500;
-                              line-height: 16px;
-                              white-space: nowrap;
-                            `}
-                          >
-                            Claim
-                          </Text>
-                        </Box>
-                      </Button>
+                      <ActivityButton
+                        activityType={quest.id as ActvityType}
+                        activityTypeId={quest.id}
+                        userId={userId as string}
+                        refetchActivity={() => refetchActivities?.()}
+                        usersSingleActivity={activityStatus}
+                        setErrorMessage={setErrorMessage}
+                        isLoadingActivity={isLoading || false}
+                        label="Claim"
+                        buttonVariant='primary'
+                        buttonSize='small'
+                      />
                     </Box>
                   </Box>
                 )}
 
                 <Box
                   display="flex"
-                  width="100px"
                   alignItems="center"
                   justifyContent="flex-end"
                   gap="spacing-md"
+                  css={css`
+                    flex-shrink: 0;
+                  `}
                 >
                   <Box
                     display="inline-flex"
@@ -160,7 +169,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                       <XP />
                     </Box>
                     <Text variant="bm-bold" color="text-primary">
-                      {quest.xp}
+                      {quest.baseXP}
                     </Text>
                   </Box>
                 </Box>
@@ -173,7 +182,16 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" width="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-start"
+      position="relative"
+      width="100%"
+      css={css`
+        flex: 1;
+        min-width: 0;
+        `}>
       <Box
         display="flex"
         flexDirection="column"
@@ -311,6 +329,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
         gap="spacing-xs"
         position="relative"
         alignSelf="stretch"
+        width="100%"
         css={css`
           margin-top: -29px;
           z-index: 0;
@@ -326,6 +345,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
           borderRadius="radius-none radius-none radius-lg radius-lg"
           border="none"
           gap="spacing-none"
+          width="100%"
           css={css`
             margin: -1px;
             background: rgba(0, 0, 0, 0.1);
@@ -364,7 +384,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             alignItems="flex-start"
             padding="spacing-lg spacing-none spacing-none spacing-none"
           >
-            {quests.map((quest, index) => renderQuestItem(quest, index))}
+            {quests?.map((quest, index) => renderQuestItem(quest, index))}
           </Box>
         </Box>
       </Box>

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { generateNonce } from "siwe";
 import bs58 from "bs58";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
@@ -67,8 +67,15 @@ const waitForUniversal = (
   });
 
 export const useSignMessageWithSolana = () => {
-  const { universalAccount } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
+  const { universalAccount } = usePushWalletContext("wallet1");
+  const { pushChainClient } = usePushChainClient("wallet1");
+
+  // pushChainClient may be the same object reference even when .universal is populated,
+  // so we track it via a ref that's always current, regardless of React's re-render cycle.
+  const clientRef = useRef(pushChainClient);
+  useEffect(() => {
+    clientRef.current = pushChainClient;
+  }, [pushChainClient]);
 
   // Ref so the async poll inside signMessage always sees the latest client
   const pushChainClientRef = useRef(pushChainClient);
@@ -88,8 +95,8 @@ export const useSignMessageWithSolana = () => {
           throw new Error("Push Wallet is not connected");
         }
 
-        if (!pushChainClientRef.current?.universal) {
-          await waitForUniversal(pushChainClientRef);
+        if (!clientRef.current?.universal) {
+          throw new Error("Wallet is still initializing. Please try again.");
         }
 
         const { chainId } = parseCAIP(universalAccount.chain);
@@ -118,7 +125,7 @@ export const useSignMessageWithSolana = () => {
 
         const messageToSign = buildSolanaSignInMessage(messageToSend);
         const messageBytes = new TextEncoder().encode(messageToSign);
-        const signatureRaw = await pushChainClientRef.current.universal.signMessage(messageBytes);
+        const signatureRaw = await clientRef.current.universal.signMessage(messageBytes);
 
         const signature: string =
           typeof signatureRaw === "string"

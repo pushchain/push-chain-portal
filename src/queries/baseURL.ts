@@ -17,3 +17,17 @@ export const getRewardsBaseURL = () => {
       return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
   }
 };
+
+export const getSeasonThreeBaseURL = () => {
+  switch (appEnv) {
+    case "prod":
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
+    case "staging":
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
+    case "dev":
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
+    default:
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
+
+  }
+};

@@ -1,23 +1,11 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Text, Copy } from '../../../../blocks';
-import { useGetUserRewardsDetails } from '../../../../queries';
-import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
-import { usePushWalletContext } from '@pushchain/ui-kit';
+import { NavLink } from 'react-router-dom';
+
+import { Box, Text } from '../../../../blocks';
+
 
 export const ReferralCard: FC = () => {
-  const { universalAccount } = usePushWalletContext();
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
-
-  const { data: userDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress
-  });
-
-  const baseUrl = window.location.origin;
-  const referralLink = `${baseUrl}/rewards?ref=${userDetails?.userId}`;
 
   return (
     <Box
@@ -57,20 +45,13 @@ export const ReferralCard: FC = () => {
           </Text>
         </Box>
 
-        <Button
-          variant="tertiary"
-          size="small"
-          leadingIcon={<Copy />}
-          onClick={() => navigator.clipboard.writeText(referralLink)}
-          css={css`
-            background: none;
-            padding: 0px;
-            min-width: auto;
-            height: auto;
-        `}
-        >
-          Copy Link
-        </Button>
+        <NavLink
+          to='/rewards/squads'
+          target='_self'
+          style={{ textDecoration: 'none ', color: '#C742DD'}}
+         >
+          Get Invite Codes
+        </NavLink>
       </Box>
     </Box>
   );

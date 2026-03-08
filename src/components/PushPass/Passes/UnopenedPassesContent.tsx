@@ -1,13 +1,18 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
 import { Box, RarePassIcon, Text } from '../../../blocks';
-import PassCard from './PassCard';
+import RarePassCard from './RarePassCard';
 import { device } from '../../../config/globals';
 
 type Pass = {
   id: number;
   isLocked: boolean;
   lockMessage?: string;
+  character?: {
+    characterId: string;
+    status: string;
+    [key: string]: any;
+  };
 };
 
 type UnopenedPassesContentProps = {
@@ -76,9 +81,32 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
           Collect and open as many passes as possible before the burn event. More Rare Pass = Higher Chance to score a Shiny
         </Text>
       </Box>
-    </Box>
+      </Box>
 
+      {!passes.length &&
       <Box
+        width="100%"
+        css={css`
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          min-height: 125px;
+        `}
+      >
+        <Text
+          variant="bm-semibold"
+          textAlign="center"
+          css={css`
+            color: rgba(255, 255, 255, 0.25);
+          `}
+        >
+          Play Spins, Level up or complete quests for a chance to win Rare Pass.
+        </Text>
+      </Box>}
+
+      {passes.length &&
+       <Box
         gap="spacing-md"
         width="100%"
         css={css`
@@ -96,15 +124,16 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
           }
         `}
       >
-        {passes.map((pass) => (
-          <PassCard
+        {passes?.map((pass) => (
+          <RarePassCard
             key={pass.id}
             isLocked={pass.isLocked}
             lockMessage={pass.lockMessage}
             id={pass.id}
+            characterId={pass.character?.characterId}
           />
         ))}
-      </Box>
+      </Box>}
     </Box>
   );
 };

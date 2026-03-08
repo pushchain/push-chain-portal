@@ -1,11 +1,12 @@
 // React and other libraries
 import React, { FC } from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 //Queries
 import { ActvityType, UsersActivity } from "../../../queries";
 import { Button } from "../../../blocks";
 import { ActivityVerificationButton } from "./ActivityVerificationButton";
-import { useCountdown } from "./hooks/useCountdown";
+// import { useCountdown } from "./hooks/useCountdown";
 
 type ActivityButtonProps = {
   userId: string;
@@ -14,12 +15,15 @@ type ActivityButtonProps = {
   activityType: ActvityType;
   refetchActivity: () => void;
   setErrorMessage: (errorMessage: string) => void;
-  usersSingleActivity?: UsersActivity;
+  usersSingleActivity?: UsersActivity | any;
   isLoadingActivity: boolean;
   label?: string;
   currentLevel?: string;
   setCurrentLevel?: (currentLevel: string) => void;
   onStartClaim?: () => void;
+  buttonVariant?: "primary" | "secondary" | "tertiary" | "outline";
+  buttonSize?: "small" | "medium" | "large";
+  buttonCss?: FlattenSimpleInterpolation;
 };
 
 const ActivityButton: FC<ActivityButtonProps> = ({
@@ -32,27 +36,30 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   usersSingleActivity,
   isLoadingActivity,
   label,
-  currentLevel,
-  setCurrentLevel,
+  // currentLevel,
+  // setCurrentLevel,
   onStartClaim,
+  buttonVariant = "tertiary",
+  buttonSize = "small",
+  buttonCss,
 }) => {
   // current finish date
-  const targetDate = "2025-07-31T23:59:59";
-  const { isExpired } = useCountdown(targetDate);
+  // const targetDate = "2025-07-31T23:59:59";
+  // const { isExpired } = useCountdown(targetDate);
 
-  const hasRewardsExpired = isExpired;
+  // const hasRewardsExpired = isExpired;
 
-  if (hasRewardsExpired) {
-    return (
-      <Button variant="tertiary" size="small" disabled>
-        Ended
-      </Button>
-    );
-  }
-
+  // if (hasRewardsExpired) {
+  //   return (
+  //     <Button variant="tertiary" size="small" disabled>
+  //       Ended
+  //     </Button>
+  //   );
+  // }
+  //
   if (usersSingleActivity?.status === "COMPLETED") {
     return (
-      <Button variant="tertiary" size="small" disabled>
+      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
         Claimed
       </Button>
     );
@@ -60,7 +67,7 @@ const ActivityButton: FC<ActivityButtonProps> = ({
 
   if (usersSingleActivity?.status === "PENDING") {
     return (
-      <Button variant="tertiary" size="small" disabled>
+      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
         Pending
       </Button>
     );
@@ -77,9 +84,12 @@ const ActivityButton: FC<ActivityButtonProps> = ({
       setErrorMessage={setErrorMessage}
       isLoadingActivity={isLoadingActivity}
       label={label}
-      currentLevel={currentLevel}
-      setCurrentLevel={setCurrentLevel}
+      // currentLevel={currentLevel}
+      // setCurrentLevel={setCurrentLevel}
       onStartClaim={onStartClaim}
+      buttonVariant={buttonVariant}
+      buttonSize={buttonSize}
+      buttonCss={buttonCss}
     />
   );
 };

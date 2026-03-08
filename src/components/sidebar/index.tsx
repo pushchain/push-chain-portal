@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   Box,
   Lozenge,
@@ -14,11 +14,17 @@ import {
   DotsThree,
   CaretLeftCircle,
   Cross,
+  SquadsIcon,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useRewardsContext } from '../../context/rewardsContext';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+import { walletToFullCAIP10 } from '../../helpers/web3helper';
+import { useGetUserCultStatus } from '../../queries';
+import { useActivityContext } from '../../context/activityContext';
 
 type MenuItem = {
   id: string;
@@ -38,9 +44,44 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
-  const [activeItemId, setActiveItemId] = useState<string>('discover');
   const isLaptop = useMediaQuery(device.laptopL);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { isVerified } = useActivityContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
+
+  const isWalletConnected = Boolean(universalAccount?.address);
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCultStatus } = useGetUserCultStatus({
+    wallet: caip10WalletAddress
+  });
+
+  const isCultUser = userCultStatus?.data?.isCultMember;
+
+  const showCultDashboard = isWalletConnected && isCultUser && isVerified;
+
+  const getActiveItemId = (): string => {
+    const path = location.pathname;
+
+    if (path === '/') return 'season3';
+    if (path === '/rewards' || path === '/rewards/') return 'discover';
+    if (path.startsWith('/rewards/pushpass')) return 'push-pass';
+    if (path.startsWith('/rewards/squads')) return 'squads';
+    if (path.startsWith('/rewards/leaderboard')) return 'leaderboards';
+    if (path.startsWith('/rewards/pre-launch')) return 'pre-launch';
+    if (path.startsWith('/cult/leaderboard')) return 'cult-leaderboard';
+    if (path.startsWith('/cult')) return 'cult';
+
+    return 'discover';
+  };
+
+  const activeItemId = getActiveItemId();
 
   useEffect(() => {
     if (isOpen && isLaptop) {
@@ -57,13 +98,12 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
   }, [isOpen, isLaptop, onClose]);
 
   const topMenuItems: MenuItem[] = [
-    {
-      id: 'pre-launch',
-      icon: CompassRose,
-      label: 'Pre-Launch Access',
-      route: '/rewards/pre-launch'
-    },
-    // TODO: comment out till launch
+    // {
+    //   id: 'pre-launch',
+    //   icon: CompassRose,
+    //   label: 'Pre-Launch Access',
+    //   route: '/rewards/pre-launch'
+    // },
     // {
     //   id: 'discover',
     //   icon: CompassRose,
@@ -86,11 +126,39 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     //   route: '/rewards/pushpass'
     // },
     // {
+    //   id: 'squads',
+    //   icon: SquadsIcon,
+    //   label: 'Invites/Squads',
+    //   route: '/rewards/squads'
+    // },
+    // {
     //   id: 'leaderboards',
     //   icon: Ranking,
     //   label: 'Leaderboards',
     //   route: '/rewards/leaderboard'
     // },
+    {
+      id: 'season3',
+      icon: CompassRose,
+      label: 'Season 3',
+      route: '/'
+    },
+    {
+      id: 'cult',
+      icon: CastleTurret,
+      label: 'Cult',
+      route: '/cult'
+    },
+    ...(showCultDashboard
+    ? [
+        {
+          id: 'cult-leaderboard',
+          icon: Ranking,
+          label: 'Cult Leaderboards',
+          route: '/cult/leaderboard',
+        },
+      ]
+    : []),
   ];
 
   const bottomMenuItems: MenuItem[] = [
@@ -129,8 +197,14 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
   `;
 
   const handleItemClick = (itemId: string, onClick?: () => void, route?: string) => {
-    setActiveItemId(itemId);
-    navigate(route);
+    if (route) {
+      // Check if it's an external URL
+      if (route.startsWith('http')) {
+        window.open(route, '_blank');
+      } else {
+        navigate(route);
+      }
+    }
     onClick?.();
     if (isLaptop) {
       onClose?.();

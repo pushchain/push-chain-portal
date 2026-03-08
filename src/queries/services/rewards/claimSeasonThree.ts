@@ -1,8 +1,9 @@
 import axios from "axios";
 import { getRewardsBaseURL } from "../../../queries/baseURL";
 import { claimSeasonThreeModel } from "../../../queries/models/rewards";
+import { ClaimSeasonThreePayload } from "../../types";
 
-export const claimSeasonThree = (payload: any) =>
+export const claimSeasonThree = (payload: ClaimSeasonThreePayload) =>
   axios({
     method: "POST",
     url: `${getRewardsBaseURL()}/v2/users/discord-reverify`,

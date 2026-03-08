@@ -5,71 +5,160 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
 
-interface AuthModalContextType {
+import {
+  RewardActivityStatus,
+  RewardActivityStatusResponse,
+  useGetRewardActivityStatus,
+  useAdvancedSybilCheck,
+  usePushWalletSybilCheck,
+  useGetSeasonThreeUserByWallet,
+} from "../queries";
+import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
+
+interface RewardsContextType {
   isAuthModalVisible: boolean;
   setIsAuthModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isLocked: boolean;
-  setIsLocked: React.Dispatch<React.SetStateAction<boolean>>;
+  isLockedStatusLoading: boolean;
+  isSybilEligible: boolean | null;
+  isSybilCheckPending: boolean;
   isVerifyClicked: boolean;
   setIsVerifyClicked: React.Dispatch<React.SetStateAction<boolean>>;
   isXPRefreshCompleted: boolean;
   setIsXPRefreshCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   signature: string | null;
   setSignature: React.Dispatch<React.SetStateAction<string | null>>;
+  refetchActivityStatus: () => void;
 }
 
-const AuthModalContext = createContext<AuthModalContextType | undefined>(
-  undefined,
-);
+const RewardsContext = createContext<RewardsContextType | undefined>(undefined);
 
 export const RewardsContextProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  // context state for modal visibility option
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
-  // context state for locked status in rewards activities
   const [isLocked, setIsLocked] = useState(true);
-  // context state for current rewards login status(manual or auto, manual if verify button is clicked, and auto - on wallet conect)
+  const [isSybilEligible, setIsSybilEligible] = useState<boolean | null>(null);
   const [isVerifyClicked, setIsVerifyClicked] = useState(false);
-  // context state for if refresh xp api is done and successful
   const [isXPRefreshCompleted, setIsXPRefreshCompleted] = useState(false);
-  // sign signature
   const [signature, setSignature] = useState(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const account = universalAccount?.address as string;
+  const isWalletConnected = Boolean(universalAccount?.address);
+  const { chainId } = parseCAIP(universalAccount?.chain);
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    account,
+    universalAccount?.chain,
+  );
+
+  const {
+    data: userDetails,
+    isLoading: isLoadingUserDetails,
+  } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  });
+
+  const {
+    data: activityStatus,
+    refetch: refetchActivityStatus,
+    isLoading: isLoadingActivityStatus,
+  } = useGetRewardActivityStatus(
+    {
+      userId: userDetails?.userId as string,
+      activities: ["follow_push_on_discord", "follow_push_on_twitter"],
+    },
+    !!userDetails?.userId,
+  );
+
+  const { mutate: evmSybilCheck, isPending: isEvmSybilPending } = useAdvancedSybilCheck();
+  const { mutate: pushWalletSybilCheck, isPending: isPushWalletSybilPending } = usePushWalletSybilCheck();
+
+  const isSybilCheckPending = isEvmSybilPending || isPushWalletSybilPending;
+
+  const hasSybilCheckRun = useRef(false);
 
   useEffect(() => {
-    if (!universalAccount) {
+    if (!account || !chainId || hasSybilCheckRun.current) return;
+
+    hasSybilCheckRun.current = true;
+
+    const mutate = chainId === "42101" ? pushWalletSybilCheck : evmSybilCheck;
+
+    mutate(
+      {
+        address: account,
+        chainId: parseInt(chainId),
+      },
+      {
+        onSuccess: (response) => {
+          setIsSybilEligible(response?.eligible);
+        },
+        onError: (error) => {
+          console.error("Sybil check error:", error);
+        },
+      }
+    );
+  }, [account, chainId, evmSybilCheck, pushWalletSybilCheck]);
+
+  const isLockedStatusLoading = isLoadingUserDetails || isLoadingActivityStatus;
+
+  useEffect(() => {
+    if (!isWalletConnected) {
       setIsLocked(true);
+      setIsSybilEligible(null);
+      return;
     }
-  }, [universalAccount]);
+
+    if (!activityStatus || Object.keys(activityStatus).length === 0) return;
+
+    const activities = activityStatus?.activities as RewardActivityStatusResponse;
+    const discordStatus = activities?.follow_push_on_discord as RewardActivityStatus;
+    const twitterStatus = activities?.follow_push_on_twitter as RewardActivityStatus;
+
+    const isDiscordCompleted = discordStatus?.status === "COMPLETED";
+    const isTwitterCompletedOrPending =
+      twitterStatus?.status === "COMPLETED" || twitterStatus?.status === "PENDING";
+
+    const shouldUnlock = isDiscordCompleted && isTwitterCompletedOrPending && isSybilEligible === true;
+    setIsLocked(!shouldUnlock);
+  }, [
+    isWalletConnected,
+    activityStatus,
+    isSybilEligible,
+  ]);
 
   return (
-    <AuthModalContext.Provider
+    <RewardsContext.Provider
       value={{
         isAuthModalVisible,
         setIsAuthModalVisible,
         isLocked,
-        setIsLocked,
+        isLockedStatusLoading,
+        isSybilEligible,
+        isSybilCheckPending,
         isVerifyClicked,
         setIsVerifyClicked,
         isXPRefreshCompleted,
         setIsXPRefreshCompleted,
         signature,
         setSignature,
+        refetchActivityStatus,
       }}
     >
       {children}
-    </AuthModalContext.Provider>
+    </RewardsContext.Provider>
   );
 };
 
 export const useRewardsContext = () => {
-  const context = useContext(AuthModalContext);
+  const context = useContext(RewardsContext);
   if (context === undefined) {
     throw new Error(
       "useRewardsContext must be used within an RewardsContextProvider",

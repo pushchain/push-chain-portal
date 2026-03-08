@@ -7,7 +7,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 // helpers
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
@@ -18,7 +18,6 @@ export type UseVerifyRewardsParams = {
   setErrorMessage: (errorMessage: string) => void;
   refetchActivity: () => void;
   activityTypeIndex?: string;
-  setCurrentLevel?: (currentLevel) => void;
   onStartClaim?: () => void;
 };
 
@@ -37,7 +36,7 @@ const useVerifyRewards = ({
 
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { chainId } = parseCAIP(universalAccount?.chain);
   const { signMessage } = useSignMessageWithEthereum();
 
@@ -62,8 +61,8 @@ const useVerifyRewards = ({
     handleVerify(userId);
   };
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
@@ -77,7 +76,7 @@ const useVerifyRewards = ({
       chainId == WalletChainType.ETH;
 
     let verificationProof = "abcd";
-    let messageToSend = "";
+    let messageToSend: Record<string, string> | "" = "";
 
     if (isSupportedChain) {
       const {
@@ -93,7 +92,7 @@ const useVerifyRewards = ({
       }
 
       verificationProof = signature;
-      messageToSend = signedMessage;
+      messageToSend = signedMessage as Record<string, string>;
     }
 
     claimRewardsActivity(
@@ -105,16 +104,17 @@ const useVerifyRewards = ({
       },
       {
         onSuccess: (response) => {
-          if (response.status === "COMPLETED") {
+          // TODO: fix this later
+          if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
             setRewardsActivityStatus("Claimed");
-            if (setCurrentLevel) {
-              setCurrentLevel(activityTypeId);
-            }
+            // if (setCurrentLevel) {
+            //   setCurrentLevel(activityTypeId);
+            // }
             refetchActivity();
             refetchUserDetails();
             setVerifyingRewards(false);
           }
-          if (response.status === "PENDING") {
+          if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
             setRewardsActivityStatus("Pending");
             refetchActivity();
             setVerifyingRewards(false);
@@ -123,8 +123,8 @@ const useVerifyRewards = ({
         onError: (error: any) => {
           console.log("Error in creating activity", error);
           setVerifyingRewards(false);
-          if (error.name) {
-            setErrorMessage(error.response.data.error);
+          if (error?.name) {
+            setErrorMessage(error?.response?.data?.error);
           }
         },
       },

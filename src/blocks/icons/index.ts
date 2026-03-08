@@ -184,21 +184,29 @@ export { default as RewardsStarGradient } from "./components/RewardsStarGradient
 export { default as Sale } from "./components/Sale";
 
 export { default as SealCheck } from "./components/SealCheck";
+
 export { default as SealCheckFilled } from "./components/SealCheckFilled";
 
 export { default as Search } from "./components/Search";
+
 export { default as SearchFilled } from "./components/SearchFilled";
+
+export { default as SeasonThreeEllipse } from './components/SeasonThreeEllipse';
 
 export { default as SendFilled } from "./components/SendFilled";
 
 export { default as SendNotification } from "./components/SendNotification";
+
 export { default as SendNotificationFilled } from "./components/SendNotificationFilled";
 
 export { default as Smiley } from "./components/Smiley";
 
 export { default as SquaresFour } from "./components/SquaresFour";
 
+export { default as SquadsIcon } from './components/SquadsIcon';
+
 export { default as Star } from "./components/Star";
+
 export { default as StarFilled } from "./components/StarFilled";
 
 export { default as Settings } from "./components/Settings";

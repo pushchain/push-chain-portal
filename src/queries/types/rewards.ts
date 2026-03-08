@@ -1,3 +1,9 @@
+export type AuthHeaders = {
+  message: string;
+  signature: string;
+  walletAddress: string;
+};
+
 export type RewardsAcitivitesResponse = {
   activities: Activity[];
   total: number;
@@ -8,176 +14,18 @@ export type RewardsAcitivitesResponse = {
 export type ActvityType =
   | "follow_push_on_discord"
   | "follow_push_on_twitter"
-  | "tweet_about_push_chain"
-  | "tweet_about_200k_points"
-  | "test_transaction_on_push_chain"
-  | "daily_check_in_7_days_day1"
-  | "daily_check_in_7_days_day2"
-  | "daily_check_in_7_days_day3"
-  | "daily_check_in_7_days_day4"
-  | "daily_check_in_7_days_day5"
-  | "daily_check_in_7_days_day6"
-  | "daily_check_in_7_days_day7"
-  | "chess:xp_level_1"
-  | "chess:xp_level_2"
-  | "chess:xp_level_3"
-  | "chess:xp_level_4"
-  | "chess:xp_level_5"
-  | "chess:xp_level_6"
-  | "chess:xp_level_7"
-  | "chess:xp_level_8"
-  | "chess:xp_level_9"
-  | "chess:xp_level_10"
-  | "chess:xp_level_11"
-  | "chess:xp_level_12"
-  | "chess:xp_level_13"
-  | "chess:xp_level_14"
-  | "chess:xp_level_15"
-  | "chess:xp_level_16"
-  | "chess:xp_level_17"
-  | "chess:xp_level_18"
-  | "chess:xp_level_19"
-  | "chess:xp_level_20"
-  | "chess:xp_level_21"
-  | "chess:xp_level_22"
-  | "chess:xp_level_23"
-  | "chess:xp_level_24"
-  | "chess:xp_level_25"
-  | "chess:xp_level_26"
-  | "chess:xp_level_27"
-  | "chess:xp_level_28"
-  | "chess:xp_level_29"
-  | "chess:xp_level_30"
-  | "chess:xp_level_31"
-  | "chess:xp_level_32"
-  | "chess:xp_level_33"
-  | "chess:xp_level_34"
-  | "chess:xp_level_35"
-  | "chess:xp_level_36"
-  | "chess:xp_level_37"
-  | "chess:xp_level_38"
-  | "chess:xp_level_39"
-  | "chess:xp_level_40"
-  | "chess:xp_level_41"
-  | "chess:xp_level_42"
-  | "chess:xp_level_43"
-  | "chess:xp_level_44"
-  | "chess:xp_level_45"
-  | "chess:xp_level_46"
-  | "chess:xp_level_47"
-  | "chess:xp_level_48"
-  | "chess:xp_level_49"
-  | "chess:xp_level_50"
-  | "chess:xp_level_51"
-  | "chess:xp_level_52"
-  | "chess:xp_level_53"
-  | "chess:xp_level_54"
-  | "chess:xp_level_55"
-  | "chess:xp_level_56"
-  | "chess:xp_level_57"
-  | "chess:xp_level_58"
-  | "chess:xp_level_59"
-  | "chess:xp_level_60"
-  | "email:xp_level_1"
-  | "email:xp_level_2"
-  | "email:xp_level_3"
-  | "email:xp_level_4"
-  | "email:xp_level_5"
-  | "email:xp_level_6"
-  | "email:xp_level_7"
-  | "email:xp_level_8"
-  | "email:xp_level_9"
-  | "email:xp_level_10"
-  | "email:xp_level_11"
-  | "email:xp_level_12"
-  | "email:xp_level_13"
-  | "email:xp_level_14"
-  | "email:xp_level_15"
-  | "email:xp_level_16"
-  | "email:xp_level_17"
-  | "email:xp_level_18"
-  | "email:xp_level_19"
-  | "email:xp_level_20"
-  | "email:xp_level_21"
-  | "email:xp_level_22"
-  | "email:xp_level_23"
-  | "email:xp_level_24"
-  | "email:xp_level_25"
-  | "email:xp_level_26"
-  | "email:xp_level_27"
-  | "email:xp_level_28"
-  | "email:xp_level_29"
-  | "email:xp_level_30"
-  | "email:xp_level_31"
-  | "email:xp_level_32"
-  | "email:xp_level_33"
-  | "email:xp_level_34"
-  | "email:xp_level_35"
-  | "email:xp_level_36"
-  | "email:xp_level_37"
-  | "email:xp_level_38"
-  | "email:xp_level_39"
-  | "email:xp_level_40"
-  | "email:xp_level_41"
-  | "email:xp_level_42"
-  | "email:xp_level_43"
-  | "email:xp_level_44"
-  | "email:xp_level_45"
-  | "email:xp_level_46"
-  | "email:xp_level_47"
-  | "email:xp_level_48"
-  | "email:xp_level_49"
-  | "email:xp_level_50"
-  | "rumors:xp_level_1"
-  | "rumors:xp_level_2"
-  | "rumors:xp_level_3"
-  | "rumors:xp_level_4"
-  | "rumors:xp_level_5"
-  | "rumors:xp_level_6"
-  | "rumors:xp_level_7"
-  | "rumors:xp_level_8"
-  | "rumors:xp_level_9"
-  | "rumors:xp_level_10"
-  | "rumors:xp_level_11"
-  | "rumors:xp_level_12"
-  | "rumors:xp_level_13"
-  | "rumors:xp_level_14"
-  | "rumors:xp_level_15"
-  | "rumors:xp_level_16"
-  | "rumors:xp_level_17"
-  | "rumors:xp_level_18"
-  | "rumors:xp_level_19"
-  | "rumors:xp_level_20"
-  | "rumors:xp_level_21"
-  | "rumors:xp_level_22"
-  | "rumors:xp_level_23"
-  | "rumors:xp_level_24"
-  | "rumors:xp_level_25"
-  | "rumors:xp_level_26"
-  | "rumors:xp_level_27"
-  | "rumors:xp_level_28"
-  | "rumors:xp_level_29"
-  | "rumors:xp_level_30"
-  | "rumors:xp_level_31"
-  | "rumors:xp_level_32"
-  | "rumors:xp_level_33"
-  | "rumors:xp_level_34"
-  | "rumors:xp_level_35"
-  | "rumors:xp_level_36"
-  | "rumors:xp_level_37"
-  | "rumors:xp_level_38"
-  | "rumors:xp_level_39"
-  | "rumors:xp_level_40"
-  | "rumors:xp_level_41"
-  | "rumors:xp_level_42"
-  | "rumors:xp_level_43"
-  | "rumors:xp_level_44"
-  | "rumors:xp_level_45"
-  | "rumors:xp_level_46"
-  | "rumors:xp_level_47"
-  | "rumors:xp_level_48"
-  | "rumors:xp_level_49"
-  | "rumors:xp_level_50";
+  | "lastone_place_bid"
+  | "lastone_win_50pc_claim"
+  | "lastone_win_3_rounds_claim"
+  | "lastone_bid_10_single_round"
+  | "lastone_participate_25_rounds"
+  | "ramen_swap_one_swap"
+  | "ramen_swap_stablecoin_to_push"
+  | "ramen_swap_five_swaps"
+  | "ramen_swap_hold_three_chain_tokens"
+  | "boss_complete_all_5_app_quests"
+  | "boss_hold_5_rare_passes"
+
 
 export type Activity = {
   id: string;
@@ -204,9 +52,9 @@ export type UsersAllActivitiesResponse = {
 
 export type UsersActivity = {
   activityId: string;
-  userId: string;
+  userId?: string;
   activityTypeId: string;
-  data:
+  data?:
     | { twitter?: string; discord?: string }
     | {
         currentEpoch?: number;
@@ -219,7 +67,7 @@ export type UsersActivity = {
   status: "COMPLETED" | "PENDING" | "REJECTED";
   points: number;
   multiplier: number;
-  verificationProof: string;
+  verificationProof?: string;
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
 };
@@ -246,7 +94,7 @@ export type ClaimRewardsActivityProps = {
 
 export type RewardActivityStatusProps = {
   userId: string;
-  activities: any;
+  activities: string[];
 };
 
 export type PointsVaultUserLoginProps = {
@@ -258,7 +106,14 @@ export type PointsVaultUserLoginPayload = {
 };
 
 export type ClaimActivitesResponse = {
-  status: "COMPLETED" | "PENDING";
+  success: boolean;
+    data?: {
+      activityId?: string;
+      status?: string;
+      points?: number;
+      multiplier?: number;
+      createdAt?: string;
+    };
 };
 
 export type DiscordDetails = {
@@ -431,4 +286,231 @@ export type UserEligibilityForPreLaunchResponse = {
   discordVerified: boolean;
   exists: boolean;
   season: string;
+};
+
+export type SeasonThreeUserByWalletParams = {
+  walletAddress: string;
+};
+
+export type SeasonThreeUserByWalletResponse = {
+  userId: string;
+  userWallet: string;
+  userUEAWallet: string;
+  activityPoints: number;
+  referralPoints: number;
+  frozenPoints: number;
+  totalPoints: number;
+  cachePCTokens: number;
+  xp: number;
+  level: number;
+  paragonModeEnabled: boolean;
+  rareActiveCount: number;
+  rareDormantCount: number;
+  shinyCount: number;
+  ashCount: number;
+  streak: number;
+  lastCheckIn: string | null;
+  spinCount: number;
+  spinDate: string | null;
+  totalSpins: number;
+  permaMultiplier: number;
+  previousPermaMultiplier: number;
+  tempMultiplier: number;
+  hasEternalTorch: boolean;
+  inviteCodes: number;
+  inviteCodeUsed: string;
+  phase: string;
+  rank: number;
+  createdAt: string;
+  lastUpdated: string;
+  isSeasonOneUser: boolean;
+  isSeasonTwoUser: boolean;
+};
+
+export type AdvancedSybilCheckParams = {
+  address: string;
+  chainId: number;
+};
+
+export type WalletAgeCheck = {
+  passed: boolean;
+  reason: string;
+  details: {
+    firstTxTimestamp: number;
+    firstTxHash: string;
+    walletCreationDate: string;
+    walletAgeDays: number;
+    cutoffDate: string;
+    requiredAgeDays: number;
+  };
+};
+
+export type MinimumBalanceCheck = {
+  passed: boolean;
+  reason: string;
+  usdCheck: {
+    passed: boolean;
+    reason: string;
+    details: {
+      error?: string;
+    };
+  };
+  nativeTokenCheck: {
+    passed: boolean;
+    reason: string;
+    details: {
+      blockNumber: number;
+      checkDate: string;
+      balanceWei: string;
+      balanceInNative: string;
+      requiredNativeToken: number;
+      shortfall: number;
+    };
+  };
+};
+
+export type TransactionCountCheck = {
+  passed: boolean;
+  reason: string;
+  details: {
+    blockNumber: number;
+    cutoffDate: string;
+    transactionCount: number;
+    requiredCount: number;
+    shortfall: number;
+    firstTxDate: string;
+    lastTxDate: string;
+  };
+};
+
+export type AdvancedSybilCheckResponse = {
+  eligible: boolean;
+  address: string;
+  chainId: number;
+  chainName: string;
+  checks: {
+    walletAge: WalletAgeCheck;
+    minimumBalance: MinimumBalanceCheck;
+    transactionCount: TransactionCountCheck;
+  };
+  checkedAt: string;
+  duration: string;
+};
+
+
+export type SpinStatusResponse = {
+  success: boolean;
+  currentSpinCount: number;
+  remainingSpins: number;
+  maxSpinsPerDay: number;
+  nextSpinCost: number;
+  canSpin: boolean;
+  hasEnoughPoints: boolean;
+  userPoints: number;
+  totalLifetimeSpins: number;
+  rarePassCount: number;
+  squadInfo?: {
+    isInSquad: boolean;
+    squadLevel?: number;
+    squadLuckProb?: number;
+  };
+  needsReset: boolean;
+  resetsAt: string;
+};
+
+export interface SpinTheWheelResponse {
+  success: boolean;
+  spinNumber: number;
+  spinCost: number;
+  slotId: number;
+  rewardType: string;
+  rewardValue: number;
+  rewardLabel: string;
+  rewardDetails?: {
+    xpMultiplierAwarded?: number;
+    xpMultiplierExpiresAt?: string;
+    pointsAwarded?: number;
+    pcTokensAwarded?: number;
+    rarePassAwarded?: boolean;
+  };
+  remainingSpins: number;
+  nextSpinCost: number;
+  userState: {
+    totalPoints: number;
+    cachePCTokens: number;
+    rareActiveCount: number;
+    tempXPMultiplier?: number;
+    tempXPMultiplierExpiresAt?: string;
+  };
+}
+
+export type ClaimSeasonThreePayload = {
+  userWallet: string;
+  discordEmail: string;
+  discordUsername: string;
+  data: Record<string, string>;
+  verificationProof: string;
+};
+
+export type ClaimSeasonThreeResponse = {
+  success: boolean;
+  created: boolean;
+  status?: string;
+  user?: UserRewardsDetailResponse;
+};
+
+export type CreateSeasonThreeUserPayload = {
+  userWallet: string;
+  userUEAWallet?: string;
+  email?: string;
+  inviteCodeUsed?: string;
+  phase?: string;
+  verificationProof: string;
+  data: Record<string, string> | string;
+};
+
+export interface CreateSeasonThreeUserResponse {
+  userId: string;
+  userWallet: string;
+  userUEAWallet?: string;
+  phase: string;
+  createdAt: string;
+}
+
+export interface DailyCheckInDetailsResponse {
+  success: boolean;
+  streak: number;
+  lastCheckIn: string;
+  canCheckInToday: boolean;
+  nextCheckInAvailable: string;
+}
+
+export interface ClaimDailyRewardsSeasonThreeResponse {
+  success: boolean;
+  streak: number;
+  points: number;
+  xp: number;
+  isStreakReset: boolean;
+  message: string;
+}
+
+export type LevelConfigItem = {
+  level: number;
+  xpNeeded: number;
+  pointsReward: number;
+  pcTokensReward: number;
+};
+
+export type LevelProgressResponse = {
+  success: boolean;
+  level: number;
+  xp: number;
+  xpProgress: {
+    currentXPInLevel: number;
+    xpNeededForNextLevel: number;
+    progressPercentage: number;
+  };
+  currentLevelConfig: LevelConfigItem;
+  nextLevelConfig: LevelConfigItem;
+  paragonModeEnabled: boolean;
 };
