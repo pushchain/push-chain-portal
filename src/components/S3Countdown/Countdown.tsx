@@ -135,11 +135,11 @@ export const Countdown = () => {
 							</Text>
 
 							<Text variant="h4-regular" color="#000000">
-								Brace yourselves. You are about to see the raw, unfiltered power of Push 
+								Brace yourselves. You are about to see the raw, unfiltered power of Push
 								Chain and the network we are building.
 							</Text>
 						</Box>
-            
+
 
 						<Text variant="ds-bold" color="#C742DD">
               {timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S
@@ -162,7 +162,7 @@ export const Countdown = () => {
           Invited to be a part of Push Cult?
         </Text>
 				<Text
-					variant="h5-bold" 
+					variant="h5-bold"
 					color="#C742DD"
 					onClick={handleConnectToPushWallet}
 					css={css`

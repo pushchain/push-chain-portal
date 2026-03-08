@@ -35,6 +35,7 @@ export const CultHeader = () => {
       justifyContent="center"
       width="100%"
       borderRadius="radius-md"
+      position="relative"
       css={css`
         flex: 1;
 				border: 1px solid rgba(171, 70, 248, 0.40);
@@ -55,9 +56,22 @@ export const CultHeader = () => {
         overflow="hidden"
         width="100%"
         css={css`
-          background: linear-gradient(180deg, #010101 39.5%, #D548EC 100%);
+          background: linear-gradient(180deg, #010101 30.5%, #D548EC 100%);
           box-sizing: border-box;
 					min-height: 406px;
+
+					&::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: rgba(255, 255, 255, 0.40);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            }
         `}
       >
 

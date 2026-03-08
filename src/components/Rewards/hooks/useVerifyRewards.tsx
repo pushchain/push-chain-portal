@@ -11,6 +11,7 @@ import {
 } from "../../../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { WalletChainType } from "../utils/wallet";
 
 export type UseVerifyRewardsParams = {
@@ -39,6 +40,7 @@ const useVerifyRewards = ({
   const { universalAccount } = usePushWalletContext('wallet1');
   const { chainId } = parseCAIP(universalAccount?.chain);
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -70,15 +72,27 @@ const useVerifyRewards = ({
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    // Check if the chain is Sepolia or Ethereum
-    const isSupportedChain =
-      chainId == WalletChainType.SEPOLIA ||
-      chainId == WalletChainType.ETH;
+    let verificationProof;
+    let messageToSend: Record<string, string | undefined> = {};
 
-    let verificationProof = "abcd";
-    let messageToSend: Record<string, string> | "" = "";
+    const isSolana = chainId == WalletChainType.SOLANA;
 
-    if (isSupportedChain) {
+    if (isSolana) {
+      const {
+        signature,
+        messageToSend: signedMessage,
+        error,
+      } = await signMessageWithSolana();
+      if (error || !signature) {
+        console.log(error);
+        setErrorMessage(error);
+        setVerifyingRewards(false);
+        return;
+      }
+
+      verificationProof = signature;
+      messageToSend = signedMessage;
+    } else {
       const {
         signature,
         messageToSend: signedMessage,
@@ -92,7 +106,12 @@ const useVerifyRewards = ({
       }
 
       verificationProof = signature;
-      messageToSend = signedMessage as Record<string, string>;
+      messageToSend = signedMessage as Record<string, string | undefined>;
+    }
+
+    if (!verificationProof) {
+      setErrorMessage('Invalid Verification Proof');
+      setVerifyingRewards(false);
     }
 
     claimRewardsActivity(

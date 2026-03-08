@@ -1,6 +1,6 @@
 import { css } from "styled-components"
 
-import { Box, Text } from "../../../blocks"
+import { Box, Link, Text } from "../../../blocks"
 import { device } from "../../../config/globals"
 
 export const LoggedInVerifiedUser = () => {
@@ -18,11 +18,8 @@ export const LoggedInVerifiedUser = () => {
                 flexDirection="column"
                 alignItems="center"
                 textAlign="center"
-                // css={css`
-                //     max-width: 720px;
-                // `}
         >
-            
+
                 <Text
                         variant="h2-bold"
                         css={css`
@@ -42,7 +39,9 @@ export const LoggedInVerifiedUser = () => {
                 </Text>
 
                 <Text variant="h4-regular" color="#FFFFFF">
-                        Join #push-cult channel on Discord and await further instructions
+                  Join
+                  <Link to="https://discord.com/invite/pushchain"
+                    textProps={{ variant: "h4-regular", color: "#C742DD" }}>{' '}#push-cult</Link> channel on Discord and await further instructions
                 </Text>
         </Box>
     </Box>

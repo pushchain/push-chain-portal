@@ -22,7 +22,7 @@ export const LoggedInUnverifiedUser = () => {
                         max-width: 824px;
                     `}
             >
-                
+
                     <Text
                             variant="h2-bold"
                             css={css`
@@ -42,7 +42,7 @@ export const LoggedInUnverifiedUser = () => {
                     </Text>
 
                     <Text variant="h4-regular" color="#FFFFFF">
-                            You’ve bee chosen as a Push Cult Disciple. Will you answer the call?
+                            You’ve been chosen as a Push Cult Disciple. Will you answer the call?
                     </Text>
             </Box>
             <Box>

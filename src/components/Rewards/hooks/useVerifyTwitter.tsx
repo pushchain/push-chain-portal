@@ -24,6 +24,7 @@ import appConfig from "../../../config";
 const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseConfig) : getApps()[0];
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { WalletChainType } from "../utils/wallet";
 
 export type UseTwitterVerifyParams = {
@@ -45,6 +46,7 @@ const useVerifyTwitter = ({
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -138,17 +140,32 @@ const useVerifyTwitter = ({
         const twitterHandle = (userTwitterDetails as any)?.reloadUserInfo
           ?.screenName;
 
-        // Check if the chain is Sepolia or Ethereum
-        const isSupportedChain =
-          chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH;
-
-        let verificationProof = "abcd";
-        let messageToSend: any = {
+        let verificationProof;
+        let messageToSend: Record<string, string | undefined> = {
           twitter: twitterHandle,
         };
 
-        if (isSupportedChain) {
+        const isSolana = chainId == WalletChainType.SOLANA;
+
+        if (isSolana) {
+          const {
+            signature,
+            messageToSend: signedMessage,
+            error,
+          } = await signMessageWithSolana({
+            twitter: twitterHandle,
+          });
+
+          if (error || !signature) {
+            console.log(error);
+            setErrorMessage(error);
+            setVerifyingTwitter(false);
+            return;
+          }
+
+          verificationProof = signature;
+          messageToSend = signedMessage;
+        } else {
           const {
             signature,
             messageToSend: signedMessage,
@@ -166,6 +183,11 @@ const useVerifyTwitter = ({
 
           verificationProof = signature;
           messageToSend = signedMessage;
+        }
+
+        if (!verificationProof) {
+          setErrorMessage('Invalid Verification Proof');
+          setVerifyingTwitter(false);
         }
 
         claimRewardsActivity(
@@ -201,7 +223,7 @@ const useVerifyTwitter = ({
         );
       }
     },
-    [handleConnect],
+    [handleConnect, chainId, signMessage, signMessageWithSolana, claimRewardsActivity, updatedId, activityTypeId],
   );
 
   return {

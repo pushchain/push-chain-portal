@@ -42,11 +42,9 @@ export const ActivityContextProvider = ({
 		isLoading: isLoadingActivity,
 		refetch,
 	} = useGetRewardsActivity(
-		{ userId: userDetails?.userId, activityTypes: ['follow_push_on_discord'] },
+		{ userId: userDetails?.userId, activityTypes: ['follow_push_on_discord','follow_push_on_twitter'] },
 		{ enabled: !!userDetails?.userId },
     );
-
-  console.log('dummy');
 
   return (
     <RewardsContext.Provider
@@ -54,7 +52,7 @@ export const ActivityContextProvider = ({
         refetch,
 				userDetails,
 				isLoading: isLoadingActivity,
-				isVerified: !!userActivity?.follow_push_on_discord,
+				isVerified: !!userActivity?.follow_push_on_discord && !!userActivity?.follow_push_on_twitter,
       }}
     >
       {children}
