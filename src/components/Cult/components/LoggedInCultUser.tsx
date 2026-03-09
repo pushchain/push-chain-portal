@@ -151,7 +151,7 @@ export const LoggedInCultUser = () => {
                   refetchActivities();
                 }}
                 setErrorMessage={setErrorMessage}
-                isLoadingActivity={isLoading}
+                isLoadingActivity={isLoading || isLoadingActivities}
                 label={activity.buttonLabel}
               />
             </Box>
