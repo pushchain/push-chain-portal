@@ -9,6 +9,7 @@ import { RewardsActivityTitle } from "../../Rewards/RewardsActivity/RewardsActiv
 import { ActivityButton } from "../../Rewards/RewardsActivity/ActivityButton"
 import { device } from "../../../config/globals"
 import { useActivityContext } from "../../../context/activityContext"
+import { useGetRewardsActivity } from "../../../queries"
 
 export const LoggedInCultUser = () => {
   const { refetch, isLoading, userDetails } = useActivityContext();
@@ -30,6 +31,16 @@ export const LoggedInCultUser = () => {
       buttonLabel: "Verify Discord",
     },
   ];
+
+
+  const {
+		data: userActivity,
+    isLoading: isLoadingActivities,
+    refetch: refetchActivities
+	} = useGetRewardsActivity(
+		{ userId: userDetails?.userId, activityTypes: ['follow_push_on_discord','follow_push_on_twitter'] },
+		{ enabled: !!userDetails?.userId },
+    );
 
   return (
     <Box
@@ -134,7 +145,11 @@ export const LoggedInCultUser = () => {
                 activityType={activity.activityType}
                 activityTypeId={activity.activityTypeId}
                 userId={userDetails?.userId as string}
-                refetchActivity={() => refetch()}
+                usersSingleActivity={userActivity?.[activity.activityType]}
+                refetchActivity={() => {
+                  refetch();
+                  refetchActivities();
+                }}
                 setErrorMessage={setErrorMessage}
                 isLoadingActivity={isLoading}
                 label={activity.buttonLabel}
