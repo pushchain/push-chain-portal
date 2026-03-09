@@ -103,7 +103,14 @@ const useVerifySeasonThree = ({
       const isSolana = chainId == WalletChainType.SOLANA;
 
       if (isSolana) {
-        const { signature, error } = await signMessageWithSolana();
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessageWithSolana({
+          discord: username,
+          discord_token: token,
+        });
 
         if (error || !signature) {
           setErrorMessage(error);
@@ -112,6 +119,7 @@ const useVerifySeasonThree = ({
         }
 
         verificationProof = signature;
+        messageToSend = signedMessage;
       } else {
 
           const {

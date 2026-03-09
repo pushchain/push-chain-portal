@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { generateNonce } from "siwe";
 import bs58 from "bs58";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
@@ -47,28 +47,15 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
   return lines.join("\n");
 };
 
-const waitForUniversal = (
-  ref: React.MutableRefObject<any>,
-  timeoutMs = 3000,
-): Promise<void> =>
-  new Promise((resolve, reject) => {
-    if (ref.current?.universal) return resolve();
-    let elapsed = 0;
-    const interval = setInterval(() => {
-      elapsed += 200;
-      if (ref.current?.universal) {
-        clearInterval(interval);
-        resolve();
-      } else if (elapsed >= timeoutMs) {
-        clearInterval(interval);
-        reject(new Error("Push Chain client universal signer not available. Please try again."));
-      }
-    }, 200);
-  });
 
 export const useSignMessageWithSolana = () => {
   const { universalAccount } = usePushWalletContext();
   const { pushChainClient } = usePushChainClient();
+
+  const clientRef = useRef(pushChainClient);
+  useEffect(() => {
+    clientRef.current = pushChainClient;
+  }, [pushChainClient]);
 
   // Ref so the async poll inside signMessage always sees the latest client
   const pushChainClientRef = useRef(pushChainClient);
@@ -88,8 +75,8 @@ export const useSignMessageWithSolana = () => {
           throw new Error("Push Wallet is not connected");
         }
 
-        if (!pushChainClientRef.current?.universal) {
-          await waitForUniversal(pushChainClientRef);
+        if (!clientRef.current?.universal) {
+          throw new Error("Wallet is still initializing. Please try again.");
         }
 
         const { chainId } = parseCAIP(universalAccount.chain);
@@ -118,7 +105,7 @@ export const useSignMessageWithSolana = () => {
 
         const messageToSign = buildSolanaSignInMessage(messageToSend);
         const messageBytes = new TextEncoder().encode(messageToSign);
-        const signatureRaw = await pushChainClientRef.current.universal.signMessage(messageBytes);
+        const signatureRaw = await clientRef.current.universal.signMessage(messageBytes);
 
         const signature: string =
           typeof signatureRaw === "string"
