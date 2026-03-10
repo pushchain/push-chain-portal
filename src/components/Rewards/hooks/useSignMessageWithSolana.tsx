@@ -47,25 +47,6 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
   return lines.join("\n");
 };
 
-const waitForUniversal = (
-  ref: React.MutableRefObject<any>,
-  timeoutMs = 3000,
-): Promise<void> =>
-  new Promise((resolve, reject) => {
-    if (ref.current?.universal) return resolve();
-    let elapsed = 0;
-    const interval = setInterval(() => {
-      elapsed += 200;
-      if (ref.current?.universal) {
-        clearInterval(interval);
-        resolve();
-      } else if (elapsed >= timeoutMs) {
-        clearInterval(interval);
-        reject(new Error("Push Chain client universal signer not available. Please try again."));
-      }
-    }, 200);
-  });
-
 export const useSignMessageWithSolana = () => {
   const { universalAccount } = usePushWalletContext("wallet1");
   const { pushChainClient } = usePushChainClient("wallet1");
