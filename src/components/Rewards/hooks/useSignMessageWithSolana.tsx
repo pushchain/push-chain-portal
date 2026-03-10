@@ -58,6 +58,11 @@ export const useSignMessageWithSolana = () => {
     clientRef.current = pushChainClient;
   }, [pushChainClient]);
 
+  const clientRef = useRef(pushChainClient);
+  useEffect(() => {
+    clientRef.current = pushChainClient;
+  }, [pushChainClient]);
+
   // Ref so the async poll inside signMessage always sees the latest client
   const pushChainClientRef = useRef(pushChainClient);
   useEffect(() => {
