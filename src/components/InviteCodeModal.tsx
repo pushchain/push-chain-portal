@@ -2,7 +2,7 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 
-import { Box, Modal, Text, TextInput } from "../blocks";
+import { Box, Modal, Text, TextInput, Logout } from "../blocks";
 import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
 import { useCreateSeasonThreeUser, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
@@ -17,7 +17,7 @@ type InviteCodeModalProps = {
 };
 
 export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
-  const { universalAccount } = usePushWalletContext('wallet1');
+  const { universalAccount, handleUserLogOutEvent } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -92,6 +92,12 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     onClose();
   };
 
+  const handleLogout = () => {
+    console.log("logout");
+    onClose();
+    handleUserLogOutEvent();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -118,6 +124,19 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         }}
       cancelButtonProps={null}
     >
+      <Box
+        onClick={handleLogout}
+        css={css`
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          cursor: pointer;
+          color: white;
+        `}
+      >
+        <Logout size={18} />
+      </Box>
+
       <Box
         display="flex"
         flexDirection="column"

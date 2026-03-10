@@ -9,7 +9,7 @@ export const Countdown = () => {
   const isMobile = useMediaQuery(device.mobileL);
 	const { handleConnectToPushWallet } = usePushWalletContext('wallet1');
 
-	const targetDate = "2026-03-12T13:59:59";
+	const targetDate = "2026-03-17T13:59:59";
 	const { timeLeft } = useCountdown(targetDate);
 
   return (
