@@ -52,17 +52,11 @@ export const useSignMessageWithSolana = () => {
   const { pushChainClient } = usePushChainClient("wallet1");
 
   // pushChainClient may be the same object reference even when .universal is populated,
-  // so we track it via a ref that's always current, regardless of React's re-render cycle.
   const clientRef = useRef(pushChainClient);
   useEffect(() => {
     clientRef.current = pushChainClient;
   }, [pushChainClient]);
 
-  // Ref so the async poll inside signMessage always sees the latest client
-  const pushChainClientRef = useRef(pushChainClient);
-  useEffect(() => {
-    pushChainClientRef.current = pushChainClient;
-  }, [pushChainClient]);
 
 
   const { setSignature } = useRewardsContext();
