@@ -22,9 +22,6 @@ const CultLeaderboardColumns: FC = () => {
         </Text>
       </Box>
       <Box display="flex" gap="spacing-xs">
-        <Text variant="c-bold" color="text-tertiary">
-          USER ID
-        </Text>
         <Text
           variant="c-bold"
           color="text-tertiary"

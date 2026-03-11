@@ -96,7 +96,6 @@ const CultLeaderboard: FC = () => {
                   <CultLeaderboardItem
                     key={`${index}`}
                     rank={item.rank}
-                    userId={item.userId}
                     userWallet={item.userWallet}
                     totalPoints={item.totalScore}
                     isLoading={isLoading}
