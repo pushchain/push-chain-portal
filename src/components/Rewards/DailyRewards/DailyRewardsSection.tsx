@@ -3,7 +3,7 @@ import React, { FC, useState } from "react";
 import { css } from "styled-components";
 
 // hooks
-import { useRewardsContext } from "../../../context/rewardsContext";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 // type
 import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
@@ -13,15 +13,13 @@ import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text } from "../
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
-import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders } = useAuthHeaders();
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
-  useRewardStatus();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 

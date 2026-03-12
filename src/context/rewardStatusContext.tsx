@@ -2,18 +2,13 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import React, {
   createContext,
   useContext,
-  useState,
   ReactNode,
-  useEffect,
-  useRef,
 } from "react";
 
 import {
-  useAdvancedSybilCheck,
-  usePushWalletSybilCheck,
   useGetSybilStatus,
 } from "../queries";
-import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
+import { walletToFullCAIP10 } from "../helpers/web3helper";
 import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardStatusContextType {
@@ -24,12 +19,9 @@ interface RewardStatusContextType {
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
 
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
-  const [isSybilEligible, setIsSybilEligible] = useState<boolean | null>(null);
-
   const { authHeaders } = useAuthHeaders();
   const { universalAccount } = usePushWalletContext("wallet1");
   const account = universalAccount?.address as string;
-  const { chainId } = parseCAIP(universalAccount?.chain);
 
   const caip10WalletAddress = walletToFullCAIP10(
     account,
@@ -50,9 +42,6 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
   );
-
-  // console.log(sybilStatusData, 'syb', isLocked)
-
 
   return (
     <RewardStatusContext.Provider

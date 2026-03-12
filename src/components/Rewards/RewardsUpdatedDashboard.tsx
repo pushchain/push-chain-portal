@@ -8,7 +8,7 @@ import {
 import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
-import { useRewardsContext } from "../../context/rewardsContext";
+import { useRewardStatus } from "../../context/rewardStatusContext";
 import { useGetUserCultStatus } from "../../queries";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
@@ -16,7 +16,7 @@ import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

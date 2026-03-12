@@ -5,14 +5,14 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 import BossQuestCard from './BossQuestCard';
 import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
-import { useRewardsContext } from '../../../context/rewardsContext';
+import { useRewardStatus } from '../../../context/rewardStatusContext';
 
 import { Alert, Box, Quests, Text } from '../../../blocks';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 

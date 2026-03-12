@@ -9,8 +9,6 @@ import React, {
 } from "react";
 
 import {
-  RewardActivityStatus,
-  RewardActivityStatusResponse,
   useGetRewardActivityStatus,
   useAdvancedSybilCheck,
   usePushWalletSybilCheck,
@@ -21,8 +19,6 @@ import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 interface RewardsContextType {
   isAuthModalVisible: boolean;
   setIsAuthModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  // isLocked: boolean;
-  // isLockedStatusLoading: boolean;
   isSybilEligible: boolean | null;
   isSybilCheckPending: boolean;
   isVerifyClicked: boolean;
@@ -42,7 +38,6 @@ export const RewardsContextProvider = ({
   children: ReactNode;
 }) => {
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
-  const [isLocked, setIsLocked] = useState(true);
   const [isSybilEligible, setIsSybilEligible] = useState<boolean | null>(null);
   const [isVerifyClicked, setIsVerifyClicked] = useState(false);
   const [isXPRefreshCompleted, setIsXPRefreshCompleted] = useState(false);
@@ -50,7 +45,6 @@ export const RewardsContextProvider = ({
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const account = universalAccount?.address as string;
-  const isWalletConnected = Boolean(universalAccount?.address);
   const { chainId } = parseCAIP(universalAccount?.chain);
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -60,16 +54,13 @@ export const RewardsContextProvider = ({
 
   const {
     data: userDetails,
-    isLoading: isLoadingUserDetails,
   } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
 
 
   const {
-    data: activityStatus,
     refetch: refetchActivityStatus,
-    isLoading: isLoadingActivityStatus,
   } = useGetRewardActivityStatus(
     {
       userId: userDetails?.userId as string,
@@ -108,40 +99,11 @@ export const RewardsContextProvider = ({
     );
   }, [account, chainId, evmSybilCheck, pushWalletSybilCheck]);
 
-  const isLockedStatusLoading = isLoadingUserDetails || isLoadingActivityStatus;
-
-  useEffect(() => {
-    if (!isWalletConnected) {
-      setIsLocked(true);
-      setIsSybilEligible(null);
-      return;
-    }
-
-    if (!activityStatus || Object.keys(activityStatus).length === 0) return;
-
-    const activities = activityStatus?.activities as RewardActivityStatusResponse;
-    const discordStatus = activities?.follow_push_on_discord as RewardActivityStatus;
-    const twitterStatus = activities?.follow_push_on_twitter as RewardActivityStatus;
-
-    const isDiscordCompleted = discordStatus?.status === "COMPLETED";
-    const isTwitterCompletedOrPending =
-      twitterStatus?.status === "COMPLETED" || twitterStatus?.status === "PENDING";
-
-    const shouldUnlock = isDiscordCompleted && isTwitterCompletedOrPending && isSybilEligible === true;
-    setIsLocked(!shouldUnlock);
-  }, [
-    isWalletConnected,
-    activityStatus,
-    isSybilEligible,
-  ]);
-
   return (
     <RewardsContext.Provider
       value={{
         isAuthModalVisible,
         setIsAuthModalVisible,
-        // isLocked,
-        // isLockedStatusLoading,
         isSybilEligible,
         isSybilCheckPending,
         isVerifyClicked,

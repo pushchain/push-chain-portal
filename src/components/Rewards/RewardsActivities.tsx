@@ -6,10 +6,10 @@ import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
 import { css } from 'styled-components';
 import { LevelUp } from './LevelUp';
-import { useRewardsContext } from '../../context/rewardsContext';
+import { useRewardStatus } from '../../context/rewardStatusContext';
 
 const RewardsActivities = () => {
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 

@@ -20,7 +20,6 @@ import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRewardsContext } from '../../context/rewardsContext';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 import { useGetUserCultStatus } from '../../queries';
