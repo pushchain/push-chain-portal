@@ -21,3 +21,4 @@ export * from './getDailyCheckInDetailsModel';
 export * from './claimDailyRewardsSeasonThreeModel';
 export * from './getLevelProgressModel';
 export * from './pushWalletSybilCheckModel';
+export * from './getSybilStatusModel';

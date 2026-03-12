@@ -15,8 +15,10 @@ import {
   useAdvancedSybilCheck,
   usePushWalletSybilCheck,
   useGetSeasonThreeUserByWallet,
+  useGetSybilStatus,
 } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
+import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardsContextType {
   isAuthModalVisible: boolean;
@@ -64,6 +66,7 @@ export const RewardsContextProvider = ({
   } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
+
 
   const {
     data: activityStatus,

@@ -13,6 +13,7 @@ import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text } from "../
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
@@ -20,6 +21,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders } = useAuthHeaders();
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  useRewardStatus();
+  console.log(authHeaders, 'authHeadersssss')
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 

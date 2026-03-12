@@ -2,8 +2,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useSignMessageWithEthereum } from "../components/Rewards/hooks/useSignMessage";
+import { useSignMessageWithSolana } from "../components/Rewards/hooks/useSignMessageWithSolana";
 import { AuthHeaders, useGetSeasonThreeUserByWallet } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
+import { WalletChainType } from "../components/Rewards/utils/wallet";
 
 const AUTH_HEADERS_KEY = "push_auth_headers";
 
@@ -54,11 +56,15 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [isSigningMessage, setIsSigningMessage] = useState(false);
 
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageEthereum } = useSignMessageWithEthereum();
+  const { signMessage: signMessageSolana } = useSignMessageWithSolana();
 
   const walletAddress = universalAccount?.address;
   const chain = universalAccount?.chain;
   const { chainId } = parseCAIP(chain);
+
+  const isSolana = chainId === WalletChainType.SOLANA;
+  const signMessage = isSolana ? signMessageSolana : signMessageEthereum;
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -99,7 +105,7 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
       const newAuthHeaders: AuthHeaders = {
         message: messageToSend,
         signature,
-        walletAddress: `eip155:${chainId}:${walletAddress}`,
+        walletAddress: caip10WalletAddress,
       };
 
       setAuthHeaders(newAuthHeaders);
@@ -109,7 +115,7 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
       setIsSigningMessage(false);
       isSigningInProgress = false;
     }
-  }, [universalAccount, authHeaders, signMessage, chainId, walletAddress]);
+  }, [universalAccount, authHeaders, signMessage, caip10WalletAddress]);
 
   useEffect(() => {
     if (!userDetails) return;

@@ -151,7 +151,9 @@ export const RewardsUpdatedDashboard = () => {
           </Text>
         </Box>
 
-        <PushUniversalAccountButton uid='wallet1' />
+        <Box>
+          <PushUniversalAccountButton uid='wallet1' />
+        </Box>
       </Box>
       </Box>
 

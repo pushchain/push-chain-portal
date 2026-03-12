@@ -514,3 +514,9 @@ export type LevelProgressResponse = {
   nextLevelConfig: LevelConfigItem;
   paragonModeEnabled: boolean;
 };
+
+export type SybilStatusResponse = {
+  isSybil: boolean;
+  status: string;
+  walletAddress: string;
+};
