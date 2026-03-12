@@ -22,7 +22,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const { authHeaders } = useAuthHeaders();
   const { isLocked, isLockedStatusLoading } = useRewardsContext();
   useRewardStatus();
-  console.log(authHeaders, 'authHeadersssss')
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -53,8 +52,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     { id: 6, text: "Day 6", points: 280 },
     { id: 7, text: "Day 7", points: 300 },
   ];
-
-  console.log(getDailyCheckInDetails)
 
   return (
     <Box

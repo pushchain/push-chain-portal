@@ -15,16 +15,14 @@ import {
   useAdvancedSybilCheck,
   usePushWalletSybilCheck,
   useGetSeasonThreeUserByWallet,
-  useGetSybilStatus,
 } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
-import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardsContextType {
   isAuthModalVisible: boolean;
   setIsAuthModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  isLocked: boolean;
-  isLockedStatusLoading: boolean;
+  // isLocked: boolean;
+  // isLockedStatusLoading: boolean;
   isSybilEligible: boolean | null;
   isSybilCheckPending: boolean;
   isVerifyClicked: boolean;
@@ -142,8 +140,8 @@ export const RewardsContextProvider = ({
       value={{
         isAuthModalVisible,
         setIsAuthModalVisible,
-        isLocked,
-        isLockedStatusLoading,
+        // isLocked,
+        // isLockedStatusLoading,
         isSybilEligible,
         isSybilCheckPending,
         isVerifyClicked,

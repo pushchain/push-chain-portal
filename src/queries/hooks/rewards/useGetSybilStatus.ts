@@ -16,8 +16,6 @@ export const useGetSybilStatus = ({
     authHeaders?.signature &&
     authHeaders?.walletAddress;
 
-  console.log(isValid, 'isValid', walletAddress, authHeaders)
-
   return useQuery({
     queryKey: [sybilStatus, walletAddress],
     queryFn: () => getSybilStatus({ walletAddress: walletAddress!, authHeaders: authHeaders! }),

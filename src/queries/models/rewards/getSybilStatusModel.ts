@@ -1,3 +1,3 @@
-import { SybilStatusResponse } from '../../types/rewards';
+import { GetSybilStatusResponse } from '../../types/rewards';
 
-export const getSybilStatusModel = (response: SybilStatusResponse): SybilStatusResponse => response;
+export const getSybilStatusModel = (response: GetSybilStatusResponse): GetSybilStatusResponse => response;

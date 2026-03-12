@@ -17,10 +17,8 @@ import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardStatusContextType {
-  isSybilEligible: boolean | null;
-  setIsSybilEligible: React.Dispatch<React.SetStateAction<boolean | null>>;
-  isSybilCheckPending: boolean;
-  sybilStatusData: ReturnType<typeof useGetSybilStatus>["data"];
+  isLocked: boolean;
+  isLockedStatusLoading: boolean;
 }
 
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
@@ -38,55 +36,29 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     universalAccount?.chain,
   );
 
-  const { data: sybilStatusData } = useGetSybilStatus({
+  const { data: sybilStatusData, isLoading: isLockedStatusLoading } = useGetSybilStatus({
     walletAddress: caip10WalletAddress,
     authHeaders,
   });
 
-  const { mutate: evmSybilCheck, isPending: isEvmSybilPending } = useAdvancedSybilCheck();
-  const { mutate: pushWalletSybilCheck, isPending: isPushWalletSybilPending } = usePushWalletSybilCheck();
 
-  const isSybilCheckPending = isEvmSybilPending || isPushWalletSybilPending;
+  const sybilData = sybilStatusData?.data;
 
-  const hasSybilCheckRun = useRef(false);
+  const isLocked = !(
+    (sybilData?.summary?.completedCriteria ?? 0) >= 3 &&
+    sybilData?.advanced?.completed === true &&
+    sybilData?.basic?.twitter?.completed === true &&
+    sybilData?.basic?.discord?.completed === true
+  );
 
-  useEffect(() => {
-    if (!account || !chainId || hasSybilCheckRun.current) return;
+  // console.log(sybilStatusData, 'syb', isLocked)
 
-    hasSybilCheckRun.current = true;
-
-    const mutate = chainId === "42101" ? pushWalletSybilCheck : evmSybilCheck;
-
-    mutate(
-      {
-        address: account,
-        chainId: parseInt(chainId),
-      },
-      {
-        onSuccess: (response) => {
-          setIsSybilEligible(response?.eligible);
-        },
-        onError: (error) => {
-          console.error("Sybil check error:", error);
-        },
-      }
-    );
-  }, [account, chainId, evmSybilCheck, pushWalletSybilCheck]);
-
-  useEffect(() => {
-    if (!universalAccount) {
-      setIsSybilEligible(null);
-      hasSybilCheckRun.current = false;
-    }
-  }, [universalAccount]);
 
   return (
     <RewardStatusContext.Provider
       value={{
-        isSybilEligible,
-        setIsSybilEligible,
-        isSybilCheckPending,
-        sybilStatusData,
+        isLocked,
+        isLockedStatusLoading
       }}
     >
       {children}
