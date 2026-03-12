@@ -21,7 +21,7 @@ interface SolanaSignInMessageData {
 
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: Record<string, string | undefined>; // object — for activity endpoints
+  messageToSend?: Record<string, string | undefined> | string; // object — for activity endpoints
   messageString?: string; // raw signed string — for createUser endpoint
   error?: string;
   isLoading: boolean;

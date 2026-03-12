@@ -1,5 +1,5 @@
 export type AuthHeaders = {
-  message: string;
+  message: Record<string, string | undefined> | string;
   signature: string;
   walletAddress: string;
 };

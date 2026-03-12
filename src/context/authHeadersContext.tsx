@@ -100,8 +100,10 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
     setIsSigningMessage(true);
     try {
       const { signature, messageToSend, messageString, error } = await signMessage();
-      const messagePayload = isSolana ? messageString : messageToSend;
       if (error || !signature || !messageToSend) return null;
+
+      const messagePayload = isSolana ? messageString : messageToSend;
+      if (!messagePayload) return null;
 
       const newAuthHeaders: AuthHeaders = {
         message: messagePayload,
