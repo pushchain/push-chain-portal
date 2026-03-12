@@ -99,11 +99,12 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
 
     setIsSigningMessage(true);
     try {
-      const { signature, messageToSend, error } = await signMessage();
+      const { signature, messageToSend, messageString, error } = await signMessage();
+      const messagePayload = isSolana ? messageString : messageToSend;
       if (error || !signature || !messageToSend) return null;
 
       const newAuthHeaders: AuthHeaders = {
-        message: messageToSend,
+        message: messagePayload,
         signature,
         walletAddress: caip10WalletAddress,
       };
