@@ -95,29 +95,29 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   }, [universalAccount]);
 
   const signAndStore = useCallback(async () => {
-    if (!universalAccount || authHeaders) return null;
+    // if (!universalAccount || authHeaders) return null;
 
-    setIsSigningMessage(true);
-    try {
-      const { signature, messageToSend, messageString, error } = await signMessage();
-      if (error || !signature || !messageToSend) return null;
+    // setIsSigningMessage(true);
+    // try {
+    //   const { signature, messageToSend, messageString, error } = await signMessage();
+    //   if (error || !signature || !messageToSend) return null;
 
-      const messagePayload = isSolana ? messageString : messageToSend;
-      if (!messagePayload) return null;
+    //   const messagePayload = isSolana ? messageString : messageToSend;
+    //   if (!messagePayload) return null;
 
-      const newAuthHeaders: AuthHeaders = {
-        message: messagePayload,
-        signature,
-        walletAddress: caip10WalletAddress,
-      };
+    //   const newAuthHeaders: AuthHeaders = {
+    //     message: messagePayload,
+    //     signature,
+    //     walletAddress: caip10WalletAddress,
+    //   };
 
-      setAuthHeaders(newAuthHeaders);
-      storeAuthHeaders(newAuthHeaders);
-      return newAuthHeaders;
-    } finally {
-      setIsSigningMessage(false);
-      isSigningInProgress = false;
-    }
+    //   setAuthHeaders(newAuthHeaders);
+    //   storeAuthHeaders(newAuthHeaders);
+    //   return newAuthHeaders;
+    // } finally {
+    //   setIsSigningMessage(false);
+    //   isSigningInProgress = false;
+    // }
   }, [universalAccount, authHeaders, signMessage, caip10WalletAddress]);
 
   useEffect(() => {

@@ -140,62 +140,62 @@ const useVerifyTwitter = ({
         const twitterHandle = (userTwitterDetails as any)?.reloadUserInfo
           ?.screenName;
 
-        let verificationProof;
-        let messageToSend: Record<string, string | undefined> = {
-          twitter: twitterHandle,
-        };
+        // let verificationProof;
+        // let messageToSend: Record<string, string | undefined> = {
+        //   twitter: twitterHandle,
+        // };
 
-        const isSolana = chainId == WalletChainType.SOLANA;
+        // const isSolana = chainId == WalletChainType.SOLANA;
 
-        if (isSolana) {
-          const {
-            signature,
-            messageToSend: signedMessage,
-            error,
-          } = await signMessageWithSolana({
-            twitter: twitterHandle,
-          });
+        // if (isSolana) {
+        //   const {
+        //     signature,
+        //     messageToSend: signedMessage,
+        //     error,
+        //   } = await signMessageWithSolana({
+        //     twitter: twitterHandle,
+        //   });
 
-          if (error || !signature) {
-            console.log(error);
-            setErrorMessage(error);
-            setVerifyingTwitter(false);
-            return;
-          }
+        //   if (error || !signature) {
+        //     console.log(error);
+        //     setErrorMessage(error);
+        //     setVerifyingTwitter(false);
+        //     return;
+        //   }
 
-          verificationProof = signature;
-          messageToSend = signedMessage;
-        } else {
-          const {
-            signature,
-            messageToSend: signedMessage,
-            error,
-          } = await signMessage({
-            twitter: twitterHandle,
-          });
+        //   verificationProof = signature;
+        //   messageToSend = signedMessage;
+        // } else {
+        //   const {
+        //     signature,
+        //     messageToSend: signedMessage,
+        //     error,
+        //   } = await signMessage({
+        //     twitter: twitterHandle,
+        //   });
 
-          if (error || !signature) {
-            console.log(error);
-            setErrorMessage(error);
-            setVerifyingTwitter(false);
-            return;
-          }
+        //   if (error || !signature) {
+        //     console.log(error);
+        //     setErrorMessage(error);
+        //     setVerifyingTwitter(false);
+        //     return;
+        //   }
 
-          verificationProof = signature;
-          messageToSend = signedMessage;
-        }
+        //   verificationProof = signature;
+        //   messageToSend = signedMessage;
+        // }
 
-        if (!verificationProof) {
-          setErrorMessage('Invalid Verification Proof');
-          setVerifyingTwitter(false);
-        }
+        // if (!verificationProof) {
+        //   setErrorMessage('Invalid Verification Proof');
+        //   setVerifyingTwitter(false);
+        // }
 
         claimRewardsActivity(
           {
             userId: updatedId || (userId as string),
             activityTypeId,
-            data: messageToSend,
-            verificationProof,
+            // data: messageToSend,
+            // verificationProof,
           },
           {
             onSuccess: (response) => {

@@ -88,8 +88,8 @@ type Prop = {
 export type ClaimRewardsActivityProps = {
   userId: string;
   activityTypeId: string;
-  data: Prop | {};
-  verificationProof: string;
+  data?: Prop | {};
+  verificationProof?: string;
 };
 
 export type RewardActivityStatusProps = {

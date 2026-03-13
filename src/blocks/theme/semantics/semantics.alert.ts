@@ -9,7 +9,7 @@ export const alertSemantics = {
   },
   'text-body': {
     light: textSemantics['tertiary'].light,
-    dark: textSemantics['tertiary'].dark,
+    dark: colorPrimitives['white-100'],
   },
   'icon-success': {
     light: colorBrands['success-500'],

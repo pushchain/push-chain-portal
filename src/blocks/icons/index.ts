@@ -71,6 +71,8 @@ export { default as CrownSimple } from "./components/CrownSimple";
 
 export { default as Cube } from "./components/Cube";
 
+export { default as Cult } from "./components/Cult";
+
 export { default as Dash } from "./components/Dash";
 
 export { default as Dashboard } from "./components/Dashboard";

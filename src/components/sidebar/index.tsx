@@ -15,6 +15,7 @@ import {
   CaretLeftCircle,
   Cross,
   SquadsIcon,
+  Cult,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
@@ -144,7 +145,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     },
     {
       id: 'cult',
-      icon: CastleTurret,
+      icon: Cult,
       label: 'Cult',
       route: '/cult'
     },
