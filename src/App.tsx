@@ -205,9 +205,9 @@ const AppContent = () => {
           `}
         >
           <Routes>
-            {/*<Route path="/" element={<S3CountdownPage />} />*/}
-             {/*<Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />*/}
-            <Route path="/admin/controls" element={<AdminPage />} />
+            <Route path="/" element={<S3CountdownPage />} />
+             {/*<Route path="/" element={<Navigate to="/rewards" replace />} />*/}
+            {/*<Route path="/admin/controls" element={<AdminPage />} />
             <Route path="/rewards" element={<RewardsPage />} />
             <Route path="/rewards/pushpass" element={<PushPassPage />} />
             <Route path="/rewards/squads" element={<SquadsPage />} />
@@ -215,7 +215,7 @@ const AppContent = () => {
             <Route
               path="/rewards/pushpass/:id"
               element={<PushPassItemPage />}
-            />
+          />
             <Route
               path="/rewards/leaderboard"
               element={<LeaderBoardPage />}
@@ -227,15 +227,15 @@ const AppContent = () => {
             <Route
               path="/rewards/leaderboard-s1"
               element={<LeaderBoardPage />}
-            />
-            {/*<Route
+            />*/}
+            <Route
               path="/cult"
               element={<CultPage />}
             />
             <Route
               path="/cult/leaderboard"
               element={<CultLeaderboardPage />}
-            />*/}
+            />
             <Route
               path="/discord/verification"
               element={<DiscordVerificationPage />}

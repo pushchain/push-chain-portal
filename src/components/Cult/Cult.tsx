@@ -31,9 +31,10 @@ export const Cult = () => {
 				<Text variant="h4-bold" color="#FFFFFF">
 					Season 3 dropping soon!
 				</Text>
-				<Text variant="h1-regular" color="#FFFFFF">
-					{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S
-				</Text>
+        <Text variant="h1-regular" color="#FFFFFF">
+          {/*{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S*/}
+          S3 Coming March 2026
+        </Text>
 			</Box>
 		</Box>
   )

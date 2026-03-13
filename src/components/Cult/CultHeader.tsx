@@ -56,7 +56,7 @@ export const CultHeader = () => {
         overflow="hidden"
         width="100%"
         css={css`
-          background: linear-gradient(180deg, #010101 30.5%, #D548EC 100%);
+          background: linear-gradient(180deg, #010101 38.5%, #D548EC 100%);
           box-sizing: border-box;
 					min-height: 406px;
 

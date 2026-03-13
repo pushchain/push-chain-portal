@@ -56,8 +56,17 @@ const ActivityButton: FC<ActivityButtonProps> = ({
   //     </Button>
   //   );
   // }
-  //
-  if (usersSingleActivity?.status === "COMPLETED") {
+  const isSybilRelated = activityType === "follow_push_on_discord" || activityType === "follow_push_on_twitter";
+
+  if (usersSingleActivity?.status === "COMPLETED" && isSybilRelated) {
+    return (
+      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
+        Verified
+      </Button>
+    );
+  }
+
+if (usersSingleActivity?.status === "COMPLETED") {
     return (
       <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
         Claimed

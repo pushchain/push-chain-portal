@@ -103,51 +103,51 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     //   label: 'Pre-Launch Access',
     //   route: '/rewards/pre-launch'
     // },
-    {
-      id: 'discover',
-      icon: CompassRose,
-      label: 'Discover',
-      route: '/rewards'
-    },
-    {
-      id: 'quests',
-      icon: CastleTurret,
-      label: 'Quests',
-      badge: {
-        text: 'NEW',
-        icon: StarFilled,
-      },
-    },
-    {
-      id: 'push-pass',
-      icon: PushPass,
-      label: 'Push Pass',
-      route: '/rewards/pushpass'
-    },
-    {
-      id: 'squads',
-      icon: SquadsIcon,
-      label: 'Invites/Squads',
-      route: '/rewards/squads'
-    },
-    {
-      id: 'leaderboards',
-      icon: Ranking,
-      label: 'Leaderboards',
-      route: '/rewards/leaderboard'
-    },
     // {
-    //   id: 'season3',
+    //   id: 'discover',
     //   icon: CompassRose,
-    //   label: 'Season 3',
-    //   route: '/'
+    //   label: 'Discover',
+    //   route: '/rewards'
     // },
     // {
-    //   id: 'cult',
+    //   id: 'quests',
     //   icon: CastleTurret,
-    //   label: 'Cult',
-    //   route: '/cult'
+    //   label: 'Quests',
+    //   badge: {
+    //     text: 'NEW',
+    //     icon: StarFilled,
+    //   },
     // },
+    // {
+    //   id: 'push-pass',
+    //   icon: PushPass,
+    //   label: 'Push Pass',
+    //   route: '/rewards/pushpass'
+    // },
+    // {
+    //   id: 'squads',
+    //   icon: SquadsIcon,
+    //   label: 'Invites/Squads',
+    //   route: '/rewards/squads'
+    // },
+    // {
+    //   id: 'leaderboards',
+    //   icon: Ranking,
+    //   label: 'Leaderboards',
+    //   route: '/rewards/leaderboard'
+    // },
+    {
+      id: 'season3',
+      icon: CompassRose,
+      label: 'Season 3',
+      route: '/'
+    },
+    {
+      id: 'cult',
+      icon: CastleTurret,
+      label: 'Cult',
+      route: '/cult'
+    },
     // ...(showCultDashboard
     // ? [
     //     {

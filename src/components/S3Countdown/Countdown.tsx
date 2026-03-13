@@ -1,16 +1,23 @@
+import { useNavigate } from "react-router-dom"
 import { css } from "styled-components"
-import { Box, GlowStreaks, Text } from "../../blocks"
+
 import useMediaQuery from "../../hooks/useMediaQuery"
 import { device } from "../../config/globals"
 import { useCountdown } from "../Rewards/hooks/useCountdown"
-import { usePushWalletContext } from "@pushchain/ui-kit"
+
+import { Box, GlowStreaks, Text } from "../../blocks"
+
 
 export const Countdown = () => {
   const isMobile = useMediaQuery(device.mobileL);
-	const { handleConnectToPushWallet } = usePushWalletContext('wallet1');
+  const navigate = useNavigate();
 
 	const targetDate = "2026-03-17T13:59:59";
-	const { timeLeft } = useCountdown(targetDate);
+  const { timeLeft } = useCountdown(targetDate);
+
+  const handleGoToCult = () => {
+    navigate('/cult')
+  }
 
   return (
     <Box
@@ -142,7 +149,8 @@ export const Countdown = () => {
 
 
 						<Text variant="ds-bold" color="#C742DD">
-              {timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S
+              {/*{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S*/}
+              S3 Coming March 2026
             </Text>
           </Box>
         </Box>
@@ -164,7 +172,7 @@ export const Countdown = () => {
 				<Text
 					variant="h5-bold"
 					color="#C742DD"
-					onClick={handleConnectToPushWallet}
+					onClick={handleGoToCult}
 					css={css`
 						cursor: pointer;
 					`}
