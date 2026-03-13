@@ -259,8 +259,8 @@ function App() {
     uid: 'wallet1',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
-      email: false,
-      google: false,
+      email: true,
+      google: true,
       wallet: {
         enabled: true,
       },
