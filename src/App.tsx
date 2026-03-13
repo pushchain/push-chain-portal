@@ -1,5 +1,5 @@
 // React + Web3 Essentials
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // External Packages
 import {
@@ -16,11 +16,11 @@ import {
    PushUI,
    PushUniversalWalletProvider,
    ProviderConfigProps,
+   usePushWalletContext,
 } from '@pushchain/ui-kit';
 
 import { getPreviewBasePath } from "../basePath";
 import { ThemeProviderWrapper } from "./context/themeContext";
-import { AccountProvider } from "./context/accountContext";
 import { RewardsContextProvider } from "./context/rewardsContext";
 
 import { blocksColors, Box, getBlocksCSSVariables } from "../src/blocks";
@@ -36,6 +36,16 @@ import Header from "./structure/Header";
 import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
 import AdminPage from "./pages/AdminPage";
+import CultLeaderboardPage from "./pages/CultLeaderboardPage";
+import SquadsPage from "./pages/SquadsPage";
+import { InviteCodeModal } from "./components/InviteCodeModal";
+import { walletToFullCAIP10 } from "./helpers/web3helper";
+import { useGetSeasonThreeUserByWallet } from "./queries";
+import { AuthHeadersProvider } from "./context/authHeadersContext";
+import { RewardStatusContextProvider } from "./context/rewardStatusContext";
+import S3CountdownPage from "./pages/S3CountdownPage";
+import CultPage from "./pages/CultPage";
+import { ActivityContextProvider } from "./context/activityContext";
 
 
 const GlobalStyle = createGlobalStyle`
@@ -111,7 +121,30 @@ const queryClient = new QueryClient({});
 
 const AppContent = () => {
   const location = useLocation();
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isInviteCodeModalOpen, setIsInviteCodeModalOpen] = useState(false);
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  useEffect(() => {
+    if (connectionStatus !== 'connected') return;
+
+    if (isLoading) return;
+
+    if (seasonThreeDetails) {
+      setIsInviteCodeModalOpen(false);
+    } else {
+      setIsInviteCodeModalOpen(true);
+    }
+  }, [connectionStatus, seasonThreeDetails, isLoading]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -172,16 +205,17 @@ const AppContent = () => {
           `}
         >
           <Routes>
-            <Route path="/" element={<Navigate to="/rewards/pre-launch" replace />} />
-            <Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />
-            <Route path="/admin/controls" element={<AdminPage />} />
-            {/*<Route path="/rewards" element={<RewardsPage />} />
-            <Route path="/rewards/pushpass" element={<PushPassPage />} />*/}
+            <Route path="/" element={<S3CountdownPage />} />
+             {/*<Route path="/" element={<Navigate to="/rewards" replace />} />*/}
+            {/*<Route path="/admin/controls" element={<AdminPage />} />
+            <Route path="/rewards" element={<RewardsPage />} />
+            <Route path="/rewards/pushpass" element={<PushPassPage />} />
+            <Route path="/rewards/squads" element={<SquadsPage />} />
             <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
             <Route
               path="/rewards/pushpass/:id"
               element={<PushPassItemPage />}
-            />
+          />
             <Route
               path="/rewards/leaderboard"
               element={<LeaderBoardPage />}
@@ -193,6 +227,14 @@ const AppContent = () => {
             <Route
               path="/rewards/leaderboard-s1"
               element={<LeaderBoardPage />}
+            />*/}
+            <Route
+              path="/cult"
+              element={<CultPage />}
+            />
+            <Route
+              path="/cult/leaderboard"
+              element={<CultLeaderboardPage />}
             />
             <Route
               path="/discord/verification"
@@ -202,6 +244,11 @@ const AppContent = () => {
           </Routes>
         </Box>
       </Box>
+
+      <InviteCodeModal
+        isOpen={isInviteCodeModalOpen}
+        onClose={() => setIsInviteCodeModalOpen(false)}
+      />
     </Box>
   );
 };
@@ -209,17 +256,34 @@ const AppContent = () => {
 function App() {
 
   const walletConfig: ProviderConfigProps = {
+    uid: 'wallet1',
+    network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
+    login: {
+      email: true,
+      google: true,
+      wallet: {
+        enabled: true,
+      },
+      appPreview: true,
+    },
+    modal: {
+      loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
+      connectedLayout: PushUI.CONSTANTS.CONNECTED.LAYOUT.HOVER,
+      appPreview: true,
+      connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
+    },
+    chainConfig: {
+      rpcUrls: {
+      },
+    },
+  };
+
+  const linkedWalletConfig: ProviderConfigProps = {
+    uid: 'wallet2',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
       email: false,
       google: false,
-      phone: false,
-      socials: {
-        x: false,
-        github: false,
-        discord: false,
-        bluesky: false
-      },
       wallet: {
         enabled: true,
       },
@@ -249,15 +313,28 @@ function App() {
                '--pw-core-font-family': "'DM Sans', sans-serif",
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
-           >
-        <AccountProvider>
-          <RewardsContextProvider>
-            <QueryClientProvider client={queryClient}>
-                <AppContent />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
-          </RewardsContextProvider>
-        </AccountProvider>
+        >
+        {/*<PushUniversalWalletProvider
+          config={linkedWalletConfig}
+          themeMode={PushUI.CONSTANTS.THEME.DARK}
+          themeOverrides={{
+            '--pw-core-font-family': "'DM Sans', sans-serif",
+            '--pwauth-btn-connected-bg-color': '#D548EC'
+          }}
+        >*/}
+          <QueryClientProvider client={queryClient}>
+            <RewardsContextProvider>
+              <AuthHeadersProvider>
+                <RewardStatusContextProvider>
+                  <ActivityContextProvider>
+                    <AppContent />
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  </ActivityContextProvider>
+                </RewardStatusContextProvider>
+              </AuthHeadersProvider>
+            </RewardsContextProvider>
+          </QueryClientProvider>
+        {/*</PushUniversalWalletProvider>*/}
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

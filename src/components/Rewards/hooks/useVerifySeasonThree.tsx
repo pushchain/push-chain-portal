@@ -31,7 +31,7 @@ const useVerifySeasonThree = ({
   const [verifyingSeasonThree, setVerifyingSeasonThree] = useState(false);
   const [verificationSuccess, setVerificationSuccess] = useState(false);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 

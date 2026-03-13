@@ -1,28 +1,13 @@
-// React and other libraries
 import React, { useMemo } from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
+import { usePushWalletContext } from "@pushchain/ui-kit";
 
-// hooks
-import { useAuthWithButton } from "../hooks/useWithAuthButton";
 import { useVerifyTwitter } from "../hooks/useVerifyTwitter";
 import { useVerifyDiscord } from "../hooks/useVerifyDiscord";
 import { useVerifyRewards } from "../hooks/useVerifyRewards";
-
-// helpers
-import {
-  chessRewardsActivities,
-  dailyRewardActivities,
-  emailRewardsActivities,
-  otherRewardActivities,
-  rumorsRewardsActivities,
-  simulateRewardsActivities,
-} from "../utils/activityTypeArray";
-
-// types
+import { otherRewardActivities } from "../utils/activityTypeArray";
 import { ActvityType } from "../../../queries/types";
-
-// components
 import { Button } from "../../../blocks";
-import { usePushWalletContext } from "@pushchain/ui-kit";
 
 type ActivityVerificationButtonProps = {
   userId: string;
@@ -33,9 +18,10 @@ type ActivityVerificationButtonProps = {
   setErrorMessage: (errorMessage: string) => void;
   isLoadingActivity: boolean;
   label?: string;
-  currentLevel?: string;
-  setCurrentLevel?: (currentLevel: string) => void;
   onStartClaim?: () => void;
+  buttonVariant?: "primary" | "secondary" | "tertiary" | "outline";
+  buttonSize?: "small" | "medium" | "large";
+  buttonCss?: FlattenSimpleInterpolation;
 };
 
 export const ActivityVerificationButton = ({
@@ -47,10 +33,12 @@ export const ActivityVerificationButton = ({
   userId,
   isLoadingActivity,
   label,
-  setCurrentLevel,
   onStartClaim,
+  buttonVariant = "tertiary",
+  buttonSize = "small",
+  buttonCss,
 }: ActivityVerificationButtonProps) => {
-  const { universalAccount, connectionStatus } = usePushWalletContext();
+  const { universalAccount, handleConnectToPushWallet } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
 
   const { handleTwitterVerification, verifyingTwitter, twitterActivityStatus } =
@@ -73,7 +61,6 @@ export const ActivityVerificationButton = ({
       refetchActivity,
       setErrorMessage,
       activityTypeIndex,
-      setCurrentLevel,
       onStartClaim,
     });
 
@@ -83,7 +70,7 @@ export const ActivityVerificationButton = ({
         isLoading: verifyingDiscord,
         label: "Verify",
         action: handleDiscordVerification,
-        isVerificationComplete: discordActivityStatus == "Claimed",
+        isComplete: discordActivityStatus === "Claimed",
       };
     }
 
@@ -92,80 +79,56 @@ export const ActivityVerificationButton = ({
         isLoading: verifyingTwitter,
         label: "Verify",
         action: handleTwitterVerification,
-        isVerificationComplete:
-          twitterActivityStatus == "Claimed" ||
-          twitterActivityStatus == "Pending",
+        isComplete: twitterActivityStatus === "Claimed" || twitterActivityStatus === "Pending",
       };
     }
 
-    if (
-      otherRewardActivities.includes(activityType) ||
-      chessRewardsActivities.includes(activityType) ||
-      emailRewardsActivities.includes(activityType) ||
-      rumorsRewardsActivities.includes(activityType) ||
-      simulateRewardsActivities.includes(activityType)
-    ) {
+    if (otherRewardActivities.includes(activityType)) {
       return {
         isLoading: verifyingRewards,
         label: "Claim",
         action: handleRewardsVerification,
-        isVerificationComplete:
-          rewardsActivityStatus == "Claimed" ||
-          rewardsActivityStatus == "Pending",
+        isComplete: rewardsActivityStatus === "Claimed" || rewardsActivityStatus === "Pending",
       };
     }
 
-    if (dailyRewardActivities.includes(activityType)) {
-      return {
-        isLoading: verifyingRewards,
-        label: "Check In",
-        action: handleRewardsVerification,
-        isVerificationComplete:
-          rewardsActivityStatus == "Claimed" ||
-          rewardsActivityStatus == "Pending",
-      };
-    }
+    return null;
   }, [
     activityType,
     twitterActivityStatus,
     discordActivityStatus,
+    rewardsActivityStatus,
     verifyingRewards,
     verifyingTwitter,
     verifyingDiscord,
-    universalAccount,
   ]);
 
-  const { isAuthenticated, authButton } = useAuthWithButton({
-    isLoading:
-      isLoadingActivity ||
-      connectionStatus === "connecting" ||
-      connectionStatus === "authenticating",
-    onSuccess: (userDetails) => activityData?.action(userDetails?.userId),
-    label: label,
-  });
+  const handleClick = () => {
+    if (!isWalletConnected) {
+      handleConnectToPushWallet();
+      return;
+    }
 
-  if (isAuthenticated && isWalletConnected) {
-    return (
-      <Button
-        variant="tertiary"
-        size="small"
-        loading={
-          activityData?.isLoading || activityData?.isVerificationComplete
-        }
-        onClick={() => {
-          console.log("after auth");
-          activityData?.action(userId);
-        }}
-        disabled={isLoadingActivity}
-      >
-        {activityData?.isVerificationComplete
-          ? "Verifying..."
-          : activityData?.label
-            ? activityData?.label
-            : "Verify"}
-      </Button>
-    );
-  }
+    activityData?.action(userId);
+  };
 
-  return authButton;
+  // console.log(activityData, 'test loading state')
+
+  const isLoading = isLoadingActivity || activityData?.isLoading;
+  const buttonLabel = activityData?.isComplete
+    ? "Verifying..."
+    : label || activityData?.label || "Verify";
+
+  return (
+    <Button
+      variant={buttonVariant}
+      size={buttonSize}
+      css={buttonCss}
+      loading={isLoading}
+      onClick={handleClick}
+      disabled={isLoading || activityData?.isComplete}
+    >
+      {buttonLabel}
+    </Button>
+  );
 };

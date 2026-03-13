@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
+
 import { Box } from '../../../blocks';
 import { StatsCards } from './LoggedInVerified/StatsCards';
 import { ReferralCard } from './LoggedInVerified/ReferralCard';

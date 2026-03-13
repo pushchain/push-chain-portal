@@ -21,7 +21,7 @@ interface SolanaSignInMessageData {
 
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: Record<string, string | undefined>; // object — for activity endpoints
+  messageToSend?: Record<string, string | undefined> | string; // object — for activity endpoints
   messageString?: string; // raw signed string — for createUser endpoint
   error?: string;
   isLoading: boolean;
@@ -47,21 +47,16 @@ const buildSolanaSignInMessage = (payload: SolanaSignInMessageData) => {
   return lines.join("\n");
 };
 
-
 export const useSignMessageWithSolana = () => {
-  const { universalAccount } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
+  const { universalAccount } = usePushWalletContext("wallet1");
+  const { pushChainClient } = usePushChainClient("wallet1");
 
+  // pushChainClient may be the same object reference even when .universal is populated,
   const clientRef = useRef(pushChainClient);
   useEffect(() => {
     clientRef.current = pushChainClient;
   }, [pushChainClient]);
 
-  // Ref so the async poll inside signMessage always sees the latest client
-  const pushChainClientRef = useRef(pushChainClient);
-  useEffect(() => {
-    pushChainClientRef.current = pushChainClient;
-  }, [pushChainClient]);
 
 
   const { setSignature } = useRewardsContext();

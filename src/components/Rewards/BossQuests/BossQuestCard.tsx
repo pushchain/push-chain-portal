@@ -1,8 +1,11 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { css } from 'styled-components';
 import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, XP } from '../../../blocks';
+import { ActvityType } from '../../../queries';
+import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
 type BossQuestCardProps = {
+  questId?: string;
   title: string;
   description: string;
   resetTime: string;
@@ -16,9 +19,16 @@ type BossQuestCardProps = {
   ctaText: string;
   icon?: string;
   onClaim?: () => void;
+  activityStatus?: any;
+  isLoadingActivity?: boolean;
+  refetchActivities?: () => void;
+  userId?: string;
+  completedMap?: Record<string, boolean>;
+  setErrorMessage?: (errorMessage: string) => void;
 };
 
 const BossQuestCard: FC<BossQuestCardProps> = ({
+  questId,
   title,
   description,
   resetTime,
@@ -29,8 +39,16 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   ctaText,
   icon,
   onClaim,
+  activityStatus,
+  isLoadingActivity,
+  refetchActivities,
+  userId,
+  completedMap = {},
+  setErrorMessage
 }) => {
   const showProgress = maxProgress > 0;
+  const isCompleted = completedMap[questId] ?? true;
+
 
   return (
     <Box
@@ -231,32 +249,41 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             display="flex"
             alignItems="flex-start"
             alignSelf="stretch"
+            width="100%"
           >
-            {isLocked ? (
+            {!isLocked && questId && userId && (
+              <ActivityButton
+                activityType={questId as ActvityType}
+                activityTypeId={questId}
+                userId={userId}
+                refetchActivity={() => refetchActivities?.()}
+                usersSingleActivity={activityStatus}
+                setErrorMessage={setErrorMessage}
+                isLoadingActivity={isLoadingActivity || false}
+                label="Claim"
+                buttonSize="small"
+                buttonVariant="primary"
+                buttonCss={css`
+                  width: 100%;
+                `}
+              />
+            )}
+
+            {isLocked && (
               <Button
+                variant="outline"
                 size="small"
-                variant="tertiary"
+                leadingIcon={< Lock />}
                 css={css`
                   width: 100%;
-                  border: 1px solid var(--stroke-tertiary);
-                  background: none;
-                `}
+                  `}
+                disabled
               >
-                <Box display="inline-flex" alignItems="center" justifyContent="center" gap="spacing-xxxs">
-                  <Lock size={24} color="icon-tertiary" />
-                  <Text color="text-tertiary"
-                    css={css`
-                        font-family: "FK Grotesk Neue-Medium", Helvetica;
-                        font-size: 14px;
-                        font-weight: 500;
-                        line-height: 16px;
-                        white-space: nowrap;
-                    `}>
-                    Locked
-                  </Text>
-                </Box>
+                Locked
               </Button>
-            ) : (
+            )}
+
+            {!questId && !isLocked && (
               <Button
                 size="small"
                 variant="tertiary"

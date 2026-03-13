@@ -1,9 +1,61 @@
+import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Quests, Text } from '../../../blocks';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import BossQuestCard from './BossQuestCard';
+import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+import { useRewardStatus } from '../../../context/rewardStatusContext';
+
+import { Alert, Box, Quests, Text } from '../../../blocks';
 
 const BossQuestsSection = () => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: bossQuests } = useGetQuests({
+    appId:'boss-quests'
+  })
+
+  const bossQuestIds = bossQuests?.data?.quests?.map((q) => q.id) || [];
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+    {
+      userId: userDetails?.userId as string,
+      activities: bossQuestIds,
+    },
+    !!userDetails?.userId && bossQuestIds.length > 0
+  );
+
+  const { data: bossQuestsProgress } = useGetQuestsProgress({
+    appId: "boss-quests",
+    userId: userDetails?.userId,
+  });
+
+  const bossCompletedMap: Record<string, boolean> = {};
+  bossQuestsProgress?.data?.quests?.forEach((q) => {
+    bossCompletedMap[q.questId] = q.completed;
+  });
+
   return (
+    <Box width={"100%"}>
+      {errorMessage &&
+        <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
+          <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
+        </Box>}
+
     <Box
       display="inline-flex"
       flexDirection="column"
@@ -108,31 +160,32 @@ const BossQuestsSection = () => {
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
-          />
+            />
 
-          <BossQuestCard
-            title="Complete and Claim 25 App Quests"
-            description="Earn a Rare Pass by completing 25 quests on any apps"
-            resetTime="Resets in 29D 23H"
-            progress={0}
-            maxProgress={25}
-            unlocks={{ rarePass: true, xp: 250 }}
-            isLocked={true}
-            ctaText="Locked"
-          />
-
-          <BossQuestCard
-            title="Obtain & Scratch a total of 5 Rare Passes"
-            description="Earn a Rare Pass by scratching 5 Rare Passes during Season 3"
-            resetTime="Resets in 29D 23H"
-            progress={0}
-            maxProgress={5}
-            unlocks={{ rarePass: true }}
-            isLocked={true}
-            ctaText="Locked"
-          />
+          {bossQuests?.data.quests.map((item) => (
+            <BossQuestCard
+              key={item.id}
+              questId={item.id}
+              title={item?.title}
+              description={item.description}
+              resetTime="Resets in 29D 23H"
+              progress={0}
+              maxProgress={25}
+              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: (item.baseXP > 0 && item?.baseXP) }}
+              isLocked={rewardsLocked}
+              ctaText="Locked"
+              activityStatus={activityStatuses}
+              isLoadingActivity={isLoadingActivities}
+              refetchActivities={refetchActivities}
+              userId={userDetails?.userId}
+              completedMap={bossCompletedMap}
+              icon={true}
+              setErrorMessage={setErrorMessage}
+            />
+          ))}
         </Box>
       </Box>
+     </Box>
     </Box>
   );
 };

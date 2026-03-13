@@ -5,20 +5,34 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
 
+interface SiweMessageData {
+  [key: string]: string | undefined;
+  domain: string;
+  address: string;
+  uri: string;
+  version: string;
+  chainId: string;
+  nonce: string;
+  issuedAt: string;
+  discord?: string;
+  discord_token?: string;
+  twitter?: string;
+}
+
 interface SignMessageResult {
   signature?: string;
-  messageToSend?: any;
+  messageToSend?: SiweMessageData | string;
   error?: string;
   isLoading: boolean;
 }
 
 export const useSignMessageWithEthereum = () => {
-  const { universalAccount, handleSignMessage } = usePushWalletContext();
+  const { universalAccount, handleSignMessage } = usePushWalletContext('wallet1');
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const signMessage = useCallback(
-    async (extraData?: any): Promise<SignMessageResult> => {
+    async (extraData?: Record<string, string>): Promise<SignMessageResult> => {
       setIsLoading(true);
 
       try {
@@ -29,8 +43,13 @@ export const useSignMessageWithEthereum = () => {
         const domain = window.location.hostname;
         const nonce = generateNonce();
         const origin = window.location.origin;
-        const address = universalAccount.address;
+        const rawAddress = universalAccount.address;
         const { chainId } = parseCAIP(universalAccount?.chain);
+
+        const address =
+          ethers.utils.isAddress(rawAddress)
+            ? ethers.utils.getAddress(rawAddress)
+            : rawAddress;
 
         const messageToSend = {
           domain,

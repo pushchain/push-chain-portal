@@ -1,20 +1,20 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, Text } from '../../../../blocks';
-import { useGetUserRewardsDetails } from '../../../../queries';
+import { Box, Skeleton, Text } from '../../../../blocks';
+import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import TotalPointsBg from '../../../../../static/assets/website/rewards/total-points-bg.webp';
 
 export const PointsCard: FC = () => {
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
   );
 
-  const { data: userDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress
+  const { data: userDetails, isLoading } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
   });
 
   return (
@@ -63,16 +63,18 @@ export const PointsCard: FC = () => {
         `}
       />
 
-      <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" css={css`z-index: 1;`}>
-        <Text variant="h1-bold" color="text-primary">
-          {userDetails?.totalPoints?.toLocaleString() || '1050'}
-        </Text>
-        <Text variant="h5-semibold" color="text-tertiary">
-          Total
-          <br />
-          Points
-        </Text>
-      </Box>
+          <Skeleton isLoading={ isLoading }>
+            <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" css={css`z-index: 1;`}>
+              <Text variant="h1-bold" color="text-primary">
+                {userDetails?.totalPoints?.toLocaleString() || '-'}
+              </Text>
+              <Text variant="h5-semibold" color="text-tertiary">
+                Total
+                <br />
+                Points
+              </Text>
+            </Box>
+        </Skeleton>
     </Box>
   );
 };

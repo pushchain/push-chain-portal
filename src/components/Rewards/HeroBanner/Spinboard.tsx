@@ -1,8 +1,9 @@
-import { useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { css } from 'styled-components';
 import { gsap } from 'gsap';
 import { Box } from '../../../blocks';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
+import spinboardCenter from '/static/assets/website/rewards/spinboardcenter.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
 
 interface SpinboardProps {
@@ -11,117 +12,199 @@ interface SpinboardProps {
 }
 
 export interface SpinboardHandle {
-  spin: () => void;
+  startSpin: () => void;
+  landOn: (slotId: number) => void;
+  stopSpin: () => void;
+  reset: () => void;
 }
 
-const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(({ onSpinComplete, disabled = false }, ref) => {
-  const wheelRef = useRef<HTMLDivElement>(null);
-  const [isSpinning, setIsSpinning] = useState(false);
+const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
+  ({ onSpinComplete, disabled = false }, ref) => {
+    const wheelRef = useRef<HTMLDivElement>(null);
+    const loopTween = useRef<gsap.core.Tween | null>(null);
+    const landTween = useRef<gsap.core.Tween | null>(null);
+    const [isSpinning, setIsSpinning] = useState(false);
+    const currentRotation = useRef(0);
 
-  useImperativeHandle(ref, () => ({
-    spin: handleSpin,
-  }));
+    useEffect(() => {
+      return () => {
+        loopTween.current?.kill();
+        landTween.current?.kill();
+      };
+    }, []);
 
-  const handleSpin = () => {
-    if (isSpinning || disabled || !wheelRef.current) return;
+    const startSpin = () => {
+      if (isSpinning || disabled || !wheelRef.current) return;
+      setIsSpinning(true);
 
-    setIsSpinning(true);
+      const spin = () => {
+        if (!wheelRef.current) return;
+        currentRotation.current += 360;
+        loopTween.current = gsap.to(wheelRef.current, {
+          rotation: currentRotation.current,
+          duration: 0.6,
+          ease: 'none',
+          onComplete: spin,
+        });
+      };
 
-    const segmentWeights = [30, 15, 18, 0.5, 12, 2, 10, 8, 0.5, 4];
+      spin();
+    };
 
-    const totalWeight = segmentWeights.reduce((sum, weight) => sum + weight, 0);
-    let random = Math.random() * totalWeight;
-    let prizeIndex = 0;
+    const landOn = (slotId: number) => {
+      if (!wheelRef.current) return;
 
-    for (let i = 0; i < segmentWeights.length; i++) {
-      random -= segmentWeights[i];
-      if (random <= 0) {
-        prizeIndex = i;
-        break;
+      if (loopTween.current) {
+        // Grab where the wheel actually is right now before killing
+        const actualRotation = gsap.getProperty(wheelRef.current, 'rotation') as number;
+        loopTween.current.kill();
+        loopTween.current = null;
+        currentRotation.current = actualRotation;
       }
-    }
 
-    const segmentAngle = 360 / 10;
+      // 10 slots, 36° each. Position = slotId % 10.
+      // At 0° rotation, stopper points at center of position 0 (RARE PASS / slotId 10).
+      // Wheel rotates clockwise (positive), but stopper moves counter-clockwise through slots,
+      // so to land on position p we need: finalRotation % 360 = (360 - p * 36) % 360
+      const position = slotId % 10;
+      const targetMod = (360 - position * 36) % 360;
 
-    const minRotations = 5;
-    const maxRotations = 7;
-    const randomRotations = Math.floor(Math.random() * (maxRotations - minRotations + 1)) + minRotations;
+      // Round current rotation up to the next multiple of 360, then add targetMod + extra spins
+      const base = Math.ceil(currentRotation.current / 360) * 360;
+      const fullSpins = (Math.floor(Math.random() * 2) + 3) * 360;
+      const finalRotation = base + fullSpins + targetMod;
 
-    const currentRotation = gsap.getProperty(wheelRef.current, 'rotation') as number || 0;
-    const currentNormalized = currentRotation % 360;
+      landTween.current = gsap.to(wheelRef.current, {
+        rotation: finalRotation,
+        duration: 3,
+        ease: 'power3.out',
+        onComplete: () => {
+          currentRotation.current = finalRotation;
+          landTween.current = null;
+          setIsSpinning(false);
+          onSpinComplete?.(slotId);
+        },
+      });
+    };
 
-    const targetSegmentAngle = -prizeIndex * segmentAngle;
-    const totalRotation = randomRotations * 360 + (targetSegmentAngle - currentNormalized);
+    const stopSpin = () => {
+      if (!wheelRef.current) return;
 
-    gsap.to(wheelRef.current, {
-      rotation: `+=${totalRotation}`,
-      duration: 4,
-      ease: 'power3.out',
-      onComplete: () => {
-        setIsSpinning(false);
-        onSpinComplete?.(prizeIndex);
-      },
-    });
-  };
+      const actualRotation = gsap.getProperty(wheelRef.current, 'rotation') as number;
 
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      gap="spacing-none"
-      position="relative"
-      width="100%"
-      css={css`
-        user-select: none;
-      `}
-    >
+      loopTween.current?.kill();
+      loopTween.current = null;
+      landTween.current?.kill();
+      landTween.current = null;
+
+      currentRotation.current = actualRotation;
+      gsap.set(wheelRef.current, { rotation: actualRotation });
+      setIsSpinning(false);
+    };
+
+    const reset = () => {
+      stopSpin();
+      if (wheelRef.current) {
+        gsap.set(wheelRef.current, { rotation: 0 });
+      }
+      currentRotation.current = 0;
+    };
+
+    useImperativeHandle(ref, () => ({
+      startSpin,
+      landOn,
+      stopSpin,
+      reset,
+    }));
+
+    return (
       <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="spacing-none"
         position="relative"
-        width="40px"
-        height="40px"
+        width="100%"
         css={css`
-          z-index: 2;
-          margin-bottom: -20px;
+          user-select: none;
         `}
       >
-        <img
-          src={stopperImage}
-          alt="Stopper"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            filter: 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2))',
-          }}
-        />
-      </Box>
+        <Box
+          position="relative"
+          width="40px"
+          height="40px"
+          css={css`
+            z-index: 2;
+            margin-bottom: -20px;
+          `}
+        >
+          <img
+            src={stopperImage}
+            alt="Stopper"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2))',
+            }}
+          />
+        </Box>
 
-      {/* Spinning Wheel */}
-      <Box
-        ref={wheelRef}
-        position="relative"
-        width="200px"
-        height="200px"
-        css={css`
-          z-index: 1;
-        `}
-      >
-        <img
-          src={spinboardImage}
-          alt="Spin Board"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15))',
-          }}
-        />
+        <Box
+          position="relative"
+          width="200px"
+          height="200px"
+        >
+          <Box
+            ref={wheelRef}
+            position="absolute"
+            top="0"
+            left="0"
+            width="100%"
+            height="100%"
+            css={css`
+              z-index: 1;
+            `}
+          >
+            <img
+              src={spinboardImage}
+              alt="Spin Board"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15))',
+              }}
+            />
+          </Box>
+
+          <Box
+            position="absolute"
+            width="48px"
+            height="48px"
+            css={css`
+              z-index: 2;
+              pointer-events: none;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            `}
+          >
+            <img
+              src={spinboardCenter}
+              alt="Center"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+        </Box>
       </Box>
-    </Box>
-  );
-});
+    );
+  }
+);
 
 Spinboard.displayName = 'Spinboard';
-
 export default Spinboard;
