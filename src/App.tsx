@@ -206,7 +206,7 @@ const AppContent = () => {
         >
           <Routes>
             {/*<Route path="/" element={<S3CountdownPage />} />*/}
-             {/*<Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />*/}
+             <Route path="/" element={<Navigate to="/rewards" replace />} />
             <Route path="/admin/controls" element={<AdminPage />} />
             <Route path="/rewards" element={<RewardsPage />} />
             <Route path="/rewards/pushpass" element={<PushPassPage />} />
