@@ -42,6 +42,7 @@ import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
 import { useGetSeasonThreeUserByWallet } from "./queries";
 import { AuthHeadersProvider } from "./context/authHeadersContext";
+import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
 import { ActivityContextProvider } from "./context/activityContext";
@@ -204,8 +205,8 @@ const AppContent = () => {
           `}
         >
           <Routes>
-            <Route path="/" element={<S3CountdownPage />} />
-            {/* <Route path="/rewards" element={<Navigate to="/rewards/pre-launch" replace />} />
+            {/*<Route path="/" element={<S3CountdownPage />} />*/}
+             <Route path="/" element={<Navigate to="/rewards" replace />} />
             <Route path="/admin/controls" element={<AdminPage />} />
             <Route path="/rewards" element={<RewardsPage />} />
             <Route path="/rewards/pushpass" element={<PushPassPage />} />
@@ -226,15 +227,15 @@ const AppContent = () => {
             <Route
               path="/rewards/leaderboard-s1"
               element={<LeaderBoardPage />}
-            /> */}
-            <Route
+            />
+            {/*<Route
               path="/cult"
               element={<CultPage />}
             />
             <Route
               path="/cult/leaderboard"
               element={<CultLeaderboardPage />}
-            />
+            />*/}
             <Route
               path="/discord/verification"
               element={<DiscordVerificationPage />}
@@ -322,13 +323,15 @@ function App() {
           }}
         >*/}
           <QueryClientProvider client={queryClient}>
-          <RewardsContextProvider>
-            <ActivityContextProvider>
-            <AuthHeadersProvider>
-                <AppContent />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </AuthHeadersProvider>
-            </ActivityContextProvider>
+            <RewardsContextProvider>
+              <AuthHeadersProvider>
+                <RewardStatusContextProvider>
+                  <ActivityContextProvider>
+                    <AppContent />
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  </ActivityContextProvider>
+                </RewardStatusContextProvider>
+              </AuthHeadersProvider>
             </RewardsContextProvider>
           </QueryClientProvider>
         {/*</PushUniversalWalletProvider>*/}

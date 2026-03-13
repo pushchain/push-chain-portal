@@ -3,7 +3,7 @@ import React, { FC, useState } from "react";
 import { css } from "styled-components";
 
 // hooks
-import { useRewardsContext } from "../../../context/rewardsContext";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 // type
 import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
@@ -19,7 +19,7 @@ export type DailyRewardsSectionProps = Record<string, never>;
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders } = useAuthHeaders();
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -50,8 +50,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     { id: 6, text: "Day 6", points: 280 },
     { id: 7, text: "Day 7", points: 300 },
   ];
-
-  console.log(getDailyCheckInDetails)
 
   return (
     <Box

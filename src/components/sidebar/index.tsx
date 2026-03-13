@@ -20,7 +20,6 @@ import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRewardsContext } from '../../context/rewardsContext';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 import { useGetUserCultStatus } from '../../queries';
@@ -104,61 +103,61 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     //   label: 'Pre-Launch Access',
     //   route: '/rewards/pre-launch'
     // },
-    // {
-    //   id: 'discover',
-    //   icon: CompassRose,
-    //   label: 'Discover',
-    //   route: '/rewards'
-    // },
-    // {
-    //   id: 'quests',
-    //   icon: CastleTurret,
-    //   label: 'Quests',
-    //   badge: {
-    //     text: 'NEW',
-    //     icon: StarFilled,
-    //   },
-    // },
-    // {
-    //   id: 'push-pass',
-    //   icon: PushPass,
-    //   label: 'Push Pass',
-    //   route: '/rewards/pushpass'
-    // },
-    // {
-    //   id: 'squads',
-    //   icon: SquadsIcon,
-    //   label: 'Invites/Squads',
-    //   route: '/rewards/squads'
-    // },
-    // {
-    //   id: 'leaderboards',
-    //   icon: Ranking,
-    //   label: 'Leaderboards',
-    //   route: '/rewards/leaderboard'
-    // },
     {
-      id: 'season3',
+      id: 'discover',
       icon: CompassRose,
-      label: 'Season 3',
-      route: '/'
+      label: 'Discover',
+      route: '/rewards'
     },
     {
-      id: 'cult',
+      id: 'quests',
       icon: CastleTurret,
-      label: 'Cult',
-      route: '/cult'
+      label: 'Quests',
+      badge: {
+        text: 'NEW',
+        icon: StarFilled,
+      },
     },
-    ...(showCultDashboard
-    ? [
-        {
-          id: 'cult-leaderboard',
-          icon: Ranking,
-          label: 'Cult Leaderboards',
-          route: '/cult/leaderboard',
-        },
-      ]
-    : []),
+    {
+      id: 'push-pass',
+      icon: PushPass,
+      label: 'Push Pass',
+      route: '/rewards/pushpass'
+    },
+    {
+      id: 'squads',
+      icon: SquadsIcon,
+      label: 'Invites/Squads',
+      route: '/rewards/squads'
+    },
+    {
+      id: 'leaderboards',
+      icon: Ranking,
+      label: 'Leaderboards',
+      route: '/rewards/leaderboard'
+    },
+    // {
+    //   id: 'season3',
+    //   icon: CompassRose,
+    //   label: 'Season 3',
+    //   route: '/'
+    // },
+    // {
+    //   id: 'cult',
+    //   icon: CastleTurret,
+    //   label: 'Cult',
+    //   route: '/cult'
+    // },
+    // ...(showCultDashboard
+    // ? [
+    //     {
+    //       id: 'cult-leaderboard',
+    //       icon: Ranking,
+    //       label: 'Cult Leaderboards',
+    //       route: '/cult/leaderboard',
+    //     },
+    //   ]
+    // : []),
   ];
 
   const bottomMenuItems: MenuItem[] = [

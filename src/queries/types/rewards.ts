@@ -1,5 +1,5 @@
 export type AuthHeaders = {
-  message: string;
+  message: Record<string, string | undefined> | string;
   signature: string;
   walletAddress: string;
 };
@@ -513,4 +513,40 @@ export type LevelProgressResponse = {
   currentLevelConfig: LevelConfigItem;
   nextLevelConfig: LevelConfigItem;
   paragonModeEnabled: boolean;
+};
+
+export type SybilStatusResponse = {
+  isSybil: boolean;
+  status: string;
+  walletAddress: string;
+};
+
+export type GetSybilStatusResponse = {
+  success: boolean;
+  data: {
+    passed: boolean;
+    reason: string | null;
+    isCultMember: boolean;
+    cultBypass: boolean;
+    completed: boolean;
+    summary: {
+      completedCriteria: number;
+      totalCriteria: number;
+    };
+    basic: {
+      twitter: { completed: boolean };
+      discord: { completed: boolean };
+      level: {
+        completed: boolean;
+        currentLevel: number;
+        requiredLevel: number;
+        remainingLevels: number;
+      };
+    };
+    advanced: {
+      completed: boolean;
+      connectedWalletAddress: string | null;
+    };
+  };
+
 };

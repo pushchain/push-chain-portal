@@ -5,12 +5,12 @@ import SpinToWinModal from './SpinToWinModal';
 import { useSpinStatus } from '../hooks/useSpinStatus';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
-import { useRewardsContext } from '../../../context/rewardsContext';
+import { useRewardStatus } from '../../../context/rewardStatusContext';
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { spinStatus } = useSpinStatus();
-  const { isLocked, isLockedStatusLoading } = useRewardsContext();
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
