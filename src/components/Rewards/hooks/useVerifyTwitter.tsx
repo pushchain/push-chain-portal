@@ -141,9 +141,9 @@ const useVerifyTwitter = ({
           ?.screenName;
 
         // let verificationProof;
-        // let messageToSend: Record<string, string | undefined> = {
-        //   twitter: twitterHandle,
-        // };
+        const messageToSend: Record<string, string | undefined> = {
+          twitter: twitterHandle,
+        };
 
         // const isSolana = chainId == WalletChainType.SOLANA;
 
@@ -194,7 +194,7 @@ const useVerifyTwitter = ({
           {
             userId: updatedId || (userId as string),
             activityTypeId,
-            // data: messageToSend,
+            data: messageToSend,
             // verificationProof,
           },
           {

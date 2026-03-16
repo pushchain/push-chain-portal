@@ -9,7 +9,7 @@ export const claimRewardsActivity = (payload: ClaimRewardsActivityProps) =>
     url: `${getSeasonThreeBaseURL()}/v3/users/${payload.userId}/activity/${payload.activityTypeId}`,
     data: {
       data: payload.data,
-      verificationProof: payload.verificationProof,
+      // verificationProof: payload.verificationProof,
     },
     headers: {
       "Content-Type": "application/json",

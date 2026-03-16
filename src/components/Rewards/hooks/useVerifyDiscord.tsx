@@ -114,9 +114,9 @@ const useVerifyDiscord = ({
 
       if (username && token) {
         // let verificationProof;
-        // let messageToSend: Record<string, string | undefined> = {
-        //   discord_token: token,
-        // };
+        const messageToSend: Record<string, string | undefined> = {
+          discord_token: token,
+        };
 
         // const isSolana = chainId == WalletChainType.SOLANA;
 
@@ -168,7 +168,7 @@ const useVerifyDiscord = ({
           {
             userId: updatedId || (userId as string),
             activityTypeId,
-            // data: messageToSend,
+            data: messageToSend,
             // verificationProof,
           },
           {
