@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
-
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
@@ -10,23 +9,20 @@ import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
 import { useRewardsContext } from "../../../context/rewardsContext"
+import { useAuthHeaders } from "../../../context/authHeadersContext"
 
 import { Alert, ArrowDown, Box, Button, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
 
-// const PUSH_CHAIN_IDS = ["42101", "42102"];
-
 export const RenderLoggedInUnverifiedState = () => {
-  // TODO: fix second wallet flow
   const { universalAccount } = usePushWalletContext('wallet1');
-  // const { universalAccount: linkedAccount, handleConnectToPushWallet: connectLinkedWallet } = usePushWalletContext('wallet2');
   const { refetchActivityStatus } = useRewardsContext();
+  const { authHeaders } = useAuthHeaders();
   const [errorMessage, setErrorMessage] = useState("");
   const [localSybilEligible, setLocalSybilEligible] = useState<boolean | null>(null);
-  const { mutate: evmSybilCheck, isPending: isEvmPending } = useAdvancedSybilCheck();
   const { mutate: pushWalletSybilCheck, isPending: isPushWalletPending } = usePushWalletSybilCheck();
   const { chainId } = parseCAIP(universalAccount?.chain);
-  // const isPushWalletUser = PUSH_CHAIN_IDS.includes(chainId);
-  const isLocalSybilCheckPending = isEvmPending || isPushWalletPending;
+
+  const isLocalSybilCheckPending = isPushWalletPending;
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -45,57 +41,9 @@ export const RenderLoggedInUnverifiedState = () => {
     !!userDetails?.userId
   );
 
-  // Auto-trigger sybil check when wallet2 (linked EVM wallet) connects for Push wallet users
-  // useEffect(() => {
-  //   if (!isPushWalletUser || !linkedAccount?.address || localSybilEligible !== null) return;
-  //   const { chainId: linkedChainId } = parseCAIP(linkedAccount.chain);
-  //   evmSybilCheck(
-  //     { address: linkedAccount.address, chainId: parseInt(linkedChainId) },
-  //     {
-  //       onSuccess: (response) => {
-  //         setLocalSybilEligible(response?.eligible);
-  //         // Remove wallet2 session from localStorage to prevent it from overwriting wallet1 on refresh
-  //         localStorage.removeItem("walletInfo");
-  //       },
-  //       onError: () => {
-  //         setLocalSybilEligible(false);
-  //         localStorage.removeItem("walletInfo");
-  //       },
-  //     }
-  //   );
-  // }, [linkedAccount?.address]);
-
   const handleVerifyWallet = () => {
-    // if (isPushWalletUser) {
-    //   // Push wallet users must link an EVM wallet via wallet2
-    //   if (!linkedAccount?.address) {
-    //     connectLinkedWallet();
-    //     return;
-    //   }
-    //
-    //   const { chainId: linkedChainId } = parseCAIP(linkedAccount.chain);
-    //   evmSybilCheck(
-    //     {
-    //       address: linkedAccount.address,
-    //       chainId: parseInt(linkedChainId),
-    //     },
-    //     {
-    //       onSuccess: (response) => {
-    //         setLocalSybilEligible(response?.eligible);
-    //         // Remove wallet2 session from localStorage to prevent it from overwriting wallet1 on refresh
-    //         localStorage.removeItem("walletInfo");
-    //       },
-    //       onError: () => {
-    //         setLocalSybilEligible(false);
-    //         localStorage.removeItem("walletInfo");
-    //       },
-    //     }
-    //   );
-    //   return;
-    // }
-
     if (!universalAccount?.address || !chainId) return;
-
+    if (!authHeaders) return;
     pushWalletSybilCheck(
       {
         address: universalAccount.address,
@@ -132,6 +80,9 @@ export const RenderLoggedInUnverifiedState = () => {
       activityTypeId: "link_an_active_wallet",
     },
   ];
+
+  // Check if authHeaders are ready for verify button
+  const isVerifyDisabled = isLocalSybilCheckPending || !authHeaders;
 
   return (
     <Box
@@ -225,9 +176,11 @@ export const RenderLoggedInUnverifiedState = () => {
           </Box>
         </Box>
 
-        {errorMessage && <Box width="100%" margin="spacing-sm spacing-none spacing-none spacing-none">
-          <Alert variant="error" description={errorMessage} />
-        </Box>}
+        {errorMessage && (
+          <Box width="100%" margin="spacing-sm spacing-none spacing-none spacing-none">
+            <Alert variant="error" description={errorMessage} />
+          </Box>
+        )}
 
         <Box
           display="flex"
@@ -266,11 +219,6 @@ export const RenderLoggedInUnverifiedState = () => {
                   Linked wallet will be bound to Push account for Season 3
                 </Text>
               </Box>
-
-
-              {/*<Box>
-                <PushUniversalAccountButton uid='wallet2' />
-              </Box>*/}
 
               {localSybilEligible === true && (
                 <Box
@@ -338,17 +286,14 @@ export const RenderLoggedInUnverifiedState = () => {
                     variant="tertiary"
                     size="small"
                     onClick={handleVerifyWallet}
-                    disabled={isLocalSybilCheckPending}
+                    disabled={isVerifyDisabled}
                   >
-                    {isLocalSybilCheckPending
-                      ? "Verifying..."
-                      : "Verify"}
+                    {isLocalSybilCheckPending ? "Verifying..." : "Verify"}
                   </Button>
                 </Box>
               )}
             </Box>
           )}
-
 
           <Box
             display="flex"
@@ -400,8 +345,6 @@ export const RenderLoggedInUnverifiedState = () => {
               );
             })}
           </Box>
-
-
         </Box>
       </Box>
 

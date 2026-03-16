@@ -1,15 +1,14 @@
 // AuthHeadersContext.tsx
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useSignMessageWithEthereum } from "../components/Rewards/hooks/useSignMessage";
 import { useSignMessageWithSolana } from "../components/Rewards/hooks/useSignMessageWithSolana";
 import { AuthHeaders, useGetSeasonThreeUserByWallet } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { WalletChainType } from "../components/Rewards/utils/wallet";
+import { FLAGS } from "../config/flags";
 
 const AUTH_HEADERS_KEY = "push_auth_headers";
-
-let isSigningInProgress = false;
 
 const getStoredAuthHeaders = (walletAddress: string): AuthHeaders | null => {
   try {
@@ -45,7 +44,6 @@ type AuthHeadersContextType = {
   authHeaders: AuthHeaders | undefined;
   isSigningMessage: boolean;
   hasSigned: boolean;
-  signAndStore: () => Promise<AuthHeaders | null>;
   clearAuthHeaders: () => void;
 };
 
@@ -54,6 +52,7 @@ const AuthHeadersContext = createContext<AuthHeadersContextType | null>(null);
 export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [authHeaders, setAuthHeaders] = useState<AuthHeaders | undefined>();
   const [isSigningMessage, setIsSigningMessage] = useState(false);
+  const hasAttemptedSign = useRef(false);
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage: signMessageEthereum } = useSignMessageWithEthereum();
@@ -77,63 +76,67 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
 
   const hasSigned = !!authHeaders;
 
+  // Load from sessionStorage on wallet connect
   useEffect(() => {
     if (walletAddress) {
       const stored = getStoredAuthHeaders(walletAddress);
       if (stored) {
         setAuthHeaders(stored);
+        hasAttemptedSign.current = true;
       }
     }
   }, [walletAddress]);
 
+  // Clear on disconnect
   useEffect(() => {
     if (!universalAccount) {
       setAuthHeaders(undefined);
       clearStoredAuthHeaders();
-      isSigningInProgress = false;
+      hasAttemptedSign.current = false;
     }
   }, [universalAccount]);
-
-  const signAndStore = useCallback(async () => {
-    // if (!universalAccount || authHeaders) return null;
-
-    // setIsSigningMessage(true);
-    // try {
-    //   const { signature, messageToSend, messageString, error } = await signMessage();
-    //   if (error || !signature || !messageToSend) return null;
-
-    //   const messagePayload = isSolana ? messageString : messageToSend;
-    //   if (!messagePayload) return null;
-
-    //   const newAuthHeaders: AuthHeaders = {
-    //     message: messagePayload,
-    //     signature,
-    //     walletAddress: caip10WalletAddress,
-    //   };
-
-    //   setAuthHeaders(newAuthHeaders);
-    //   storeAuthHeaders(newAuthHeaders);
-    //   return newAuthHeaders;
-    // } finally {
-    //   setIsSigningMessage(false);
-    //   isSigningInProgress = false;
-    // }
-  }, [universalAccount, authHeaders, signMessage, caip10WalletAddress]);
 
   useEffect(() => {
     if (!userDetails) return;
     if (!universalAccount) return;
     if (authHeaders) return;
-    if (isSigningInProgress) return;
+    if (hasAttemptedSign.current) return;
+    // no signings needed for cult
+    if (FLAGS.CULT) return;
 
-    isSigningInProgress = true;
-    signAndStore();
-  }, [universalAccount, authHeaders, userDetails, signAndStore]);
+    hasAttemptedSign.current = true;
+
+    const signOnce = async () => {
+      setIsSigningMessage(true);
+      try {
+        const { signature, messageToSend, messageToSign, error } = await signMessage();
+        if (error || !signature) return;
+
+        const messagePayload = isSolana ? messageToSign : messageToSend;
+        if (!messagePayload) return;
+
+        const newAuthHeaders: AuthHeaders = {
+          message: messagePayload as AuthHeaders['message'],
+          signature,
+          walletAddress: caip10WalletAddress,
+        };
+
+        setAuthHeaders(newAuthHeaders);
+        storeAuthHeaders(newAuthHeaders);
+      } catch (err) {
+        console.error("Failed to sign:", err);
+      } finally {
+        setIsSigningMessage(false);
+      }
+    };
+
+    signOnce();
+  }, [userDetails, universalAccount, authHeaders, signMessage, isSolana, caip10WalletAddress]);
 
   const clearAuthHeaders = useCallback(() => {
     setAuthHeaders(undefined);
     clearStoredAuthHeaders();
-    isSigningInProgress = false;
+    hasAttemptedSign.current = false;
   }, []);
 
   return (
@@ -142,7 +145,6 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
         authHeaders,
         isSigningMessage,
         hasSigned,
-        signAndStore,
         clearAuthHeaders,
       }}
     >

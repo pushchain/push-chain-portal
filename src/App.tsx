@@ -20,6 +20,7 @@ import {
 } from '@pushchain/ui-kit';
 
 import { getPreviewBasePath } from "../basePath";
+import { FLAGS } from "./config/flags";
 import { ThemeProviderWrapper } from "./context/themeContext";
 import { RewardsContextProvider } from "./context/rewardsContext";
 
@@ -205,37 +206,24 @@ const AppContent = () => {
           `}
         >
           <Routes>
-            <Route path="/" element={<S3CountdownPage />} />
-             {/*<Route path="/" element={<Navigate to="/rewards" replace />} />*/}
-            {/*<Route path="/admin/controls" element={<AdminPage />} />
-            <Route path="/rewards" element={<RewardsPage />} />
-            <Route path="/rewards/pushpass" element={<PushPassPage />} />
-            <Route path="/rewards/squads" element={<SquadsPage />} />
-            <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
-            <Route
-              path="/rewards/pushpass/:id"
-              element={<PushPassItemPage />}
-          />
-            <Route
-              path="/rewards/leaderboard"
-              element={<LeaderBoardPage />}
-            />
-            <Route
-              path="/rewards/leaderboard-s2"
-              element={<LeaderBoardPage />}
-            />
-            <Route
-              path="/rewards/leaderboard-s1"
-              element={<LeaderBoardPage />}
-            />*/}
-            <Route
-              path="/cult"
-              element={<CultPage />}
-            />
-            <Route
-              path="/cult/leaderboard"
-              element={<CultLeaderboardPage />}
-            />
+            {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
+            {FLAGS.SEASON_THREE && <>
+              <Route path="/" element={<Navigate to="/rewards" replace />} />
+              <Route path="/admin/controls" element={<AdminPage />} />
+              <Route path="/rewards" element={<RewardsPage />} />
+              <Route path="/rewards/pushpass" element={<PushPassPage />} />
+              <Route path="/rewards/squads" element={<SquadsPage />} />
+              <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
+              <Route path="/rewards/pushpass/:id" element={<PushPassItemPage />} />
+              <Route path="/rewards/leaderboard" element={<LeaderBoardPage />} />
+              <Route path="/rewards/leaderboard-s2" element={<LeaderBoardPage />} />
+              <Route path="/rewards/leaderboard-s1" element={<LeaderBoardPage />} />
+            </>}
+            {FLAGS.CULT && <>
+               <Route path="/" element={<S3CountdownPage />} />
+              <Route path="/cult" element={<CultPage />} />
+              <Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />
+            </>}
             <Route
               path="/discord/verification"
               element={<DiscordVerificationPage />}
