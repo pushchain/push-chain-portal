@@ -30,8 +30,6 @@ const DiscordVerification = () => {
     }
   };
 
-  console.log(access_token, userDiscordDetails);
-
   if (!access_token) {
     window.close();
   }
