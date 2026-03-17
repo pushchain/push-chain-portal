@@ -35,6 +35,7 @@ import { Sidebar } from "./components/sidebar";
 import Header from "./structure/Header";
 import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
+import PreMigratePage from "./pages/PreMigratePage";
 import AdminPage from "./pages/AdminPage";
 
 
@@ -178,6 +179,7 @@ const AppContent = () => {
             {/*<Route path="/rewards" element={<RewardsPage />} />
             <Route path="/rewards/pushpass" element={<PushPassPage />} />*/}
             <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
+            <Route path="/rewards/pre-migrate" element={<PreMigratePage />} />
             <Route
               path="/rewards/pushpass/:id"
               element={<PushPassItemPage />}
