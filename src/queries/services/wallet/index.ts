@@ -1,0 +1,1 @@
+export { resolveWallet } from './resolveWallet';

@@ -4,6 +4,7 @@ export type ButtonVariant =
   | 'tertiary'
   | 'danger'
   | 'dangerSecondary'
-  | 'outline';
+  | 'outline'
+  | 'success';
 
 export type ButtonSize = 'extraSmall' | 'small' | 'medium' | 'large';

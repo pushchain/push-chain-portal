@@ -1,0 +1,322 @@
+import { useState, useRef, useEffect } from 'react';
+import { css } from 'styled-components';
+
+import Spinboard, { SpinboardHandle } from './Spinboard';
+import { useSpinStatus } from '../hooks/useSpinStatus';
+import { useGetSeasonThreeUserByWallet, useSpinTheWheel } from '../../../queries/hooks';
+
+import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
+import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
+import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } from '../../../blocks';
+import { Image } from '../../../css/SharedStyling';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+
+type SpinToWinModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+type SpinPrize = {
+  slotId: number;
+  rewardType: string;
+  rewardValue: number;
+  label: string;
+};
+
+type ButtonConfig = {
+  label: string;
+  onClick?: () => void;
+  disabled: boolean;
+  variant?: string;
+};
+
+const spinConfig: SpinPrize[] = [
+  { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "RARE PASS" },
+  { slotId: 1, rewardType: "POINTS", rewardValue: 50, label: "50 Points" },
+  { slotId: 2, rewardType: "POINTS", rewardValue: 100, label: "100 Points" },
+  { slotId: 3, rewardType: "POINTS", rewardValue: 150, label: "150 Points" },
+  { slotId: 4, rewardType: "PC_TOKENS", rewardValue: 5, label: "5 PC Tokens" },
+  { slotId: 5, rewardType: "XP_BOOST", rewardValue: 10, label: "+10% XP (24h)" },
+  { slotId: 6, rewardType: "POINTS", rewardValue: 200, label: "200 Points" },
+  { slotId: 7, rewardType: "POINTS", rewardValue: 250, label: "250 Points" },
+  { slotId: 8, rewardType: "PC_TOKENS", rewardValue: 10, label: "10 PC Tokens" },
+  { slotId: 9, rewardType: "XP_BOOST", rewardValue: 25, label: "+25% XP (24h)" },
+];
+
+const getPrizeBySlotId = (slotId: number): SpinPrize | undefined =>
+  spinConfig.find(item => item.slotId === slotId);
+
+const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [countdown, setCountdown] = useState('');
+  const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
+  const { universalAccount } = usePushWalletContext('wallet1');
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const spinboardRef = useRef<SpinboardHandle>(null);
+
+  const { spinStatus, authHeaders, refetch } = useSpinStatus();
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  })
+  const { mutate: spin } = useSpinTheWheel();
+
+  const remainingSpins = spinStatus?.remainingSpins ?? 0;
+  const canSpin = spinStatus?.canSpin ?? false;
+  const nextSpinCost = spinStatus?.nextSpinCost ?? 0;
+  const hasEnoughPoints = spinStatus?.hasEnoughPoints ?? false;
+  const isFirstSpin = spinStatus?.currentSpinCount === 0;
+  const currentSpinCount = spinStatus?.currentSpinCount ?? 0;
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setShowResult(false);
+      setWonPrize(null);
+      setIsSpinning(false);
+      spinboardRef.current?.reset();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!spinStatus?.resetsAt) return;
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const resetTime = new Date(spinStatus.resetsAt).getTime();
+      const diff = resetTime - now;
+
+      if (diff <= 0) {
+        setCountdown('00h:00m');
+        refetch();
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      setCountdown(`${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, [spinStatus?.resetsAt]);
+
+  const handleSpinClick = () => {
+    if (isSpinning || !canSpin || !authHeaders) return;
+
+    setShowResult(false);
+    setIsSpinning(true);
+    spinboardRef.current?.startSpin();
+
+    spin(authHeaders, {
+      onSuccess: (data) => {
+        const slotId = data?.slotId ?? 1;
+        spinboardRef.current?.landOn(slotId);
+        setWonPrize(getPrizeBySlotId(slotId) ?? null);
+        refetch();
+        refetchUserDetails();
+      },
+      onError: () => {
+        spinboardRef.current?.stopSpin();
+        setIsSpinning(false);
+      },
+    });
+  };
+
+  const handleSpinComplete = () => {
+    setIsSpinning(false);
+    setShowResult(true);
+  };
+
+  const handleClose = () => {
+    if (isSpinning) return;
+    onClose();
+  };
+
+  const handleSpinAgain = () => {
+    setShowResult(false);
+  };
+
+  const getButtonConfig = (): ButtonConfig => {
+    if (isSpinning) {
+      return {
+        label: 'Spinning...',
+        disabled: true };
+    }
+
+    if (showResult) {
+      if (wonPrize?.rewardType === 'RARE_PASS') {
+        return {
+          label: `More spins unlock in ${countdown}`,
+          disabled: true,
+          variant: 'outline',
+        };
+      }
+
+      if (remainingSpins > 0) {
+        const cost = nextSpinCost > 0 ? ` (${nextSpinCost} Points)` : '';
+        return {
+          label: `Spin Again${cost}`,
+          onClick: handleSpinAgain,
+          disabled: false };
+      }
+
+      return {
+        label: 'Close',
+        onClick: handleClose,
+        disabled: false };
+    }
+
+    if (!canSpin) {
+      if (!hasEnoughPoints) {
+        return {
+          label: `Spin The Wheel ${nextSpinCost} Points`,
+          disabled: true };
+      }
+      return {
+        label: 'No Spins Available',
+        disabled: true };
+    }
+
+    if (isFirstSpin) {
+      return {
+        label: 'Free Spin x1',
+        onClick: handleSpinClick,
+        variant: 'success',
+        disabled: false };
+    }
+
+    return {
+      label: `Spin The Wheel (${nextSpinCost} Points)`,
+      onClick: handleSpinClick,
+      disabled: false
+    };
+  };
+
+  const buttonConfig = getButtonConfig();
+  const isRarePass = wonPrize?.rewardType === "RARE_PASS";
+  const isPointsWinning = wonPrize?.rewardType === "POINTS";
+  const isPCTokenWinning = wonPrize?.rewardType === "PC_TOKENS";
+  const isXPBoostWinning = wonPrize?.rewardType === "XP_BOOST";
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="small"
+      css={css`
+        border-radius: var(--radius-lg, 32px);
+        outline: none;
+        background: url(${ModalBg}) no-repeat center center;
+        background-size: cover;
+
+        & > div:last-child:empty {
+          display: none;
+        }
+      `}
+      acceptButtonProps={null}
+      cancelButtonProps={null}
+    >
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="spacing-md"
+        width="100%"
+      >
+        <Text
+          variant="h2-semibold"
+          textAlign="center"
+          css={css`
+            background: linear-gradient(180deg, #FFF 0%, #FFE397 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          `}
+        >
+          {showResult ? "Rewards" : "Spin 2 Win"}
+        </Text>
+
+        {!showResult && (
+          <Box width="100%">
+            <Spinboard ref={spinboardRef} onSpinComplete={handleSpinComplete} />
+          </Box>
+        )}
+
+        {showResult && (
+          <Box
+            position='relative'
+            css={css`
+              width: 226px;
+              height: 127px;
+              border-radius: 20.239px;
+              border: 0.843px solid rgba(255, 255, 255, 0.40);
+              background: radial-gradient(79.77% 79.77% at 31.11% 22.5%, #C35FF5 0%, #635CC8 100%);
+              margin: 125px 0px 25px 0px;
+              display: flex;
+              align-items: flex-end;
+              padding: 24px;
+              box-sizing: border-box;
+            `}
+          >
+            <Box css={css`
+              position: absolute;
+              top: -15%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            `}>
+              {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
+              {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
+              {isXPBoostWinning && <Multiplier width={80} height={80} />}
+              {isPCTokenWinning && <PCTokens width={80} height={80} />}
+            </Box>
+
+            <Box css={css`width: 100%;`}>
+              <Text variant='h4-semibold' textAlign='center'>{wonPrize?.label}</Text>
+            </Box>
+          </Box>
+        )}
+
+        <Button
+          size="medium"
+          variant={buttonConfig.variant ?? "primary"}
+          onClick={buttonConfig.onClick}
+          disabled={buttonConfig.disabled}
+          css={css`
+            width: 100%;
+            opacity: ${buttonConfig.disabled ? 0.6 : 1};
+            cursor: ${buttonConfig.disabled ? 'not-allowed' : 'pointer'};
+          `}
+        >
+          {buttonConfig.label}
+        </Button>
+
+        {isFirstSpin && (
+          <Text variant='bes-semibold'>Come back daily for a free spin</Text>
+        )}
+
+        {!isFirstSpin && currentSpinCount < 5 && wonPrize?.rewardType !== "RARE_PASS" && (
+          <Text variant='bes-semibold'>
+            Spin again for better rewards {currentSpinCount}/5
+          </Text>
+        )}
+
+        {!isFirstSpin && (currentSpinCount >= 5 || wonPrize?.rewardType === "RARE_PASS") && (
+          <Text variant='bes-semibold'>
+            Check back tomorrow for new spins
+          </Text>
+        )}
+
+      </Box>
+    </Modal>
+  );
+};
+
+export default SpinToWinModal;

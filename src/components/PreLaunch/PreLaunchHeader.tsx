@@ -24,7 +24,7 @@ export const PreLaunchHeader = ({
   isLoading
 }: PreLaunchHeaderProps) => {
   const isMobile = useMediaQuery(device.mobileL);
-  const { universalAccount, connectionStatus } = usePushWalletContext();
+  const { universalAccount, connectionStatus } = usePushWalletContext('wallet1');
   const isWalletConnected = connectionStatus === 'connected';
 
 
@@ -265,7 +265,7 @@ export const PreLaunchHeader = ({
                   )}
                 </Skeleton>
               ) : (
-               <PushUniversalAccountButton />
+                  <PushUniversalAccountButton uid='wallet1' />
               )}
               </Box>
             </Box>

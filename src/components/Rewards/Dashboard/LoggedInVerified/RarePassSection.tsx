@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Text, ArrowRight } from '../../../../blocks';
+import { NavLink } from 'react-router-dom';
+
+import { Box, Text, ArrowRight } from '../../../../blocks';
 import { LockedPassCard } from './LockedPassCard';
 
 export const RarePassSection: FC = () => {
@@ -12,10 +14,23 @@ export const RarePassSection: FC = () => {
       justifyContent="flex-end"
       padding="spacing-md"
       height="-webkit-fill-available"
+      position='relative'
       css={css`
         flex: 1;
-        border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          padding: 1px;
+          background: rgba(255, 255, 255, 0.10);
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+        }
       `}
     >
       <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-md" width="100%">
@@ -29,19 +44,24 @@ export const RarePassSection: FC = () => {
             </Text>
           </Box>
 
-          <Button
-            variant="tertiary"
-            size="small"
-            trailingIcon={<ArrowRight size={20} />}
-            css={css`
-              background: none;
-              padding: 0px;
-              min-width: auto;
-              color: #C742DD;
-              `}
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            minWidth="90px"
+            gap="spacing-xxs"
           >
-            View All
-          </Button>
+            <NavLink
+              to="/rewards/squads"
+              style={{
+                textDecoration: 'none',
+                color: "#C742DD"
+              }}
+            >
+              View All
+              </NavLink>
+              <ArrowRight size={14} />
+          </Box>
         </Box>
 
         <Box

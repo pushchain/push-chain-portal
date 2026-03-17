@@ -1,26 +1,81 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Text } from '../../blocks';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
+import { useGetCharacterEligible, useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
+
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import PushPassTabs from './Tabs/PushPassTabs';
 import UnopenedPassesContent from './Passes/UnopenedPassesContent';
 import MyCollectionContent from './Passes/MyCollectionContent';
+import { Box, Link, Text } from '../../blocks';
+import { walletToFullCAIP10 } from '../../helpers/web3helper';
+
 
 type TabType = 'unopened' | 'collection';
 
 const PushPass = () => {
   const [activeTab, setActiveTab] = useState<TabType>('unopened');
+  const { universalAccount } = usePushWalletContext('wallet1');
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCharacterInfo, isLoading } = useGetCharacterInfo({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: isUserEligible } = useGetCharacterEligible({
+    userWallet: caip10WalletAddress
+  });
+
+  const { data: rarePassHistory } = useGetRarePassHistory({
+    userId: userDetails?.userId ?? '',
+  });
+
+  const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
+  const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const characters = userCharacterInfo?.characters || [];
+  const unmintedCharacters = characters.filter((c) => c.status === 'UNMINTED');
+
+  // Use history to get lock messages (level info) for dormant passes
+  const dormantHistory = (rarePassHistory?.history ?? [])
+    .filter((item) => item.activityTypeId === 'rare_pass_dormant_grant')
+    .slice(0, rareDormantCount);
 
   const passes = [
-    { id: 1, isLocked: false },
-    { id: 2, isLocked: true, lockMessage: 'Spin to Unlock' },
-    { id: 3, isLocked: true, lockMessage: 'Unlocks at Lv. 15' },
-    { id: 4, isLocked: true, lockMessage: 'Unlocks at Lv. 25' },
-    { id: 5, isLocked: true, lockMessage: 'Unlocks at Lv. 40' },
-    { id: 6, isLocked: true, lockMessage: 'Unlocks at Lv. 50' },
-    { id: 7, isLocked: true, lockMessage: 'Complete Boss Quest' },
-    { id: 8, isLocked: true, lockMessage: 'Complete Boss Quest' },
+    // Cards for unminted characters (already generated, waiting to be minted)
+    ...unmintedCharacters.map((char, index) => ({
+      id: index + 1,
+      isLocked: false,
+      lockMessage: 'View Pass',
+      character: char,
+    })),
+
+    // Cards for active passes the user can claim (not yet generated)
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
+      id: unmintedCharacters.length + index + 1,
+      isLocked: false,
+      lockMessage: 'Open Now',
+    })),
+
+    // Cards for dormant (locked) passes
+    ...dormantHistory.map((item, index) => {
+      const level = (item.details as { level?: number })?.level;
+      return {
+        id: unmintedCharacters.length + rareActiveCount + index + 1,
+        isLocked: true,
+        lockMessage: `Unlocks at Lv. ${level}`,
+      };
+    }),
   ];
+
 
   return (
     <Box
@@ -124,9 +179,12 @@ const PushPass = () => {
         <Text
           variant='h5-regular'
           textAlign='center'>Keep an eye on
-            <Text
-              as='span'
-              variant='h5-semibold' color='#C742DD'>{' '}@PushChain{' '}</Text>
+            <Link
+              to="https://x.com/pushchain"
+              textProps={{ variant: "bm-semibold", color: "#C742DD" }}
+            >
+              {' '}@PushChain{' '}
+            </Link>
             for more ways to score more Rare Passes</Text>
       </Box>
     </Box>
