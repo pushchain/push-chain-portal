@@ -222,7 +222,8 @@ const AppContent = () => {
             {FLAGS.CULT && <>
                <Route path="/" element={<S3CountdownPage />} />
               <Route path="/cult" element={<CultPage />} />
-              <Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />
+              {/*TODO: comment out for now */}
+              {/*<Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />*/}
             </>}
             <Route
               path="/discord/verification"
