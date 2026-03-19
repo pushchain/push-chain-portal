@@ -249,11 +249,18 @@ function App() {
     uid: 'wallet1',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
-      email: true,
-      google: true,
+      email: false,
+      google: false,
+      phone: false,
       wallet: {
         enabled: true,
       },
+      socials: {
+        discord: false,
+        github: false,
+        x: false,
+        bluesky: false,
+    },
       appPreview: true,
     },
     modal: {
