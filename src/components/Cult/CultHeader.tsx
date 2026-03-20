@@ -10,7 +10,7 @@ import { LoggedInUnverifiedUser } from "./components/LoggedInUnverifiedUser"
 import { useActivityContext } from "../../context/activityContext"
 
 export const CultHeader = () => {
-	const { isVerified } = useActivityContext();
+	const { isVerified, isLoading: isLoadingActivity } = useActivityContext();
 
 	const { universalAccount } = usePushWalletContext('wallet1');
 
@@ -21,11 +21,11 @@ export const CultHeader = () => {
 		universalAccount?.chain,
 	);
 
-	const { data: userCultStatus } = useGetUserCultStatus({
+	const { data: userCultStatus, isLoading } = useGetUserCultStatus({
 		wallet: caip10WalletAddress
 	});
 
-	const isCultUser = userCultStatus?.data?.isCultMember;
+  const isCultUser = userCultStatus?.data?.isCultMember && !isLoading && !isLoadingActivity;
 
   return (
     <Box
@@ -96,14 +96,18 @@ export const CultHeader = () => {
             `}
           >
 						<img src={CultImage} alt="Cult Logo" width="316px" height="123px" />
-						{isWalletConnected && isCultUser && !isVerified && (
-							<LoggedInCultUser />
-						)}
-						{isWalletConnected && isCultUser && isVerified && (
-							<LoggedInVerifiedUser />
-						)}
-						{!isCultUser && (
-							<LoggedInUnverifiedUser />
+						{!isLoading && !isLoadingActivity && (
+							<>
+								{isWalletConnected && isCultUser && !isVerified && (
+									<LoggedInCultUser />
+								)}
+								{isWalletConnected && isCultUser && isVerified && (
+									<LoggedInVerifiedUser />
+								)}
+								{!isCultUser && (
+									<LoggedInUnverifiedUser isCultUser={isCultUser} isLoading={isLoading} />
+								)}
+							</>
 						)}
           </Box>
         </Box>
