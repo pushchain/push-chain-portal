@@ -14,7 +14,7 @@ import { Box, Link, Skeleton, Text } from '../../../blocks';
 type RewardsActivityTitleProps = {
   activityTitle: string;
   isLoading: boolean;
-  color?: TextColors;
+  color?: TextColors | string;
   variant?: TextVariants;
 };
 

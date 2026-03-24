@@ -183,10 +183,6 @@ export const RewardsUpdatedDashboard = () => {
     <RenderLoggedInVerifiedState />
   );
 
-  const renderLoggedInCultUser = () => (
-    <RenderLoggedInCultUser />
-  );
-
   if (isWalletConnected && isLockedStatusLoading) {
     return (
       <Box
@@ -332,9 +328,6 @@ export const RewardsUpdatedDashboard = () => {
 
     );
   }
-
-  // if (isWalletConnected && isCultUser)
-  //   return renderLoggedInCultUser();
 
   if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 
