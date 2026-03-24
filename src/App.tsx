@@ -207,9 +207,14 @@ const AppContent = () => {
         >
           <Routes>
             {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
+            <Route path="/admin/controls" element={<AdminPage />} />
+            <Route
+              path="/discord/verification"
+              element={<DiscordVerificationPage />}
+            />
+
             {FLAGS.SEASON_THREE && <>
               <Route path="/" element={<Navigate to="/rewards" replace />} />
-              <Route path="/admin/controls" element={<AdminPage />} />
               <Route path="/rewards" element={<RewardsPage />} />
               <Route path="/rewards/pushpass" element={<PushPassPage />} />
               <Route path="/rewards/squads" element={<SquadsPage />} />
@@ -220,16 +225,11 @@ const AppContent = () => {
               <Route path="/rewards/leaderboard-s1" element={<LeaderBoardPage />} />
             </>}
             {FLAGS.CULT && <>
-              <Route path="/admin/controls" element={<AdminPage />} />
               <Route path="/" element={<S3CountdownPage />} />
               <Route path="/cult" element={<CultPage />} />
               {/*TODO: comment out for now */}
-              {/*<Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />*/}
+              <Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />
             </>}
-            <Route
-              path="/discord/verification"
-              element={<DiscordVerificationPage />}
-            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>

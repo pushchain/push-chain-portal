@@ -1,4 +1,4 @@
 export const FLAGS = {
-  SEASON_THREE: false,
-  CULT: true,
+  SEASON_THREE: true,
+  CULT: false,
 } as const;
