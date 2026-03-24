@@ -32,7 +32,7 @@ const faqs = [
 
 export const PreMigrate = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
 
   const isWalletConnected = Boolean(universalAccount?.address);
 

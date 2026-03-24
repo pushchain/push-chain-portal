@@ -5,9 +5,9 @@ import { StakeActivityResponse } from '../../types';
 
 export const useGetRewardsActivity = (
   { userId, activityTypes }: { userId: string; activityTypes: string[] },
-  config?: Partial<UseQueryOptions<StakeActivityResponse>>
+  config?: Partial<UseQueryOptions<Record<string, unknown>>>
 ) =>
-  useQuery<StakeActivityResponse>({
+  useQuery<Record<string, unknown>>({
     queryKey: [rewardsActivity, userId, activityTypes],
     queryFn: () => getRewardsActivity(userId, activityTypes),
     ...config,

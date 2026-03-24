@@ -69,7 +69,7 @@ export const getButtonVariantStyles = (
             color: var(--components-button-secondary-text-disabled);
           };`
         };
-        
+
       `;
     }
     case 'tertiary': {
@@ -83,7 +83,7 @@ export const getButtonVariantStyles = (
               color: var(--components-button-tertiary-text-default);
               background-color: var(--components-button-tertiary-background-hover);
             }
-       
+
             &:active {
               background-color: var(--components-button-tertiary-background-pressed);
               color: var(--components-button-secondary-text-default);
@@ -145,7 +145,7 @@ export const getButtonVariantStyles = (
             &:hover {
               background-color: var(--components-button-danger-secondary-background-hover);
             }
-       
+
           &:active {
             background-color: var(--components-button-danger-secondary-background-pressed);
           }`
@@ -165,6 +165,35 @@ export const getButtonVariantStyles = (
         };
       `;
     }
+    case 'success': {
+      return `
+        background-color: ${loading ? '#3da876' : '#4AC887'};
+        color: #fff;
+         ${
+           !loading &&
+           `
+            &:hover {
+              background-color: #3da876;
+            }
+            &:active {
+              background-color: #349667;
+            }`
+         };
+
+        &:focus-visible {
+          background-color: #3da876;
+          border: var(--border-sm) solid #2d8459;
+          outline: none;
+        }
+        ${
+          !loading &&
+          `&:disabled {
+            background-color: #4AC88766;
+            color: #ffffff99;
+          }`
+        };
+      `;
+    }
     case 'outline': {
       return `
         background-color: var(--components-button-outline-background-default);
@@ -178,7 +207,7 @@ export const getButtonVariantStyles = (
             border: var(--border-sm) solid var(--components-button-outline-stroke-hover);
             background-color: var(--components-button-outline-background-hover);
           }
-        
+
           &:active {
             border:  var(--border-sm) solid var(--components-button-outline-stroke-pressed);
             background-color: var(--components-button-outline-background-pressed);
@@ -194,8 +223,10 @@ export const getButtonVariantStyles = (
           !loading &&
           `&:disabled {
              border: none;
-             background-color: var(--components-button-tertiary-background-disabled);
-             color: var(--components-button-outline-text-disabled);
+             opacity: 0.7;
+             color: var(--components-button-outline-stroke-default);
+             background-color: var(--components-button-outline-background-default);
+             border: var(--border-sm) solid var(--components-button-outline-stroke-default);
           }`
         };
       `;

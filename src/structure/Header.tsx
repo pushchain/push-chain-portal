@@ -8,8 +8,10 @@ import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-
 import useMediaQuery from "../hooks/useMediaQuery";
 import { device } from "../config/globals";
 
-import { Box } from "../../src/blocks";
+import { Box, LevelBadge, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
+import { walletToFullCAIP10 } from "../helpers/web3helper";
 
 
 interface HeaderProps {
@@ -19,14 +21,31 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
   const baseURL = "/";
   const navigate = useNavigate();
-  const { universalAccount } = usePushWalletContext();
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
 
   const isTablet = useMediaQuery(device.tablet);
   const isLaptop = useMediaQuery(device.laptopL);
 
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
   const GoToHome = () => {
     navigate(baseURL);
   };
+
+  const { data: userSeasonThreeDetails, isLoading: isLoadingSeasonThree } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  })
+
+  const { data: userCultStatus, isLoading: isLoadingCultStatus } = useGetUserCultStatus({
+		wallet: caip10WalletAddress
+	});
+
+  const isLoadingUserData = isLoadingSeasonThree || isLoadingCultStatus;
+	const isCultUser = userCultStatus?.data?.isCultMember;
+  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails && !isCultUser;
 
   return (
     <Box
@@ -57,18 +76,23 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
         flexDirection="row"
         alignItems="center"
       >
-        {!isTablet && (
-               <PushUniversalAccountButton
-                 universalAccount={universalAccount}
-                 title="Connect Account"
-                 styling={{
-                   width: "fit-content",
-                   fontFamily: "DM Sans !important",
-                   margin: "0 0 0 auto",
-                   borderRadius: "12px"
-                 }}
-               />
-             )}
+        {showStats &&
+          (<Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap="spacing-xxs"
+              margin="spacing-none spacing-sm spacing-none spacing-none"
+              css={css`
+                    height: 40px;
+                  `}
+            >
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">     <LevelBadge width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Multiplier width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.permaMultiplier }x</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
+        </Box>)}
+
+        {!isTablet && (<PushUniversalAccountButton uid='wallet1' />)}
 
         {isLaptop &&
           (<Box

@@ -24,7 +24,7 @@ export type ButtonProps = {
   /* Render an icon after button contents */
   trailingIcon?: ReactNode;
   /* Sets the variant of the button */
-  variant?: ButtonVariant;
+  variant?: ButtonVariant | string;
   /* Button takes the full width if enabled */
   block?: boolean;
   /* Button loading state */

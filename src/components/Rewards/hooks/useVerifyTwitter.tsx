@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 // third party libraries
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import {
   getAuth,
   signInWithPopup,
@@ -15,13 +15,16 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 // hooks
 import {
   useClaimRewardsActivity,
-  useGetUserRewardsDetails,
+  useGetSeasonThreeUserByWallet,
 } from "../../../queries";
 
 // helpers
 import appConfig from "../../../config";
+
+const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseConfig) : getApps()[0];
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
+import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { WalletChainType } from "../utils/wallet";
 
 export type UseTwitterVerifyParams = {
@@ -41,8 +44,9 @@ const useVerifyTwitter = ({
   >(null);
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext();
+  const { universalAccount } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
+  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -51,18 +55,16 @@ const useVerifyTwitter = ({
     universalAccount?.chain,
   );
 
-  const { refetch: refetchUserDetails } = useGetUserRewardsDetails({
-    caip10WalletAddress: caip10WalletAddress,
+  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
   });
 
   useEffect(() => {
     setErrorMessage("");
   }, [setErrorMessage, account]);
 
-  initializeApp(appConfig.firebaseConfig);
-
   const provider = new TwitterAuthProvider();
-  const auth = getAuth();
+  const auth = getAuth(firebaseApp);
 
   const handleTwitterVerification = (userId: string) => {
     setUpdatedId(userId);
@@ -100,6 +102,34 @@ const useVerifyTwitter = ({
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
 
+  const formatTwitterVerificationError = (rawMessage: string): string => {
+    if (!rawMessage) return "Twitter verification failed. Please try again.";
+
+    const lines = rawMessage.split("\n").map(l => l.trim());
+
+    const reasons: string[] = [];
+
+    lines.forEach(line => {
+      if (line.includes("Not following")) {
+        reasons.push("Follow @pushchain on Twitter.");
+      }
+
+      if (line.includes("Insufficient followers")) {
+        reasons.push("Your account must have at least 100 followers.");
+      }
+
+      if (line.includes("Unable to verify account age")) {
+        reasons.push("Your Twitter account must be at least 6 months old.");
+      }
+    });
+
+    if (reasons.length === 0) {
+      return "Twitter verification failed. Please try again later.";
+    }
+
+    return `Twitter verification failed:\n• ${reasons.join("\n• ")}`;
+  };
+
   const handleVerify = useCallback(
     async (userId: string | null) => {
       setErrorMessage("");
@@ -110,52 +140,72 @@ const useVerifyTwitter = ({
         const twitterHandle = (userTwitterDetails as any)?.reloadUserInfo
           ?.screenName;
 
-        // Check if the chain is Sepolia or Ethereum
-        const isSupportedChain =
-          chainId == WalletChainType.SEPOLIA ||
-          chainId == WalletChainType.ETH;
-
-        let verificationProof = "abcd";
-        let messageToSend: any = {
+        // let verificationProof;
+        const messageToSend: Record<string, string | undefined> = {
           twitter: twitterHandle,
         };
 
-        if (isSupportedChain) {
-          const {
-            signature,
-            messageToSend: signedMessage,
-            error,
-          } = await signMessage({
-            twitter: twitterHandle,
-          });
+        // const isSolana = chainId == WalletChainType.SOLANA;
 
-          if (error || !signature) {
-            console.log(error);
-            setErrorMessage(error);
-            setVerifyingTwitter(false);
-            return;
-          }
+        // if (isSolana) {
+        //   const {
+        //     signature,
+        //     messageToSend: signedMessage,
+        //     error,
+        //   } = await signMessageWithSolana({
+        //     twitter: twitterHandle,
+        //   });
 
-          verificationProof = signature;
-          messageToSend = signedMessage;
-        }
+        //   if (error || !signature) {
+        //     console.log(error);
+        //     setErrorMessage(error);
+        //     setVerifyingTwitter(false);
+        //     return;
+        //   }
+
+        //   verificationProof = signature;
+        //   messageToSend = signedMessage;
+        // } else {
+        //   const {
+        //     signature,
+        //     messageToSend: signedMessage,
+        //     error,
+        //   } = await signMessage({
+        //     twitter: twitterHandle,
+        //   });
+
+        //   if (error || !signature) {
+        //     console.log(error);
+        //     setErrorMessage(error);
+        //     setVerifyingTwitter(false);
+        //     return;
+        //   }
+
+        //   verificationProof = signature;
+        //   messageToSend = signedMessage;
+        // }
+
+        // if (!verificationProof) {
+        //   setErrorMessage('Invalid Verification Proof');
+        //   setVerifyingTwitter(false);
+        // }
 
         claimRewardsActivity(
           {
             userId: updatedId || (userId as string),
             activityTypeId,
             data: messageToSend,
-            verificationProof,
+            // verificationProof,
           },
           {
             onSuccess: (response) => {
-              if (response.status === "COMPLETED") {
+              if (response.data.status === "COMPLETED") {
                 setTwitterActivityStatus("Claimed");
                 refetchActivity();
                 refetchUserDetails();
                 setVerifyingTwitter(false);
               }
-              if (response.status === "PENDING") {
+              if (response.data.status === "PENDING") {
                 setTwitterActivityStatus("Pending");
                 refetchActivity();
                 setVerifyingTwitter(false);
@@ -164,15 +214,16 @@ const useVerifyTwitter = ({
             onError: (error: any) => {
               console.log("Error in creating activity", error);
               setVerifyingTwitter(false);
-              if (error.name) {
-                setErrorMessage(error.response.data.error);
-              }
+
+              const rawMessage = error?.response?.data?.error?.message;
+              setErrorMessage(formatTwitterVerificationError(rawMessage));
+
             },
           },
         );
       }
     },
-    [handleConnect],
+    [handleConnect, chainId, signMessage, signMessageWithSolana, claimRewardsActivity, updatedId, activityTypeId],
   );
 
   return {
