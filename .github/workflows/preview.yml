@@ -22,13 +22,12 @@ jobs:
       - name: Install and Build
         if: github.event.action != 'closed'
         env:
+          VITE_PR_PREVIEW_BASE: pr-43
+          VITE_APP_NODE_ENV: production
+          VITE_APP_DEPLOY_ENV: PREVIEW
+          VITE_APP_PUBLIC_URL: https://pushchain.github.io/push-chain-portal/
           VITE_APP_DISCORD_CLIENT_ID: ${{ secrets.VITE_APP_DISCORD_CLIENT_ID }}
         run: |
-          echo "VITE_PR_PREVIEW_BASE=pr-43" >> $GITHUB_ENV
-          echo "VITE_APP_NODE_ENV=production" >> $GITHUB_ENV
-          echo "VITE_APP_DEPLOY_ENV=PREVIEW" >> $GITHUB_ENV
-          echo "VITE_APP_PUBLIC_URL=https://pushchain.github.io/push-chain-portal/" >> $GITHUB_ENV
-          echo "VITE_APP_DISCORD_CLIENT_ID=${{ secrets.VITE_APP_DISCORD_CLIENT_ID }}" >> $GITHUB_ENV
           yarn install
           yarn build:pr:preview
 
