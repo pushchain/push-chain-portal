@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { css } from "styled-components";
-import { Add, ArrowUpRight, Box, Button, CaretRight, Cross, Text } from "../../blocks";
+import { Add, ArrowRight, ArrowUpRight, Box, Button, Minus, Text } from "../../blocks";
 
 const faqs = [
   {
@@ -8,7 +8,23 @@ const faqs = [
     answer:
       "Push is the world's first blockchain-agnostic decentralised communication protocol for Web3. It is an open network for validating and indexing all sorts of communication (notifications, chats, etc) that can then be integrated by any crypto frontend (dApps, wallets, etc).\n\nAny smart contract, dApp, or backend service can integrate Push to provide a communication layer through notifications or chats that are tied to the wallet addresses of users.",
   },
-  { question: "What is Push trying to solve?", answer: null },
+  {
+    question: "What is Push trying to solve?", answer:
+    `- Fragmentation
+    Unites EVM & non-EVM chains under one shared-state L1, so users never need to hop networks or wallets.
+
+    - Interoperability
+    Native support for transactions from any blockchain and on-chain shared state.
+
+    - Finality
+    Instant, irreversible native finality in ~1-2 seconds – no more waiting or reorgs.
+
+    - Onboarding & UX
+    Social/email login, gas-in-any-token & any-wallet support for zero-friction access across chains.
+
+    - Universal Apps
+    Build once, deploy everywhere — any web3 app works seamlessly for any user on any chain.`
+  },
   { question: "What are the web3 communication products launched by Push?", answer: null },
   { question: "How can I use Push as an end-user?", answer: null },
   { question: "Is Push a blockchain? Is Push decentralised?", answer: null },
@@ -68,13 +84,13 @@ export const FAQSection = () => {
                   {faq.question}
                 </Text>
                 {openFaq === index ? (
-                  <Cross size={28} color="icon-primary" />
+                  <Minus size={28} color="icon-primary" />
                 ) : (
                   <Add size={28} color="icon-primary" />
                 )}
               </Box>
               {openFaq === index && faq.answer && (
-                <Box display="flex" flexDirection="column" margin="spacing-xs">
+                <Box display="flex" flexDirection="column" margin="spacing-sm spacing-none">
                   {faq.answer.split("\n\n").map((para, i) => (
                     <Text key={i} variant="bl-regular" color="text-secondary">
                       {para}
@@ -100,7 +116,7 @@ export const FAQSection = () => {
           <Text variant="bm-semibold" color="text-primary">
             Explore FAQs
           </Text>
-          <CaretRight size={16} color="icon-primary" />
+          <ArrowRight size={16} color="icon-secondary" />
         </Box>
       </Box>
     </Box>

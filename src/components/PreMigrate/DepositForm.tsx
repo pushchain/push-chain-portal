@@ -1,11 +1,33 @@
-import { css } from "styled-components";
-import { Box, Button, PushMonotone, Text } from "../../blocks";
+import { useState } from "react";
+import styled, { css } from "styled-components";
+import { Box, PushIcon, Text } from "../../blocks";
+import { PushUniversalAccountButton } from "@pushchain/ui-kit";
+
+const AmountInput = styled.input`
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  color: #fff;
+  width: auto;
+  min-width: 1ch;
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+`;
 
 type DepositFormProps = {
   isWalletConnected: boolean;
 };
 
-export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
+export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
+  const [amount, setAmount] = useState("");
+
+  return (
   <Box
     display="flex"
     flexDirection="column"
@@ -19,8 +41,8 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
       width="100%"
       padding="spacing-xxs"
       css={css`
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #313338;
+        border: 1px solid #484D58;
         border-radius: 24px;
         box-sizing: border-box;
       `}
@@ -31,7 +53,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
         padding="spacing-xs"
         width="100%"
         css={css`
-          background: rgba(255, 255, 255, 0.06);
+          background: #202124;
           border-radius: 16px;
           box-sizing: border-box;
         `}
@@ -41,9 +63,16 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
             PUSH to be deposited
           </Text>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
-            <PushMonotone size={24} />
+            <PushIcon size={24} />
+            <AmountInput
+              // type="number"
+              // min="0"
+              placeholder="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <Text variant="h4-bold" color="text-primary">
-              0 PUSH
+              PUSH
             </Text>
           </Box>
         </Box>
@@ -55,9 +84,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
       </Box>
     </Box>
 
-    <Button variant="primary" size="medium" block>
-      {isWalletConnected ? "Deposit" : "Connect Wallet"}
-    </Button>
+    <PushUniversalAccountButton uid="wallet1" />
 
     <Box display="flex" flexDirection="column" gap="spacing-lg" width="100%">
       <Box
@@ -93,7 +120,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
           Total Deposited
         </Text>
         <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
-          <PushMonotone size={24} />
+          <PushIcon size={24} />
           <Text variant="bs-semibold" color="text-primary">
             0 PUSH
           </Text>
@@ -101,4 +128,5 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => (
       </Box>
     </Box>
   </Box>
-);
+  );
+};

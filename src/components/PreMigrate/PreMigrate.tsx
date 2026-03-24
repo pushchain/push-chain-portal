@@ -18,10 +18,12 @@ export const PreMigrate = () => {
       gap="spacing-xl"
       padding="spacing-xl"
       width="100%"
+      maxWidth="1200px"
       css={css`
         min-height: 100%;
         box-sizing: border-box;
         position: relative;
+        margin: 0 auto;
         z-index: 1;
       `}
     >

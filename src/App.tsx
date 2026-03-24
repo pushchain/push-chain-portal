@@ -152,10 +152,13 @@ const AppContent = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const hideSideBar = location.pathname === "/discord/verification" ||
-                      location.pathname === "/admin/controls" ||
-                      location.pathname === "/pre-migrate";
-  const isAdminPage = location.pathname === "/admin/controls";
+  const hideSideBar =
+    location.pathname === "/discord/verification" ||
+    location.pathname === "/admin/controls" ||
+    location.pathname === "/pre-migrate";
+  const hideBackgroundOnThesePages =
+    location.pathname === "/admin/controls" ||
+    location.pathname === "/pre-migrate";
 
   return (
     <Box
@@ -164,7 +167,7 @@ const AppContent = () => {
       height="100vh"
       css={css``}
     >
-      {!isAdminPage &&
+      {!hideBackgroundOnThesePages &&
         (<Box
         css={css`
           position: fixed;

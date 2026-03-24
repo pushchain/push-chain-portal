@@ -24,7 +24,7 @@ const PreMigratePage: React.FC = () => {
 export default PreMigratePage;
 
 const PreMigrateWrapper = styled.div`
-  width: 1200px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
