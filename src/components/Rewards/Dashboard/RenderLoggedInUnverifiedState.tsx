@@ -1,64 +1,28 @@
-import { useState } from "react"
 import { css } from "styled-components"
-import { usePushWalletContext } from "@pushchain/ui-kit"
+import { PushUniversalAccountButton } from "@pushchain/ui-kit"
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon"
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle"
-import { useGetRewardActivityStatus, useGetSeasonThreeUserByWallet, useAdvancedSybilCheck, usePushWalletSybilCheck } from "../../../queries"
-import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper"
 import { ActvityType } from "../../../queries/types"
 import { ActivityButton } from "../RewardsActivity/ActivityButton"
-import { useRewardsContext } from "../../../context/rewardsContext"
-import { useAuthHeaders } from "../../../context/authHeadersContext"
+import { useUnverifiedStateLogic } from "../hooks/useUnverifiedStateLogic"
 
 import { Alert, ArrowDown, Box, Button, CrossFilled, GlowStreaks, SealCheckFilled, Text } from "../../../blocks"
 
 export const RenderLoggedInUnverifiedState = () => {
-  const { universalAccount } = usePushWalletContext('wallet1');
-  const { refetchActivityStatus } = useRewardsContext();
-  const { authHeaders } = useAuthHeaders();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [localSybilEligible, setLocalSybilEligible] = useState<boolean | null>(null);
-  const { mutate: pushWalletSybilCheck, isPending: isPushWalletPending } = usePushWalletSybilCheck();
-  const { chainId } = parseCAIP(universalAccount?.chain);
-
-  const isLocalSybilCheckPending = isPushWalletPending;
-
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
-
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
-    walletAddress: caip10WalletAddress,
-  });
-
-  const { data: activityStatuses, isLoading: isLoadingActivities } = useGetRewardActivityStatus(
-    {
-      userId: userDetails?.userId as string,
-      activities: ["follow_push_on_twitter", "follow_push_on_discord"],
-    },
-    !!userDetails?.userId
-  );
-
-  const handleVerifyWallet = () => {
-    if (!universalAccount?.address || !chainId) return;
-    if (!authHeaders) return;
-    pushWalletSybilCheck(
-      {
-        address: universalAccount.address,
-        chainId: parseInt(chainId),
-      },
-      {
-        onSuccess: (response) => {
-          setLocalSybilEligible(response?.eligible);
-        },
-        onError: () => {
-          setLocalSybilEligible(false);
-        },
-      }
-    );
-  };
+  const {
+    linkedAccount,
+    isPushWalletUser,
+    errorMessage,
+    setErrorMessage,
+    localSybilEligible,
+    isLocalSybilCheckPending,
+    userDetails,
+    activityStatuses,
+    isLoadingActivities,
+    refetchActivityStatus,
+    handleVerifyWallet,
+  } = useUnverifiedStateLogic();
 
   const activityList = [
     {
@@ -80,9 +44,6 @@ export const RenderLoggedInUnverifiedState = () => {
       activityTypeId: "link_an_active_wallet",
     },
   ];
-
-  // Check if authHeaders are ready for verify button
-  const isVerifyDisabled = isLocalSybilCheckPending || !authHeaders;
 
   return (
     <Box
@@ -176,11 +137,9 @@ export const RenderLoggedInUnverifiedState = () => {
           </Box>
         </Box>
 
-        {errorMessage && (
-          <Box width="100%" margin="spacing-sm spacing-none spacing-none spacing-none">
-            <Alert variant="error" description={errorMessage} />
-          </Box>
-        )}
+        {errorMessage && <Box width="100%" margin="spacing-sm spacing-none spacing-none spacing-none">
+          <Alert variant="error" description={errorMessage} />
+        </Box>}
 
         <Box
           display="flex"
@@ -220,6 +179,21 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Text>
               </Box>
 
+              {isPushWalletUser && !linkedAccount?.address && localSybilEligible !== true && (
+                <Box css={css`margin-left: auto;`}>
+                  <PushUniversalAccountButton
+                    uid="wallet2"
+                    connectButtonText="Link Account To Verify"
+                    themeOverrides={{
+                               '--pwauth-btn-connect-text-color': '#FFFFFF',
+                               '--pwauth-btn-connect-bg-color': '#000',
+                               '--pwauth-btn-connected-text-color': '#FFFFFF',
+                               '--pwauth-btn-connected-bg-color': '#000',
+                             }}
+                  />
+                </Box>
+              )}
+
               {localSybilEligible === true && (
                 <Box
                   display="flex"
@@ -248,7 +222,7 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Box>
               )}
 
-              {localSybilEligible === false && (
+              {localSybilEligible === false && (linkedAccount?.address || !isPushWalletUser) && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -276,7 +250,7 @@ export const RenderLoggedInUnverifiedState = () => {
                 </Box>
               )}
 
-              {localSybilEligible === null && (
+              {localSybilEligible === null && !linkedAccount?.address && !isPushWalletUser && (
                 <Box
                   css={css`
                     margin-left: auto;
@@ -286,14 +260,17 @@ export const RenderLoggedInUnverifiedState = () => {
                     variant="tertiary"
                     size="small"
                     onClick={handleVerifyWallet}
-                    disabled={isVerifyDisabled}
+                    disabled={isLocalSybilCheckPending}
                   >
-                    {isLocalSybilCheckPending ? "Verifying..." : "Verify"}
+                    {isLocalSybilCheckPending
+                      ? "Verifying..."
+                      : "Verify"}
                   </Button>
                 </Box>
               )}
             </Box>
           )}
+
 
           <Box
             display="flex"
@@ -345,6 +322,8 @@ export const RenderLoggedInUnverifiedState = () => {
               );
             })}
           </Box>
+
+
         </Box>
       </Box>
 

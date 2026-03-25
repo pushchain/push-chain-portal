@@ -249,12 +249,19 @@ function App() {
     uid: 'wallet1',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
-      email: true,
-      google: true,
-      wallet: {
-        enabled: true,
-      },
-      appPreview: true,
+         email: false,
+         google: false,
+         phone: false,
+         wallet: {
+           enabled: true,
+         },
+         socials: {
+           discord: false,
+           github: false,
+           x: false,
+           bluesky: false,
+       },
+         appPreview: true,
     },
     modal: {
       loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
@@ -272,12 +279,19 @@ function App() {
     uid: 'wallet2',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
-      email: false,
-      google: false,
-      wallet: {
-        enabled: true,
-      },
-      appPreview: true,
+         email: false,
+         google: false,
+         phone: false,
+         wallet: {
+           enabled: true,
+         },
+         socials: {
+           discord: false,
+           github: false,
+           x: false,
+           bluesky: false,
+       },
+         appPreview: true,
     },
     modal: {
       loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
@@ -304,14 +318,14 @@ function App() {
                '--pwauth-btn-connected-bg-color': '#D548EC'
              }}
         >
-        {/*<PushUniversalWalletProvider
+        <PushUniversalWalletProvider
           config={linkedWalletConfig}
           themeMode={PushUI.CONSTANTS.THEME.DARK}
           themeOverrides={{
             '--pw-core-font-family': "'DM Sans', sans-serif",
             '--pwauth-btn-connected-bg-color': '#D548EC'
           }}
-        >*/}
+        >
           <QueryClientProvider client={queryClient}>
             <RewardsContextProvider>
               <AuthHeadersProvider>
@@ -324,7 +338,7 @@ function App() {
               </AuthHeadersProvider>
             </RewardsContextProvider>
           </QueryClientProvider>
-        {/*</PushUniversalWalletProvider>*/}
+        </PushUniversalWalletProvider>
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

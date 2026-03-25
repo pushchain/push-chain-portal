@@ -11,7 +11,6 @@ import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverif
 import { useRewardStatus } from "../../context/rewardStatusContext";
 import { useGetUserCultStatus } from "../../queries";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
-import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -23,14 +22,14 @@ export const RewardsUpdatedDashboard = () => {
     universalAccount?.chain,
   );
 
-  const { data: userCultStatus } = useGetUserCultStatus({
-    wallet: caip10WalletAddress
-  });
+  // const { data: userCultStatus } = useGetUserCultStatus({
+  //   wallet: caip10WalletAddress
+  // });
 
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-  const isCultUser = userCultStatus?.data?.isCultMember;
+  // const isCultUser = userCultStatus?.data?.isCultMember;
 
   const renderLoggedOutState = () => (
     <Box
