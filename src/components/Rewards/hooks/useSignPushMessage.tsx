@@ -41,7 +41,7 @@ export const generateSIWEMessage = (params: SIWEMessageParams): string => {
   } = params;
 
   const lines = [
-    `${domain} wants you to sign in with your Ethereum account:`,
+    `${domain} wants you to sign in with your Push account:`,
     address,
     "",
     statement,
