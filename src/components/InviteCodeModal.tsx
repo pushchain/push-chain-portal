@@ -9,7 +9,7 @@ import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { useSignMessageWithSolana } from "./Rewards/hooks/useSignMessageWithSolana";
 import { WalletChainType } from "./Rewards/utils/wallet";
-import { generateSIWEMessage, getSiweDomainAndUri } from "./Rewards/hooks/useSignPushMessage";
+import { useSignPushMessage } from "./Rewards/hooks/useSignPushMessage";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -44,6 +44,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessageWithPush } = useSignPushMessage();
 
   const isPushWalletUser = PUSH_CHAIN_IDS.includes(chainId);
   const isSolana = chainId === WalletChainType.SOLANA;
@@ -59,28 +60,15 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
       try {
         if (isPushWalletUser) {
-          // Social login → Push Chain universal signer
-          if (!pushChainClient?.universal) {
-            setError("Push Chain client not available. Please reconnect.");
+          const { signature: newSignature, messageString, error } = await signMessageWithPush();
+
+          if (error || !newSignature) {
+            setError(error || "Failed to sign message");
             return;
           }
 
-          const { domain, uri } = getSiweDomainAndUri();
-
-          const messageToSign = generateSIWEMessage({
-            domain,
-            address: universalAccount?.address as string,
-            uri,
-            version: "1",
-            chainId: parseInt(chainId),
-            nonce: Date.now().toString(),
-            issuedAt: new Date().toISOString(),
-          });
-
-          const messageBytes = new TextEncoder().encode(messageToSign);
-          console.log(messageBytes, 'messageBytes')
-          signature = await pushChainClient.universal.signMessage(messageBytes);
-          dataPayload = messageToSign;
+          signature = newSignature;
+          dataPayload = messageString;
 
         } else {
           const { signature: newSignature, messageToSend, messageString, error } = isSolana
