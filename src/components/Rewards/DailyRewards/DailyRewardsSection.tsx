@@ -31,15 +31,12 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 
 
   const handleClaimRewards = () => {
+    if (!authHeaders) return;
     claimDailyRewards(authHeaders, {
-      onSuccess: (data) => {
-        refetch();
-      },
-      onError: (error) => {
-        console.error(error);
-      }
+      onSuccess: () => { refetch(); },
+      onError: (error) => { console.error(error); },
     });
-}
+  };
 
   const dailyRewardsActivities = [
     { id: 1, text: "Day 1", points: 100 },

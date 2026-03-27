@@ -28,25 +28,15 @@ export const Squads = () => {
   const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
   const requestInvitesCode = () => {
+    if (!authHeaders) return;
     requestForInviteCode(
+      { payload: { count: 5 }, authHeaders },
       {
-        payload: {
-          count: 5
-        },
-        authHeaders
-      },
-      {
-        onSuccess: (response) => {
-          console.log(response)
-          refetch();
-
-        },
-        onError: (error: Error) => {
-          console.log("Error in creating activity", error);
-        },
+        onSuccess: () => { refetch(); },
+        onError: (error: Error) => { console.log("Error in creating activity", error); },
       },
     );
-  }
+  };
 
 
   return (

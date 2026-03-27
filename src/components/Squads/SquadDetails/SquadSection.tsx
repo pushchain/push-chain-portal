@@ -36,6 +36,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
   const { mutate: rejectInvite, isPending: isRejecting } = useRejectSquadInvite();
 
   const handleAcceptInvite = (inviteId: string) => {
+    if (!authHeaders) return;
     setActiveInviteId(inviteId);
     acceptInvite(
       { params: { inviteId }, authHeaders },
@@ -45,14 +46,13 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
           refetchPendingInvites();
           refetchSquadsDetails();
         },
-        onError: () => {
-          setActiveInviteId(null);
-        },
+        onError: () => { setActiveInviteId(null); },
       }
     );
   };
 
   const handleDeclineInvite = (inviteId: string) => {
+    if (!authHeaders) return;
     setActiveInviteId(inviteId);
     rejectInvite(
       { params: { inviteId }, authHeaders },
@@ -62,9 +62,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
           refetchPendingInvites();
           refetchSquadsDetails();
         },
-        onError: () => {
-          setActiveInviteId(null);
-        },
+        onError: () => { setActiveInviteId(null); },
       }
     );
   };

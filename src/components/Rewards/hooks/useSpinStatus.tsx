@@ -2,7 +2,7 @@ import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { useGetSpinStatus } from "../../../queries/hooks";
 
 export const useSpinStatus = () => {
-  const { authHeaders, isSigningMessage, hasSigned, signAndStore } = useAuthHeaders();
+  const { authHeaders, isSigningMessage } = useAuthHeaders();
 
   const {
     data: spinStatus,
@@ -14,10 +14,8 @@ export const useSpinStatus = () => {
   return {
     spinStatus,
     isLoading: isLoadingSpinStatus || isSigningMessage,
-    hasSigned,
     error,
     refetch,
-    signAndStore,
     authHeaders,
   };
 };

@@ -22,7 +22,6 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
   const { mutate: createSquad, isPending } = useCreateSquad();
   const { refetch } = useGetSquadsDetails(authHeaders);
 
-
   const handleCreate = () => {
     if (!squadName.trim()) {
       setError("Squad name is required");
@@ -30,13 +29,9 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
     }
 
     setError("");
+    if (!authHeaders) return;
     createSquad(
-      {
-        params: {
-          name: squadName
-        },
-        authHeaders: authHeaders
-      },
+      { params: { name: squadName }, authHeaders },
       {
         onSuccess: () => {
           setSquadName("");

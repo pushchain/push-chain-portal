@@ -19,7 +19,8 @@ interface RewardStatusContextType {
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
 
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, isSigningMessage } = useAuthHeaders();
+
   const { universalAccount } = usePushWalletContext("wallet1");
   const account = universalAccount?.address as string;
 
@@ -28,11 +29,13 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     universalAccount?.chain,
   );
 
-  const { data: sybilStatusData, isLoading: isLockedStatusLoading } = useGetSybilStatus({
+  const { data: sybilStatusData, isLoading: isSybilQueryLoading } = useGetSybilStatus({
     walletAddress: caip10WalletAddress,
     authHeaders,
   });
 
+
+  const isLockedStatusLoading = isSybilQueryLoading || isSigningMessage;
 
   const sybilData = sybilStatusData?.data;
 

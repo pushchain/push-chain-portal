@@ -49,31 +49,19 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
 
     setError("");
 
+    if (!authHeaders) return;
+
     resolveWallet(
-      {
-        params: {
-          chainId,
-          walletAddress: walletAddress.trim(),
-        },
-        authHeaders,
-      },
+      { params: { chainId, walletAddress: walletAddress.trim() }, authHeaders },
       {
         onSuccess: (response) => {
-          console.log(response, 'res res');
           const userId = response?.data?.userId;
           if (!userId) {
             setError("Could not resolve wallet address");
             return;
           }
-
           sendInvite(
-            {
-              params: {
-                squadId,
-                userId,
-              },
-              authHeaders,
-            },
+            { params: { squadId, userId }, authHeaders },
             {
               onSuccess: () => {
                 setWalletAddress("");
