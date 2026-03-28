@@ -10,6 +10,8 @@ export const useGetRewardsLeaderboardS2 = ({
 }: LeaderboardParams) =>
   useInfiniteQuery<LeaderboardModelledResponse>({
     queryKey: [rewardsLeaderboardS2],
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
       getRewardsLeaderboardS2({

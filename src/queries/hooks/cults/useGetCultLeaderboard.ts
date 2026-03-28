@@ -7,6 +7,8 @@ import { CultLeaderboardParams, CultLeaderboardResponse } from '../../types';
 export const useGetCultLeaderboard = ({ pageSize }: CultLeaderboardParams = {}) =>
   useInfiniteQuery<CultLeaderboardResponse>({
     queryKey: [cultLeaderboard],
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
       getCultLeaderboard({ pageSize, pageNumber: pageParam as number }),
