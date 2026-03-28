@@ -91,12 +91,11 @@ export const useUnverifiedStateLogic = () => {
   const runEvmCheck = async () => {
     if (!authHeaders) await getAuthHeaders();
     if (!universalAccount?.address || !authHeaders) return;
-    console.log('make call 1')
     setIsVerifying(true);
 
     const { chainId: evmChainId } = parseCAIP(universalAccount.chain);
     evmCheck(
-      { address: universalAccount.address, chainId: parseInt(evmChainId), authHeaders },
+      { address: universalAccount.address, chainId: evmChainId, authHeaders },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: () => saveResult(false),
@@ -108,7 +107,6 @@ export const useUnverifiedStateLogic = () => {
   const runPushCheck = async () => {
     if (!authHeaders) await getAuthHeaders();
     if (!linkedAccount?.address || !authHeaders) return;
-    console.log('make call 2', linkedWalletAddress, authHeaders)
     setIsVerifying(true);
 
     pushCheck(

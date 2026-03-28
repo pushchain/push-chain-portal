@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Lock, Text } from '../../../blocks';
+import { Box, Button, Lock, Skeleton, Text } from '../../../blocks';
 import SpinToWinModal from './SpinToWinModal';
 import { useSpinStatus } from '../hooks/useSpinStatus';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
@@ -14,6 +14,8 @@ const SpinToWinCard = () => {
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
+
+  // console.log(rewardsLocked, 'rewardsLocked');
 
   return (
     <>
@@ -134,35 +136,37 @@ const SpinToWinCard = () => {
 
           </Box>
 
-          {rewardsLocked && (
-            <Button
-              variant="outline"
-              size="small"
-              leadingIcon={<Lock />}
-              disabled
-              css={css`
-                width: 100%;
-                position: relative;
-                background: #000 !important;
-              `}
-            >
-              Locked
-            </Button>
-          )}
+          <Skeleton isLoading={isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
+            {rewardsLocked && (
+              <Button
+                variant="outline"
+                size="small"
+                leadingIcon={<Lock />}
+                disabled
+                css={css`
+                  width: 100%;
+                  position: relative;
+                  background: #000 !important;
+                `}
+              >
+                Locked
+              </Button>
+            )}
 
-          {!rewardsLocked && (<Button
-            size="medium"
-            variant="primary"
-            onClick={() => {
-              setIsModalOpen(true)
-            }}
-            css={css`
-              width: 100%;
-              position: relative;
-            `}
-          >
-            Spin Now
-          </Button>)}
+            {!rewardsLocked && (
+              <Button
+                size="medium"
+                variant="primary"
+                onClick={() => setIsModalOpen(true)}
+                css={css`
+                  width: 100%;
+                  position: relative;
+                `}
+              >
+                Spin Now
+              </Button>
+            )}
+          </Skeleton>
         </Box>
       </Box>
 

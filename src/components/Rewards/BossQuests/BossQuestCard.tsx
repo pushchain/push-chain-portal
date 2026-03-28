@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, XP } from '../../../blocks';
+import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Skeleton, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
@@ -16,6 +16,7 @@ type BossQuestCardProps = {
     xp?: number;
   };
   isLocked: boolean;
+  isLockedStatusLoading?: boolean;
   ctaText: string;
   icon?: string;
   onClaim?: () => void;
@@ -36,6 +37,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   maxProgress = 0,
   unlocks,
   isLocked,
+  isLockedStatusLoading = false,
   ctaText,
   icon,
   onClaim,
@@ -251,6 +253,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             alignSelf="stretch"
             width="100%"
           >
+            <Skeleton isLoading={isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
             {!isLocked && questId && userId && (
               <ActivityButton
                 activityType={questId as ActvityType}
@@ -308,6 +311,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                 </Text>
               </Button>
             )}
+            </Skeleton>
           </Box>
         </Box>
       </Box>

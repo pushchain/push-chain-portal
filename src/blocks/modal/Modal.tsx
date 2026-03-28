@@ -22,7 +22,7 @@ export type ModalProps = {
   showCloseButton?: boolean;
 };
 
-const Overlay = styled(Dialog.Overlay)`
+const Overlay = styled.div`
   background: var(--surface-glass-bold);
   backdrop-filter: blur(calc(var(--blur-lg) / 2));
   position: fixed;
@@ -121,13 +121,15 @@ const Modal: FC<ModalProps> = ({
 
   const iconSize = size === 'small' ? 16 : 24;
   return (
-    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+    <Dialog.Root open={isOpen} onOpenChange={onClose} modal={false}>
       <Dialog.Portal>
         <Overlay onClick={handleOverlayClick} />
         <ContentContainer
           size={size}
           css={cssProp}
-          onInteractOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => {
+            if (!closeOnOverlayClick) e.preventDefault();
+          }}
         >
           <HeaderContainer>
             {onBack && (

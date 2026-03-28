@@ -29,13 +29,13 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     universalAccount?.chain,
   );
 
-  const { data: sybilStatusData, isLoading: isSybilQueryLoading } = useGetSybilStatus({
+  const { data: sybilStatusData, isLoading: isSybilQueryLoading, isFetched } = useGetSybilStatus({
     walletAddress: caip10WalletAddress,
     authHeaders,
   });
 
 
-  const isLockedStatusLoading = isSybilQueryLoading || isSigningMessage;
+  const isLockedStatusLoading = !isFetched;
 
   const sybilData = sybilStatusData?.data;
 
@@ -44,7 +44,7 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     sybilData?.advanced?.completed === true &&
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
-  );
+  ) && isFetched;
 
   return (
     <RewardStatusContext.Provider
