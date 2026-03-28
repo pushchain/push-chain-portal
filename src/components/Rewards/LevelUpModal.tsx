@@ -82,7 +82,6 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
             <Lottie
               animationData={BoxAnimation}
               loop
-              style={{ width: '220px', height: '220px' }}
             />
         </Box>
 

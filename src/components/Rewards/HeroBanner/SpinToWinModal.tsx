@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { css } from 'styled-components';
+import Lottie from 'lottie-react';
 
 import Spinboard, { SpinboardHandle } from './Spinboard';
 import { useSpinStatus } from '../hooks/useSpinStatus';
@@ -11,6 +12,10 @@ import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } fro
 import { Image } from '../../../css/SharedStyling';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+
+// import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
+// import PointsAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
+
 
 type SpinToWinModalProps = {
   isOpen: boolean;
@@ -266,12 +271,29 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
               box-sizing: border-box;
             `}
           >
+            {/*<Box css={css`
+              position: absolute;
+              top: -15%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            `}>
+                <Lottie
+                  animationData={BurstBgAnimation}
+                  loop
+                  style={{ width: '100%', margin: "40px 0 0 0"}}
+                />
+          </Box>*/}
+
             <Box css={css`
               position: absolute;
               top: -15%;
               left: 50%;
               transform: translate(-50%, -50%);
             `}>
+              {/*<Lottie
+                animationData={PointsAnimation}
+                loop
+              />*/}
               {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
               {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
               {isXPBoostWinning && <Multiplier width={80} height={80} />}
