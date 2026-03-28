@@ -6,7 +6,6 @@ import { useAuthHeaders } from "../../context/authHeadersContext";
 
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"
-import ActiveStreakBg from "../../../static/assets/website/rewards/active-streak.webp"
 import StreakFireAnimation from "../../../static/assets/website/rewards/streak-fire.json"
 
 export const StreakDays = () => {
