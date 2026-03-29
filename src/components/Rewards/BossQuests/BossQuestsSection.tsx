@@ -8,6 +8,9 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 
 import { Alert, Box, Quests, Text } from '../../../blocks';
+import contentBossQuestImg from '../../../../static/assets/website/rewards/ContentBossQuest.webp';
+import rarePassBossQuestImg from '../../../../static/assets/website/rewards/RarePassBossQuest.webp';
+import fiveBossQuestsImg from '../../../../static/assets/website/rewards/FiveBossQuests.webp';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -161,30 +164,36 @@ const BossQuestsSection = () => {
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
+            image={contentBossQuestImg}
             />
 
-          {bossQuests?.data.quests.map((item) => (
-            <BossQuestCard
-              key={item.id}
-              questId={item.id}
-              title={item?.title}
-              description={item.description}
-              resetTime="Resets in 29D 23H"
-              progress={0}
-              maxProgress={25}
-              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: (item.baseXP > 0 && item?.baseXP) }}
-              isLocked={rewardsLocked}
-              isLockedStatusLoading={isLockedStatusLoading}
-              ctaText="Locked"
-              activityStatus={activityStatuses}
-              isLoadingActivity={isLoadingActivities}
-              refetchActivities={refetchActivities}
-              userId={userDetails?.userId}
-              completedMap={bossCompletedMap}
-              icon={true}
-              setErrorMessage={setErrorMessage}
-            />
-          ))}
+          {bossQuests?.data.quests.map((item) => {
+            const isRarePass = item.baseXP == 0 && item.basePoints == 0;
+            return (
+              <BossQuestCard
+                key={item.id}
+                questId={item.id}
+                title={item?.title}
+                description={item.description}
+                resetTime={!isRarePass && "Resets in 29D 23H"}
+                progress={0}
+                maxProgress={25}
+                unlocks={{ rarePass: isRarePass, xp: (item.baseXP > 0 && item?.baseXP) }}
+                isLocked={rewardsLocked}
+                isLockedStatusLoading={isLockedStatusLoading}
+                ctaText="Locked"
+                activityStatus={activityStatuses}
+                isLoadingActivity={isLoadingActivities}
+                refetchActivities={refetchActivities}
+                userId={userDetails?.userId}
+                completedMap={bossCompletedMap}
+                icon={true}
+                image={isRarePass ? rarePassBossQuestImg : fiveBossQuestsImg}
+                setErrorMessage={setErrorMessage}
+                imageFullWidth
+              />
+            );
+          })}
         </Box>
       </Box>
      </Box>

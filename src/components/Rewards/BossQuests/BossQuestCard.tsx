@@ -4,6 +4,7 @@ import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Sk
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { usePushWalletContext } from '@pushchain/ui-kit';
+import { Image } from '../../../css/SharedStyling';
 
 type BossQuestCardProps = {
   questId?: string;
@@ -20,6 +21,8 @@ type BossQuestCardProps = {
   isLockedStatusLoading?: boolean;
   ctaText: string;
   icon?: string;
+  image?: string;
+  imageFullWidth?: boolean;
   onClaim?: () => void;
   activityStatus?: any;
   isLoadingActivity?: boolean;
@@ -47,7 +50,9 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   refetchActivities,
   userId,
   completedMap = {},
-  setErrorMessage
+  setErrorMessage,
+  image,
+  imageFullWidth = false,
 }) => {
   const showProgress = maxProgress > 0;
   const isCompleted = completedMap[questId] ?? true;
@@ -70,7 +75,8 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
       position="relative"
       overflow="hidden"
       height={{ initial: '-webkit-fill-available', tb: 'auto' }}
-      minHeight={{ initial: '473px', tb: '400px' }}
+      maxHeight={{ initial: '483px', tb: '400px' }}
+      minHeight={{ initial: '483px', tb: '400px' }}
       css={css`
         border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
@@ -86,7 +92,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
           flex: 1;
         `}
       >
-        <Box
+        {resetTime && <Box
           display="inline-flex"
           alignItems="center"
           justifyContent="center"
@@ -108,7 +114,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
           >
             {resetTime}
           </Text>
-        </Box>
+        </Box>}
 
         <Box
           display="flex"
@@ -125,8 +131,10 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             display="flex"
             flexDirection="column"
             alignItems="center"
+            justifyContent="space-between"
             alignSelf="stretch"
-            gap="spacing-xl"
+            gap="spacing-xxs"
+            height="100%"
           >
             <Box
               display="flex"
@@ -134,7 +142,22 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
               alignItems="flex-start"
               alignSelf="stretch"
               gap="spacing-xs"
+              css={css`
+                margin-top: 10px;
+                `}
             >
+              <Box
+                width="100%"
+                >
+                <Image src={image} alt=""
+                  style={{
+                    width: imageFullWidth ? '80' : '69%',
+                    height: 'auto',
+                    margin: 'auto auto',
+                    objectFit: 'contain'
+                  }} />
+              </Box>
+
               <Box
                 display="flex"
                 flexDirection="column"
@@ -143,6 +166,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                 gap="spacing-xxs"
                 justifyContent="center"
               >
+
                 <Text
                   variant="h4-semibold"
                   css={css`
@@ -312,7 +336,9 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                   `}
                 >
                   <Text as="span" color="text-primary">{ctaText.split(' on ')[0]} on </Text>
-                  <Text as="span" css={css`color: #c742dd;`}>{ctaText.split(' on ')[1] || ''}</Text>
+                  <Text as="span" css={css`
+                      color: #c742dd;
+                    `}>{ctaText.split(' on ')[1] || ''}</Text>
                 </Text>
               </Button>
             )}
