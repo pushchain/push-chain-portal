@@ -6,6 +6,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
 import { css } from 'styled-components';
+import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
+import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
 import { useState } from 'react';
 
 const ActivityStatsCards = () => {
@@ -86,6 +88,7 @@ const ActivityStatsCards = () => {
           <AppQuestCard
             appName="Last One"
             appUrl="lastone.fun"
+            bgImage={lastOneBg}
             description="Complete quests on lastone.fun and claim to level up and earn rewards"
             resetTime="New Quests in 6D 23H"
             quests={lastOneQuests?.data.quests}
@@ -100,6 +103,7 @@ const ActivityStatsCards = () => {
           <AppQuestCard
             appName="Ramen Swap"
             appUrl="unimarket.xyz"
+            bgImage={ramenBg}
             description="Complete quests on unimarket.xyz and claim to level up and earn rewards"
             resetTime="New Quests in 6D 23H"
             quests={ramenSwapQuests?.data.quests}

@@ -3,6 +3,7 @@ import { css } from 'styled-components';
 import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Skeleton, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
+import { usePushWalletContext } from '@pushchain/ui-kit';
 
 type BossQuestCardProps = {
   questId?: string;
@@ -50,6 +51,10 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
 }) => {
   const showProgress = maxProgress > 0;
   const isCompleted = completedMap[questId] ?? true;
+
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const isWalletConnected = Boolean(universalAccount?.address);
+
 
 
   return (
@@ -253,26 +258,26 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             alignSelf="stretch"
             width="100%"
           >
-            <Skeleton isLoading={isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
-            {!isLocked && questId && userId && (
-              <ActivityButton
-                activityType={questId as ActvityType}
-                activityTypeId={questId}
-                userId={userId}
-                refetchActivity={() => refetchActivities?.()}
-                usersSingleActivity={activityStatus}
-                setErrorMessage={setErrorMessage}
-                isLoadingActivity={isLoadingActivity || false}
-                label="Claim"
-                buttonSize="small"
-                buttonVariant="primary"
-                buttonCss={css`
-                  width: 100%;
-                `}
-              />
+            <Skeleton isLoading={isWalletConnected && isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
+              {!isLocked && questId && userId && (
+                <ActivityButton
+                  activityType={questId as ActvityType}
+                  activityTypeId={questId}
+                  userId={userId}
+                  refetchActivity={() => refetchActivities?.()}
+                  usersSingleActivity={activityStatus}
+                  setErrorMessage={setErrorMessage}
+                  isLoadingActivity={isLoadingActivity || false}
+                  label="Claim"
+                  buttonSize="small"
+                  buttonVariant="primary"
+                  buttonCss={css`
+                    width: 100%;
+                  `}
+                />
             )}
 
-            {isLocked && (
+            {(isLocked) && (
               <Button
                 variant="outline"
                 size="small"

@@ -21,6 +21,7 @@ type AppQuestCardProps = {
   quests: any;
   icon?: string;
   gradient?: string;
+  bgImage?: string;
   titleGradient?: string;
   linkColor?: string;
   blurColor?: string;
@@ -40,6 +41,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   quests,
   icon,
   gradient = 'linear-gradient(241deg, rgba(232, 221, 255, 1) 0%, rgba(207, 181, 255, 1) 100%)',
+  bgImage,
   titleGradient = 'linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(107, 48, 178, 1) 100%)',
   linkColor = '#6a23d5',
   blurColor = '#a683e5',
@@ -205,7 +207,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
         border="border-xs solid stroke-tertiary"
         overflow="hidden"
         css={css`
-          background: ${gradient};
+          background: ${bgImage ? `url(${bgImage}) center/cover no-repeat, ${gradient}` : gradient};
           z-index: 1;
         `}
       >
@@ -226,7 +228,6 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             height="241px"
             borderRadius="radius-round"
             css={css`
-              background: ${blurColor};
               filter: blur(50px);
               top: 40px;
               left: -20px;

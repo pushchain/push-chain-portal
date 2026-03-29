@@ -1,6 +1,9 @@
 import { css } from 'styled-components';
 import { Box, Text } from '../../../blocks';
 
+import QuestBannerImage from '../../../../static/assets/website/rewards/QuestsBannerCardImg.webp'
+import { Image } from '../../../css/SharedStyling';
+
 const QuestBannerCard = () => {
   return (
     <Box
@@ -19,6 +22,7 @@ const QuestBannerCard = () => {
         background: linear-gradient(241deg, rgba(221, 222, 255, 1) 0%, rgba(181, 184, 255, 1) 100%);
         flex: 1;
         box-sizing: border-box;
+        gap: 12px;
       `}
     >
       <Box
@@ -35,18 +39,47 @@ const QuestBannerCard = () => {
       />
 
       <Box
+        width="100%"
+        height="100%"
+        css={css`
+          flex: 1;
+          min-height: 0;
+          z-index: 1;
+          overflow: hidden;
+        `}
+      >
+        <Image
+          src={QuestBannerImage}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      </Box>
+
+
+      <Box
         display="flex"
         flexDirection="column"
         justifyContent="flex-end"
         gap="spacing-xs"
         position="relative"
         css={css`
-          flex: 1;
           z-index: 1;
         `}
       >
-        <Box display="flex" flexDirection="column" gap="spacing-xs">
-          <Box display="flex" flexDirection="column" gap="spacing-xxs" maxWidth="390px">
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="spacing-xs">
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="spacing-xxs"
+            maxWidth="390px"
+          >
             <Text
               variant="h3-semibold"
               css={css`

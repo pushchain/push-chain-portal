@@ -1,6 +1,10 @@
 import { css } from 'styled-components';
 import { Box, Text } from '../../../blocks';
 
+import CollectRaresCardImage from '../../../../static/assets/website/rewards/CollectRareCard.webp'
+import { Image } from '../../../css/SharedStyling';
+
+
 const CollectRaresCard = () => {
   return (
     <Box
@@ -27,9 +31,16 @@ const CollectRaresCard = () => {
         css={css`
           background: #f0c968;
           filter: blur(50px);
-          top: 127px;
-          left: 103px;
+          top: 180px;
+          left: -100px;
         `}
+      />
+
+
+      <Image
+        src={CollectRaresCardImage}
+        alt=""
+        style={{ width: '100%',zIndex: 7 }}
       />
 
       <Box
@@ -54,7 +65,7 @@ const CollectRaresCard = () => {
                 -webkit-text-fill-color: transparent;
               `}
             >
-              Collect Rares, Burn &amp; Mint Legendary Shiny
+              Collect Rares, <br />Burn &amp; Mint Legendary Shiny
             </Text>
 
             <Text

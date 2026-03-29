@@ -14,7 +14,8 @@ const BossQuestsSection = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
-  const rewardsLocked = isLocked && !isLockedStatusLoading;
+
+  const rewardsLocked = (isLocked && !isLockedStatusLoading);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,

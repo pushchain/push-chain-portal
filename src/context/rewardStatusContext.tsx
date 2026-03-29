@@ -19,32 +19,33 @@ interface RewardStatusContextType {
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
 
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
-  const { authHeaders, isSigningMessage } = useAuthHeaders();
+  const { authHeaders } = useAuthHeaders();
 
   const { universalAccount } = usePushWalletContext("wallet1");
   const account = universalAccount?.address as string;
+  const isWalletConnected = Boolean(universalAccount?.address);
 
   const caip10WalletAddress = walletToFullCAIP10(
     account,
     universalAccount?.chain,
   );
 
-  const { data: sybilStatusData, isLoading: isSybilQueryLoading, isFetched } = useGetSybilStatus({
+  const { data: sybilStatusData, isFetched } = useGetSybilStatus({
     walletAddress: caip10WalletAddress,
     authHeaders,
   });
 
 
-  const isLockedStatusLoading = !isFetched;
+  const isLockedStatusLoading = isWalletConnected && !isFetched;
 
   const sybilData = sybilStatusData?.data;
 
-  const isLocked = !(
+  const isLocked = !isWalletConnected || (!(
     (sybilData?.summary?.completedCriteria ?? 0) >= 3 &&
     sybilData?.advanced?.completed === true &&
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
-  ) && isFetched;
+  ) && isFetched);
 
   return (
     <RewardStatusContext.Provider
