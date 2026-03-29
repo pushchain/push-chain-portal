@@ -151,7 +151,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                 >
                 <Image src={image} alt=""
                   style={{
-                    width: imageFullWidth ? '80' : '69%',
+                    width: imageFullWidth ? '80%' : '69%',
                     height: 'auto',
                     margin: 'auto auto',
                     objectFit: 'contain'
