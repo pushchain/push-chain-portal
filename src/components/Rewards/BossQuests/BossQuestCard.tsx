@@ -75,8 +75,8 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
       position="relative"
       overflow="hidden"
       height={{ initial: '-webkit-fill-available', tb: 'auto' }}
-      maxHeight={{ initial: '483px', tb: '400px' }}
-      minHeight={{ initial: '483px', tb: '400px' }}
+      maxHeight={{ initial: '483px', tb: 'fit-content' }}
+      minHeight={{ initial: '483px', tb: 'fit-content' }}
       css={css`
         border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
