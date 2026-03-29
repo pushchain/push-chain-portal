@@ -4,6 +4,7 @@ import { Box, LevelBadge, Skeleton, Text } from '../../../../blocks';
 import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
+import { device } from '../../../../config/globals';
 
 export const LevelCard: FC = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -19,18 +20,23 @@ export const LevelCard: FC = () => {
   return (
     <Box
       height="165px"
-      width="164px"
       borderRadius="radius-md"
       display="flex"
       flexDirection="column"
       alignItems="flex-start"
       justifyContent="flex-end"
-      padding="spacing-md"
+      padding={{ initial: "spacing-md", tb: "spacing-xxxs"}}
       css={css`
         position: relative;
+        flex: 1;
         border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
         box-sizing: border-box;
+
+        @media ${device.mobileL}{
+            height: 120px;
+            width: 100%;
+        }
       `}
     >
       <Box
@@ -38,8 +44,14 @@ export const LevelCard: FC = () => {
             position: absolute;
             top: -31px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) scale(1);
+            transform-origin: top center;
             z-index: 99;
+
+            @media ${device.mobileL}{
+                transform: translateX(-50%) scale(0.7);
+            }
+
         `}>
         <LevelBadge />
       </Box>
@@ -54,7 +66,13 @@ export const LevelCard: FC = () => {
           <Text
             variant="h1-bold"
             color="text-primary"
-            textAlign="center">
+            textAlign="center"
+            css={css`
+              @media ${device.mobileL} {
+                  font-size: 23px;
+              }
+              `}
+          >
             Lv. {userDetails?.level || '-'}
           </Text>
           </Box>

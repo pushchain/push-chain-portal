@@ -53,12 +53,14 @@ export const RenderLoggedInVerifiedState: FC = () => {
           css={css`
             min-height: 420px;
             max-height: 420px;
+            overflow: hidden;
             flex: 1;
 
             @media ${device.tablet} {
               height: auto;
               min-height: initial;
               max-height: initial;
+              overflow: visible;
             }
           `}
         >
@@ -72,6 +74,8 @@ export const RenderLoggedInVerifiedState: FC = () => {
             width="100%"
             css={css`
               flex: 1;
+              min-height: 0;
+              overflow: hidden;
             `}
           >
             <StatsCards />
@@ -81,7 +85,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
           <Box
             height="-webkit-fill-available"
             css={css`
-              width: 416px;
+              width: 41%;
 
               @media ${device.tablet} {
                   width: 100%;

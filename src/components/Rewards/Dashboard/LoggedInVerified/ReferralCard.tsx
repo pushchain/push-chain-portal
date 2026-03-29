@@ -3,6 +3,9 @@ import { css } from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
 import { Box, Text } from '../../../../blocks';
+import ReferralImage from '../../../../../static/assets/website/rewards/ReferralCard.webp';
+import { Image } from '../../../../css/SharedStyling';
+
 
 
 export const ReferralCard: FC = () => {
@@ -11,7 +14,7 @@ export const ReferralCard: FC = () => {
     <Box
       borderRadius="radius-md"
       display="flex"
-      flexDirection="column"
+      flexDirection="row"
       alignItems="flex-start"
       justifyContent="space-between"
       padding="spacing-md spacing-md"
@@ -40,18 +43,37 @@ export const ReferralCard: FC = () => {
           <Text variant="h3-semibold" color="text-brand-medium">
             Invite <Text as="span" variant="h3-semibold" color="text-primary">your friends</Text>
           </Text>
-          <Text variant="bm-regular" color="text-tertiary">
-            Enjoy rewards with your friends with our rewards system*
+          <Text variant="bm-regular" color="rgba(255, 255, 255, 0.75)">
+            Enjoy & share rewards with your friends with our rewards system*
           </Text>
         </Box>
 
         <NavLink
-          to='/rewards/squads'
+          to='/rewar eds/squads'
           target='_self'
           style={{ textDecoration: 'none ', color: '#C742DD'}}
          >
           Get Invite Codes
         </NavLink>
+      </Box>
+      <Box
+        position="relative"
+        css={css`
+          width: 200px;
+          flex-shrink: 0;
+          align-self: stretch;
+          overflow: hidden;
+        `}
+      >
+        <Image src={ReferralImage}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              objectPosition: 'right center',
+            }} />
       </Box>
     </Box>
   );
