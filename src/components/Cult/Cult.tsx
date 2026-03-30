@@ -5,7 +5,7 @@ import { CultFooter } from "./CultFooter"
 import { CultHeader } from "./CultHeader"
 
 export const Cult = () => {
-	const targetDate = "2026-03-17T13:59:59";
+	const targetDate = "2026-04-07T13:59:59";
 	const { timeLeft } = useCountdown(targetDate);
 
   return (
@@ -32,8 +32,7 @@ export const Cult = () => {
 					Season 3 dropping soon!
 				</Text>
         <Text variant="h1-regular" color="#FFFFFF">
-          {/*{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S*/}
-          S3 Coming March 2026
+          {timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S
         </Text>
 			</Box>
 		</Box>

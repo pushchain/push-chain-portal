@@ -12,7 +12,7 @@ export const Countdown = () => {
   const isMobile = useMediaQuery(device.mobileL);
   const navigate = useNavigate();
 
-	const targetDate = "2026-03-17T13:59:59";
+	const targetDate = "2026-04-07T13:59:59";
   const { timeLeft } = useCountdown(targetDate);
 
   const handleGoToCult = () => {
@@ -149,8 +149,7 @@ export const Countdown = () => {
 
 
 						<Text variant="ds-bold" color="#C742DD">
-              {/*{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S*/}
-              S3 Coming March 2026
+              {timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S
             </Text>
           </Box>
         </Box>

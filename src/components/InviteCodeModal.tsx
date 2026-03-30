@@ -9,7 +9,7 @@ import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { useSignMessageWithSolana } from "./Rewards/hooks/useSignMessageWithSolana";
 import { WalletChainType } from "./Rewards/utils/wallet";
-import { generateSIWEMessage, getSiweDomainAndUri } from "./Rewards/hooks/useSignPushMessage";
+import { useSignPushMessage } from "./Rewards/hooks/useSignPushMessage";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -44,6 +44,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessageWithPush } = useSignPushMessage();
 
   const isPushWalletUser = PUSH_CHAIN_IDS.includes(chainId);
   const isSolana = chainId === WalletChainType.SOLANA;
@@ -55,34 +56,24 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       }
 
       let signature: string;
-      let dataPayload: string;
+    let dataPayload: string;
 
-      try {
-        if (isPushWalletUser) {
-          // Social login → Push Chain universal signer
-          if (!pushChainClient?.universal) {
-            setError("Push Chain client not available. Please reconnect.");
-            return;
-          }
+    console.log('handle submit')
 
-          const { domain, uri } = getSiweDomainAndUri();
+    try {
+        // TODO: find out way to check social login vs push wallet user
+        // if (isPushWalletUser) {
+        //   const { signature: newSignature, messageString, error } = await signMessageWithPush();
 
-          const messageToSign = generateSIWEMessage({
-            domain,
-            address: universalAccount?.address as string,
-            uri,
-            version: "1",
-            chainId: parseInt(chainId),
-            nonce: Date.now().toString(),
-            issuedAt: new Date().toISOString(),
-          });
+        //   if (error || !newSignature) {
+        //     setError(error || "Failed to sign message");
+        //     return;
+        //   }
 
-          const messageBytes = new TextEncoder().encode(messageToSign);
-          console.log(messageBytes, 'messageBytes')
-          signature = await pushChainClient.universal.signMessage(messageBytes);
-          dataPayload = messageToSign;
+        //   signature = newSignature;
+        //   dataPayload = messageString;
 
-        } else {
+        // } else {
           const { signature: newSignature, messageToSend, messageString, error } = isSolana
             ? await signMessageWithSolana()
             : await signMessage();
@@ -94,8 +85,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
           signature = newSignature;
           dataPayload = isSolana ? messageString : messageToSend;
-
-        }
+        // }
       } catch (err) {
         console.error("Signing failed. Please try again", err)
         setError("Signing failed. Please try again.");
