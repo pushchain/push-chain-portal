@@ -56,21 +56,24 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       }
 
       let signature: string;
-      let dataPayload: string;
+    let dataPayload: string;
 
-      try {
-        if (isPushWalletUser) {
-          const { signature: newSignature, messageString, error } = await signMessageWithPush();
+    console.log('handle submit')
 
-          if (error || !newSignature) {
-            setError(error || "Failed to sign message");
-            return;
-          }
+    try {
+        // TODO: find out way to check social login vs push wallet user
+        // if (isPushWalletUser) {
+        //   const { signature: newSignature, messageString, error } = await signMessageWithPush();
 
-          signature = newSignature;
-          dataPayload = messageString;
+        //   if (error || !newSignature) {
+        //     setError(error || "Failed to sign message");
+        //     return;
+        //   }
 
-        } else {
+        //   signature = newSignature;
+        //   dataPayload = messageString;
+
+        // } else {
           const { signature: newSignature, messageToSend, messageString, error } = isSolana
             ? await signMessageWithSolana()
             : await signMessage();
@@ -82,8 +85,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
           signature = newSignature;
           dataPayload = isSolana ? messageString : messageToSend;
-
-        }
+        // }
       } catch (err) {
         console.error("Signing failed. Please try again", err)
         setError("Signing failed. Please try again.");

@@ -21,6 +21,7 @@ interface SiweMessageData {
 
 interface SignMessageResult {
   signature?: string;
+  messageObject?: SiweMessageData;
   messageToSend?: SiweMessageData | string;
   error?: string;
   isLoading: boolean;
