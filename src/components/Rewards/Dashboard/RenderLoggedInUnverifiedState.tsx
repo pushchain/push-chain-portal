@@ -41,6 +41,11 @@ const WALLET_ACTIVITY = {
   activityTitle: "Link an active wallet ($15+ balance & history) to verify",
 } as const;
 
+const EVM_WALLET_ACTIVITY = {
+  icon: "link_an_active_wallet",
+  activityTitle: "Verify your wallet ($15+ balance & on-chain transaction history)",
+} as const;
+
 const WalletVerificationAction = ({
   sybilEligible,
   isVerifying,
@@ -127,7 +132,7 @@ export const RenderLoggedInUnverifiedState = () => {
     verify,
   } = useUnverifiedStateLogic();
 
-  const { sybilStatusData } = useRewardStatus();
+  const { sybilStatusData, refetchSybilStatus } = useRewardStatus();
 
   const {
 		data: userActivity,
@@ -200,7 +205,7 @@ export const RenderLoggedInUnverifiedState = () => {
           >
             <RewardsActivityIcon type={WALLET_ACTIVITY.icon} />
             <Box margin="spacing-none spacing-none spacing-none spacing-xs">
-              <RewardsActivityTitle activityTitle={WALLET_ACTIVITY.activityTitle} variant="h4-semibold" isLoading={false} color="#17181B" />
+              <RewardsActivityTitle activityTitle={isPushWalletUser ? WALLET_ACTIVITY.activityTitle : EVM_WALLET_ACTIVITY.activityTitle} variant="h4-semibold" isLoading={false} color="#17181B" />
               <Text variant="bm-regular" color="#313338">Linked wallet will be bound to Push account for Season 3</Text>
             </Box>
 
@@ -214,12 +219,8 @@ export const RenderLoggedInUnverifiedState = () => {
             />
           </Box>
 
-          {/* Social activity cards */}
           <Box display="flex" flexDirection={{ initial: "row", tb: "column" }} gap="spacing-sm" width="100%">
             {ACTIVITY_LIST.map((item, index) => {
-              // const activityStatus = activityStatuses?.activities?.find(
-              //   (a) => a.activityTypeId === item.activityTypeId
-              // );
               return (
                 <Box
                   key={index}
@@ -240,6 +241,7 @@ export const RenderLoggedInUnverifiedState = () => {
                       refetchActivity={() => {
                         refetch();
                         refetchActivities();
+                        refetchSybilStatus();
                       }}
                       usersSingleActivity={userActivity?.[item.activityType]}
                       setErrorMessage={setErrorMessage}
