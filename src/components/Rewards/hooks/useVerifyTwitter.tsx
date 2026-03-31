@@ -25,7 +25,6 @@ const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseCon
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
-import { WalletChainType } from "../utils/wallet";
 
 export type UseTwitterVerifyParams = {
   activityTypeId: string;
@@ -140,62 +139,15 @@ const useVerifyTwitter = ({
         const twitterHandle = (userTwitterDetails as any)?.reloadUserInfo
           ?.screenName;
 
-        // let verificationProof;
         const messageToSend: Record<string, string | undefined> = {
           twitter: twitterHandle,
         };
-
-        // const isSolana = chainId == WalletChainType.SOLANA;
-
-        // if (isSolana) {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessageWithSolana({
-        //     twitter: twitterHandle,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingTwitter(false);
-        //     return;
-        //   }
-
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // } else {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessage({
-        //     twitter: twitterHandle,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingTwitter(false);
-        //     return;
-        //   }
-
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // }
-
-        // if (!verificationProof) {
-        //   setErrorMessage('Invalid Verification Proof');
-        //   setVerifyingTwitter(false);
-        // }
 
         claimRewardsActivity(
           {
             userId: updatedId || (userId as string),
             activityTypeId,
             data: messageToSend,
-            // verificationProof,
           },
           {
             onSuccess: (response) => {

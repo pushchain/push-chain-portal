@@ -3,7 +3,7 @@ import { PushUniversalAccountButton } from "@pushchain/ui-kit";
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon";
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle";
-import { ActvityType } from "../../../queries/types";
+import { ActvityType, GetSybilStatusResponse } from "../../../queries/types";
 import { ActivityButton } from "../RewardsActivity/ActivityButton";
 import { useUnverifiedStateLogic } from "../hooks/useUnverifiedStateLogic";
 
@@ -17,6 +17,9 @@ import {
   SealCheckFilled,
   Text,
 } from "../../../blocks";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
+import { useGetRewardsActivity } from "../../../queries";
+import { useActivityContext } from "../../../context/activityContext";
 
 const ACTIVITY_LIST = [
   {
@@ -44,14 +47,16 @@ const WalletVerificationAction = ({
   isPushWalletUser,
   hasLinkedAccount,
   verify,
+  sybilStatusData
 }: {
   sybilEligible: boolean | null;
   isVerifying: boolean;
   isPushWalletUser: boolean;
   hasLinkedAccount: boolean;
   verify: () => void;
+    sybilStatusData: GetSybilStatusResponse;
 }) => {
-  if (sybilEligible === true) {
+  if (sybilStatusData?.data?.advanced?.completed) {
     return (
       <Box display="flex" alignItems="center" gap="spacing-xxs" padding="spacing-xs spacing-md" css={css`margin-left: auto;`}>
         <SealCheckFilled color="#00A47F" size={16} />
@@ -110,6 +115,8 @@ const WalletVerificationAction = ({
 };
 
 export const RenderLoggedInUnverifiedState = () => {
+  const { refetch, isLoading, userDetails } = useActivityContext();
+
   const {
     linkedAccount,
     isPushWalletUser,
@@ -117,12 +124,19 @@ export const RenderLoggedInUnverifiedState = () => {
     isVerifying,
     errorMessage,
     setErrorMessage,
-    user,
-    activityStatuses,
-    isLoadingActivities,
-    refetchActivityStatus,
     verify,
   } = useUnverifiedStateLogic();
+
+  const { sybilStatusData } = useRewardStatus();
+
+  const {
+		data: userActivity,
+    isLoading: isLoadingActivities,
+    refetch: refetchActivities
+	} = useGetRewardsActivity(
+		{ userId: userDetails?.userId, activityTypes: ['follow_push_on_discord','follow_push_on_twitter'] },
+		{ enabled: !!userDetails?.userId },
+    );
 
   return (
     <Box
@@ -173,7 +187,7 @@ export const RenderLoggedInUnverifiedState = () => {
           </Box>
         )}
 
-        <Box display="flex" flexDirection="column" width="100%" margin="spacing-lg spacing-none spacing-none spacing-none" gap="spacing-sm" css={css`z-index: 1;`}>
+        <Box display="flex" flexDirection="column" width="100%" margin="spacing-sm spacing-none spacing-none spacing-none" gap="spacing-sm" css={css`z-index: 1;`}>
 
           <Box
             display="flex"
@@ -196,15 +210,16 @@ export const RenderLoggedInUnverifiedState = () => {
               isPushWalletUser={isPushWalletUser}
               hasLinkedAccount={!!linkedAccount?.address}
               verify={verify}
+              sybilStatusData={sybilStatusData}
             />
           </Box>
 
           {/* Social activity cards */}
           <Box display="flex" flexDirection={{ initial: "row", tb: "column" }} gap="spacing-sm" width="100%">
             {ACTIVITY_LIST.map((item, index) => {
-              const activityStatus = activityStatuses?.activities?.find(
-                (a) => a.activityTypeId === item.activityTypeId
-              );
+              // const activityStatus = activityStatuses?.activities?.find(
+              //   (a) => a.activityTypeId === item.activityTypeId
+              // );
               return (
                 <Box
                   key={index}
@@ -221,11 +236,14 @@ export const RenderLoggedInUnverifiedState = () => {
                     <ActivityButton
                       activityType={item.activityType as ActvityType}
                       activityTypeId={item.activityTypeId}
-                      userId={user?.userId as string}
-                      refetchActivity={() => refetchActivityStatus()}
-                      usersSingleActivity={activityStatus}
+                      userId={userDetails?.userId as string}
+                      refetchActivity={() => {
+                        refetch();
+                        refetchActivities();
+                      }}
+                      usersSingleActivity={userActivity?.[item.activityType]}
                       setErrorMessage={setErrorMessage}
-                      isLoadingActivity={isLoadingActivities}
+                      isLoadingActivity={isLoading || isLoadingActivities}
                       label="Verify"
                     />
                   </Box>

@@ -14,6 +14,7 @@ import { AuthHeaders } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { WalletChainType } from "../components/Rewards/utils/wallet";
 import { FLAGS } from "../config/flags";
+import { useLocation } from "react-router-dom";
 
 const AUTH_HEADERS_KEY = "push_auth_headers";
 
@@ -59,6 +60,7 @@ const AuthHeadersContext = createContext<AuthHeadersContextType | null>(null);
 export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [authHeaders, setAuthHeaders] = useState<AuthHeaders | undefined>();
   const [isSigningMessage, setIsSigningMessage] = useState(false);
+  const location = useLocation();
 
   const { universalAccount } = usePushWalletContext("wallet1");
   const { pushChainClient } = usePushChainClient('wallet1');
@@ -145,6 +147,7 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   //
   useEffect(() => {
       if (!walletAddress || FLAGS.CULT) return;
+      if (location.pathname === '/discord/verification') return
       if (!isSignerReady) return;
       if (authHeaders) return;
 

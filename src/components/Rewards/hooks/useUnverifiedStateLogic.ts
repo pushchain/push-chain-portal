@@ -9,7 +9,9 @@ import {
 import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper";
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useLocation } from "react-router-dom";
+import { WalletChainType } from "../utils/wallet";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -43,6 +45,7 @@ export const useUnverifiedStateLogic = () => {
 
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const { refetchActivityStatus } = useRewardsContext();
+  const { refetchSybilStatus } = useRewardStatus();
   const location = useLocation();
 
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -83,19 +86,22 @@ export const useUnverifiedStateLogic = () => {
       }
       setSybilEligible(eligible);
       setIsVerifying(false);
+      refetchSybilStatus();
     },
-    [universalAccount?.address, isPushWalletUser]
+    [universalAccount?.address, isPushWalletUser, refetchSybilStatus]
   );
 
   // EVM user → advancedSybilCheck
   const runEvmCheck = async () => {
-    if (!authHeaders) await getAuthHeaders();
-    if (!universalAccount?.address || !authHeaders) return;
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (!universalAccount?.address || !headers) return;
     setIsVerifying(true);
 
     const { chainId: evmChainId } = parseCAIP(universalAccount.chain);
+    const resolvedChainId = evmChainId === WalletChainType.SEPOLIA ? WalletChainType.ETH : evmChainId;
+
     evmCheck(
-      { address: universalAccount.address, chainId: evmChainId, authHeaders },
+      { address: universalAccount.address, chainId: resolvedChainId, authHeaders: headers },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: () => saveResult(false),
@@ -105,12 +111,12 @@ export const useUnverifiedStateLogic = () => {
 
   // Push wallet user → pushWalletSybilCheck (uses linked wallet2)
   const runPushCheck = async () => {
-    if (!authHeaders) await getAuthHeaders();
-    if (!linkedAccount?.address || !authHeaders) return;
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (!linkedAccount?.address || !headers) return;
     setIsVerifying(true);
 
     pushCheck(
-      { address: linkedWalletAddress, authHeaders },
+      { address: linkedWalletAddress, authHeaders: headers },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: () => saveResult(false),
@@ -143,24 +149,6 @@ export const useUnverifiedStateLogic = () => {
     setSybilEligible(null);
   }, []);
 
-
-  // Disconnect wallet2 on unmount
-  // const cleanupRef = useRef({ isPushWalletUser, linkedAccount, disconnectLinkedWallet });
-  // useEffect(() => { cleanupRef.current = { isPushWalletUser, linkedAccount, disconnectLinkedWallet }; });
-  // useEffect(() => () => {
-  //   const { isPushWalletUser, linkedAccount, disconnectLinkedWallet } = cleanupRef.current;
-  //   if (isPushWalletUser && linkedAccount?.address) {
-  //     disconnectLinkedWallet();
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log('logout action1 ')
-
-  //   if (universalAccount) return;
-  //   console.log('logout action 2')
-  //   clearSybil(universalAccount?.address);
-  // }, [universalAccount.address])
 
   const verify = () => {
     setErrorMessage("");

@@ -13,9 +13,6 @@ import {
 
 // helpers
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
-import { useSignMessageWithEthereum } from "./useSignMessage";
-import { WalletChainType } from "../utils/wallet";
-import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 
 type UseDiscordActivityVerificationProps = {
   activityTypeId: string;
@@ -39,8 +36,6 @@ const useVerifyDiscord = ({
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { signMessage } = useSignMessageWithEthereum();
-  const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -118,58 +113,13 @@ const useVerifyDiscord = ({
           discord_token: token,
         };
 
-        // const isSolana = chainId == WalletChainType.SOLANA;
-
-        // if (isSolana) {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessageWithSolana({
-        //     discord_token: token,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingDiscord(false);
-        //     return;
-        //   }
-
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // } else {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessage({
-        //     discord_token: token,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingDiscord(false);
-        //     return;
-        //   }
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // }
-
         clearTokens();
-
-        // if (!verificationProof) {
-        //   setErrorMessage('Invalid Verification Proof');
-        //   setVerifyingDiscord(false);
-        // }
 
         claimRewardsActivity(
           {
             userId: updatedId || (userId as string),
             activityTypeId,
             data: messageToSend,
-            // verificationProof,
           },
           {
             onSuccess: (response) => {
