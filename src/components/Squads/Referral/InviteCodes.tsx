@@ -281,7 +281,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           gap="spacing-xs"
           css={css`
             overflow-y: auto;
-            max-height: ${isCultUser ? '200px' : ''};
+            max-height: ${isCultUser ? '200px' : '260px'};
           `}
         >
           {isSuccess && inviteCodeDetails?.data?.invites?.map((invite, index) => (
