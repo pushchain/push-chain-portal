@@ -33,28 +33,12 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     universalAccount?.chain,
   );
 
+
+
   const { data: sybilStatusData, isFetched, refetch: refetchSybilStatus } = useGetSybilStatus({
     walletAddress: caip10WalletAddress,
-    authHeaders,
+    authHeaders: authHeaders,
   });
-
-  // const sybilData = {
-  //     passed: true,
-  //     reason: "",
-  //     isCultMember: false,
-  //     cultBypass: false,
-  //     summary: { completedCriteria: 3, totalCriteria: 4 },
-  //     basic: {
-  //       twitter: { completed: true },
-  //       discord: { completed: true },
-  //       level: { completed: true, currentLevel: 10, requiredLevel: 10, remainingLevels: 0 },
-  //     },
-  //     advanced: {
-  //       completed: true,
-  //       connectedWalletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-  //     },
-  // };
-
 
   const isLockedStatusLoading = isWalletConnected && !isFetched;
 

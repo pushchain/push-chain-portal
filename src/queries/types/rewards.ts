@@ -516,6 +516,22 @@ export type LevelProgressResponse = {
   paragonModeEnabled: boolean;
 };
 
+export type VerifySybilWalletParams = {
+  userId: string;
+  verificationProof: string;
+};
+
+export type VerifySybilWalletResponse = {
+  // success: boolean;
+  // data?: {
+  //   activityId?: string;
+  //   status?: string;
+  //   points?: number;
+  //   multiplier?: number;
+  //   createdAt?: string;
+  // };
+};
+
 export type SybilStatusResponse = {
   isSybil: boolean;
   status: string;

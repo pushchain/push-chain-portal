@@ -54,3 +54,4 @@ export const nextReshuffleFee = "nextReshuffleFee";
 export const userCultStatus = "userCultStatus";
 export const cultLeaderboard = "cultLeaderboard";
 export const sybilStatus = "sybilStatus";
+export const verifySybilWallet = "verifySybilWallet";

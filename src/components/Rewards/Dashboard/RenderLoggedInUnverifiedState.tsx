@@ -61,7 +61,8 @@ const WalletVerificationAction = ({
   verify: () => void;
     sybilStatusData: GetSybilStatusResponse;
 }) => {
-  if (sybilStatusData?.data?.advanced?.completed) {
+if (sybilStatusData?.data?.advanced?.completed) {
+  // if (sybilEligible === true && sybilStatusData?.data?.advanced?.completed) {
     return (
       <Box display="flex" alignItems="center" gap="spacing-xxs" padding="spacing-xs spacing-md" css={css`margin-left: auto;`}>
         <SealCheckFilled color="#00A47F" size={16} />

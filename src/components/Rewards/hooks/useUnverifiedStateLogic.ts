@@ -79,29 +79,34 @@ export const useUnverifiedStateLogic = () => {
     return readSybil(universalAccount.address, isPushWalletUser);
   });
 
+
+
   const saveResult = useCallback(
     (eligible: boolean) => {
       if (universalAccount?.address) {
         writeSybil(universalAccount.address, isPushWalletUser, eligible);
       }
+
       setSybilEligible(eligible);
+
+      if (eligible) {
+         refetchSybilStatus();
+         return;
+      }
+
       setIsVerifying(false);
-      refetchSybilStatus();
     },
     [universalAccount?.address, isPushWalletUser, refetchSybilStatus]
   );
 
   // EVM user → advancedSybilCheck
   const runEvmCheck = async () => {
-    const headers = authHeaders ?? await getAuthHeaders();
+    const headers = authHeaders ?? (await getAuthHeaders());
     if (!universalAccount?.address || !headers) return;
     setIsVerifying(true);
 
-    const { chainId: evmChainId } = parseCAIP(universalAccount.chain);
-    const resolvedChainId = evmChainId === WalletChainType.SEPOLIA ? WalletChainType.ETH : evmChainId;
-
-    evmCheck(
-      { address: universalAccount.address, chainId: resolvedChainId, authHeaders: headers },
+    pushCheck(
+      { address: caip10, authHeaders: headers},
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: () => saveResult(false),
@@ -111,9 +116,12 @@ export const useUnverifiedStateLogic = () => {
 
   // Push wallet user → pushWalletSybilCheck (uses linked wallet2)
   const runPushCheck = async () => {
-    const headers = authHeaders ?? await getAuthHeaders();
+    const headers = authHeaders ?? (await getAuthHeaders());
     if (!linkedAccount?.address || !headers) return;
     setIsVerifying(true);
+
+    console.log('try call 2', linkedWalletAddress)
+
 
     pushCheck(
       { address: linkedWalletAddress, authHeaders: headers },
@@ -125,11 +133,9 @@ export const useUnverifiedStateLogic = () => {
   };
 
   // Auto-trigger push check when wallet2 connects
-  const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!isPushWalletUser || !linkedAccount?.address) return;
-    if (sybilEligible !== null || hasAutoTriggered.current) return;
-    hasAutoTriggered.current = true;
+    if (sybilEligible !== null) return;
     runPushCheck();
   }, [linkedAccount?.address, isPushWalletUser]);
 
@@ -138,17 +144,14 @@ export const useUnverifiedStateLogic = () => {
     if (!universalAccount?.address || sybilEligible !== true) {
       clearSybil();
       disconnectLinkedWallet();
-      console.log('clear them')
     }
-
   }, [universalAccount?.address, location.pathname]);
 
   const clearSybil = useCallback(() => {
-    clearEvmSybil(universalAccount?.address)
-    clearPushSybil(universalAccount?.address)
+    clearEvmSybil(universalAccount?.address);
+    clearPushSybil(universalAccount?.address);
     setSybilEligible(null);
   }, []);
-
 
   const verify = () => {
     setErrorMessage("");

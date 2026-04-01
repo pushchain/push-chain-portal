@@ -24,3 +24,4 @@ export * from './useClaimDailyRewardsSeasonThree';
 export * from './useGetLevelProgress';
 export * from './usePushWalletSybilCheck';
 export * from './useGetSybilStatus';
+export * from './useVerifySybilWallet';
