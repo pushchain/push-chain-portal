@@ -18,8 +18,8 @@ export const RenderLoggedInVerifiedState: FC = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      padding="spacing-md"
-      gap="spacing-md"
+      padding={{ initial: "spacing-md", ml: "spacing-sm"}}
+      gap={{ initial: "spacing-md", ml: "spacing-sm" }}
       position="relative"
       css={css`
         background: rgba(0, 0, 0, 0.1);
@@ -36,7 +36,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
-        gap="spacing-lg"
+        gap={{ initial: "spacing-lg", ml: "spacing-sm"}}
         width="100%"
         css={css`
           z-index: 1;
@@ -68,7 +68,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
             display="flex"
             flexDirection="column"
             alignItems="flex-start"
-            gap="spacing-md"
+            gap={{ initial: "spacing-md", ml: "spacing-sm"}}
             position="relative"
             height="-webkit-fill-available"
             width="100%"

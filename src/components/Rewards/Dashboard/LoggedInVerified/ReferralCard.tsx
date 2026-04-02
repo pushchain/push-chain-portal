@@ -17,7 +17,7 @@ export const ReferralCard: FC = () => {
       flexDirection="row"
       alignItems="flex-start"
       justifyContent="space-between"
-      padding="spacing-md spacing-md"
+      padding={{initial: "spacing-md", ml: "spacing-sm"}}
       width="100%"
       css={css`
         flex: 1;

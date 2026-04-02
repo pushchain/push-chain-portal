@@ -11,7 +11,7 @@ export const StatsCards: FC = () => {
     <Box
       display="flex"
       alignItems="flex-end"
-      gap="spacing-md"
+      gap={{ initial: "spacing-md", ml: "spacing-sm"}}
       width="100%"
       flexDirection='row'
       css={css`

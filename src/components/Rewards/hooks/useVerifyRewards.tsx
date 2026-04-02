@@ -114,6 +114,8 @@ const useVerifyRewards = ({
       setVerifyingRewards(false);
     }
 
+    console.log(verificationProof, messageToSend, 'got here')
+
     claimRewardsActivity(
       {
         userId: updatedId || (userId as string),

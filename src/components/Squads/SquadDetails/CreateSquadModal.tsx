@@ -102,6 +102,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
           error={!!error}
           errorMessage={error}
           backgroundColor={"rgba(0, 0, 0, 0.25)"}
+          totalCount={24}
         />
 
         <Text

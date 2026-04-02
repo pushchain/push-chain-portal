@@ -95,10 +95,17 @@ export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProp
           alignItems="center"
           justifyContent="center"
           gap="spacing-xxs"
+          css={css`min-width: 0;`}
         >
           <Text
             variant="h4-semibold"
-            css={css`color: rgba(255, 255, 255, 0.75);`}
+            css={css`
+              color: rgba(255, 255, 255, 0.75);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              max-width: 24ch;
+            `}
           >
             {squadName}
           </Text>

@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { NavLink } from 'react-router-dom';
 
-import { Box, Text, ArrowRight } from '../../../../blocks';
+import { Box, Text, ArrowRight, Link } from '../../../../blocks';
 import { LockedPassCard } from './LockedPassCard';
 
 export const RarePassSection: FC = () => {
@@ -12,7 +11,7 @@ export const RarePassSection: FC = () => {
       display="flex"
       alignItems="flex-start"
       justifyContent="flex-end"
-      padding="spacing-md"
+      padding={{ initial: "spacing-md", ml: "spacing-sm" }}
       height="-webkit-fill-available"
       position='relative'
       css={css`
@@ -34,7 +33,7 @@ export const RarePassSection: FC = () => {
       `}
     >
       <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-md" width="100%">
-        <Box display="flex" alignItems="center" gap="spacing-md" width="100%" justifyContent="space-between" flexDirection='row'>
+        <Box display="flex" alignItems="center" gap="spacing-md" width="100%" justifyContent="space-between" flexDirection={{initial: 'row', ms: 'column'}}>
           <Box display="flex" flexDirection="column" alignItems="flex-start">
             <Text variant="h4-semibold" color="text-primary">
               Rare Pass
@@ -48,18 +47,18 @@ export const RarePassSection: FC = () => {
             display="flex"
             flexDirection="row"
             alignItems="center"
-            minWidth="90px"
+            minWidth={{initial: "90px", ms: '100%'}}
             gap="spacing-xxs"
+            css={css`
+              z-index: 90;
+            `}
           >
-            <NavLink
-              to="/rewards/squads"
-              style={{
-                textDecoration: 'none',
-                color: "#C742DD"
-              }}
+            <Link
+              to="/rewards/pushpass"
+              textProps={{ variant: 'bm-bold', color: '#C742DD'}}
             >
               View All
-              </NavLink>
+              </Link>
               <ArrowRight size={14} />
           </Box>
         </Box>

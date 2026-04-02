@@ -108,9 +108,8 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 color="text-primary"
                 css={css`
                   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
+                  overflow-wrap: break-word;
+                  word-break: break-word;
                   min-width: 0;
                 `}
               >

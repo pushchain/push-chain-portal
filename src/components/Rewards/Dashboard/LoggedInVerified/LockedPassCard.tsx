@@ -29,6 +29,10 @@ export const LockedPassCard: FC<LockedPassCardProps> = ({ message }) => {
         @media ${device.tablet} {
             height: 350px;
         }
+
+        @media ${device.mobileL} {
+            height: 200px;
+        }
       `}
     >
       <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" height="100%" width="100%">
