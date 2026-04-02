@@ -23,12 +23,11 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-
-  const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards } = useGetDailyCheckInDetails(authHeaders);
+  const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards, isRefetching } = useGetDailyCheckInDetails(authHeaders);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
 
+  const isBusy = isClaimingRewards || isRefetching;
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
-
 
   const handleClaimRewards = () => {
     if (!authHeaders) return;
@@ -122,7 +121,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
 
         {!rewardsLocked && (
           <>
-            {!canClaimRewards && (
+            {!canClaimRewards && !isBusy && (
               <Skeleton isLoading={isLockedStatusLoading}>
                 <Button variant="tertiary" size="small" disabled>
                   Claimed
@@ -130,16 +129,16 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
               </Skeleton>
             )}
 
-            {canClaimRewards && (
+            {(canClaimRewards || isBusy) && (
               <Skeleton isLoading={isLockedStatusLoading}>
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handleClaimRewards}
-                disabled={isClaimingRewards}
-                loading={isClaimingRewards}
-              >
-                Claim
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  onClick={handleClaimRewards}
+                  disabled={isBusy}
+                  loading={isBusy}
+                >
+                  Claim
                 </Button>
               </Skeleton>
             )}

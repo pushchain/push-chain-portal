@@ -107,8 +107,8 @@ export const textVariants = {
   'h2-semibold': {
     fontSize: '34px',
     fontStyle: null,
-    fontWeight: '500',
-    lineHeight: '48px',
+    fontWeight: '600',
+    lineHeight: '42px',
     letterSpacing: null,
     textTransform: null,
   },

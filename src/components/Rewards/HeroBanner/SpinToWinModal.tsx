@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { css } from 'styled-components';
 import Lottie from 'lottie-react';
 
@@ -30,7 +30,7 @@ type SpinPrize = {
 };
 
 type ButtonConfig = {
-  label: string;
+  label: ReactNode;
   onClick?: () => void;
   disabled: boolean;
   variant?: string;
@@ -166,9 +166,16 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       }
 
       if (remainingSpins > 0) {
-        const cost = nextSpinCost > 0 ? ` (${nextSpinCost} Points)` : '';
+        const cost = nextSpinCost > 0 ? <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          margin="spacing-none spacing-none spacing-none spacing-xxxs"
+          gap="spacing-xxxs">
+            <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+        </Box> : '';
         return {
-          label: `Spin Again${cost}`,
+          label: <>Spin Again {cost}</>,
           onClick: handleSpinAgain,
           disabled: false };
       }
@@ -182,7 +189,18 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     if (!canSpin) {
       if (!hasEnoughPoints) {
         return {
-          label: `Spin The Wheel ${nextSpinCost} Points`,
+          label:
+            <>
+              Spin The Wheel
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                margin="spacing-none spacing-none spacing-none spacing-xxs"
+                gap="spacing-xxxs">
+                  <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+              </Box>
+            </>,
           disabled: true };
       }
       return {
@@ -199,7 +217,18 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     }
 
     return {
-      label: `Spin The Wheel (${nextSpinCost} Points)`,
+      label:
+        <>
+          Spin The Wheel
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            margin="spacing-none spacing-none spacing-none spacing-xxs"
+            gap="spacing-xxxs">
+              <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+          </Box>
+        </>,
       onClick: handleSpinClick,
       disabled: false
     };
@@ -301,8 +330,24 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             </Box>
 
             <Box css={css`width: 100%;`}>
-              <Text variant='h4-semibold' textAlign='center'>{wonPrize?.label}</Text>
+              <Text variant="h4-semibold" textAlign="center">
+                {/points|pc tokens/i.test(wonPrize?.label || "")
+                  ? wonPrize?.label?.split(/(\d+)/).map((part, i) =>
+                      /\d+/.test(part) ? (
+                        <Text key={i} variant="h2-semibold" textAlign="center" css={css`line-height: 100%;`}>
+                          {part}
+                        </Text>
+                      ) : (
+                        part
+                      )
+                    )
+                  : wonPrize?.label}
+              </Text>
             </Box>
+
+            {/*<Box css={css`width: 100%;`}>
+              <Text variant='h4-semibold' textAlign='center'>{wonPrize?.label}</Text>
+            </Box>*/}
           </Box>
         )}
 

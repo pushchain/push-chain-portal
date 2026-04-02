@@ -152,8 +152,8 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
 
         <Box
           position="relative"
-          width="200px"
-          height="200px"
+          width={{ initial: "320px", ms: "250px", ml: "300px" }}
+          height={{ initial: "320px", ms: "250px", ml: "300px" }}
         >
           <Box
             ref={wheelRef}
@@ -180,8 +180,8 @@ const Spinboard = forwardRef<SpinboardHandle, SpinboardProps>(
 
           <Box
             position="absolute"
-            width="48px"
-            height="48px"
+            width={{ initial: "78px", ml: "58px" }}
+            height={{ initial: "78px", ml: "58px" }}
             css={css`
               z-index: 2;
               pointer-events: none;

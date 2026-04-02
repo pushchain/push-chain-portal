@@ -15,8 +15,6 @@ const SpinToWinCard = () => {
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
 
-  // console.log(rewardsLocked, 'rewardsLocked');
-
   return (
     <>
       <Box

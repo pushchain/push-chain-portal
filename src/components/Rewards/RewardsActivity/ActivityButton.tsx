@@ -1,10 +1,10 @@
 // React and other libraries
 import React, { FC } from "react";
-import { FlattenSimpleInterpolation } from "styled-components";
+import { css, FlattenSimpleInterpolation } from "styled-components";
 
 //Queries
 import { ActvityType, UsersActivity } from "../../../queries";
-import { Button } from "../../../blocks";
+import { Box, Button, SealCheckFilled, Text } from "../../../blocks";
 import { ActivityVerificationButton } from "./ActivityVerificationButton";
 // import { useCountdown } from "./hooks/useCountdown";
 
@@ -60,9 +60,14 @@ const ActivityButton: FC<ActivityButtonProps> = ({
 
   if (usersSingleActivity?.status === "COMPLETED" && isSybilRelated) {
     return (
-      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
-        Verified
-      </Button>
+      <Box display="flex" alignItems="center" gap="spacing-xxs" padding="spacing-xs spacing-md" css={css`margin-left: auto;`}>
+        <SealCheckFilled color="#00A47F" size={16} />
+        <Text color="#00A47F" css={css`
+          white-space: nowrap; font-size: 14px; font-weight: 600; line-height: 16px;`
+        }>
+          {activityType === "follow_push_on_discord" ? "Discord" : "X"} Verified
+        </Text>
+      </Box>
     );
   }
 

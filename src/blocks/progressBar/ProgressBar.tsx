@@ -82,7 +82,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
       {progressIcon && (
         <ProgressMarker position={progressPosition}>
-          {progressPercentage > 0 && <ProgressIcon>{progressIcon}</ProgressIcon>}
+           <ProgressIcon>{progressIcon}</ProgressIcon>
           {progressIconText && <ProgressText>{progressIconText}</ProgressText>}
         </ProgressMarker>
       )}

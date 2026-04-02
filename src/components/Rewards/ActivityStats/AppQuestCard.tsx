@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { ArrowUpRight, Box, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ArrowUpRight, Box, Link, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
+import { LinkTo } from '../../../css/SharedStyling';
 
 // type Quest = {
 //   title: string;
@@ -43,8 +44,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   gradient = 'linear-gradient(241deg, rgba(232, 221, 255, 1) 0%, rgba(207, 181, 255, 1) 100%)',
   bgImage,
   titleGradient = 'linear-gradient(180deg, rgba(0, 0, 0, 1) 8%, rgba(107, 48, 178, 1) 100%)',
-  linkColor = '#6a23d5',
-  blurColor = '#a683e5',
+  linkColor,
   activityStatus,
   isLoading,
   refetchActivities,
@@ -183,6 +183,8 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
     );
   };
 
+  const fullUrl = appUrl?.startsWith("http") ? appUrl : `https://${appUrl}`;
+
   return (
     <Box
       display="flex"
@@ -284,20 +286,32 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 gap="spacing-xxs"
                 alignSelf="stretch"
               >
-                <Text
-                  variant="h4-semibold"
-                  css={css`
-                    background: ${titleGradient};
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    white-space: nowrap;
-                  `}
-                >
-                  {appName}
-                </Text>
+                <LinkTo
+                  to={fullUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  padding="0px"
+                  letterSpacing="0em"
+                  gap="12px"
+                  hoverBackground="transparent"
 
-                <ArrowUpRight size={23} />
+                >
+                  <Text
+                    variant="h4-semibold"
+                    css={css`
+                      background: ${titleGradient};
+                      -webkit-background-clip: text;
+                      background-clip: text;
+                      -webkit-text-fill-color: transparent;
+                      white-space: nowrap;
+                      margin-right: 8px;
+                    `}
+                  >
+                    {appName}
+                  </Text>
+
+                  <ArrowUpRight size={23} color='#000' />
+                </LinkTo>
               </Box>
 
               <Text
@@ -308,15 +322,12 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 `}
               >
                 Complete quests on{' '}
-                <Text
-                  as="span"
-                  variant="bm-bold"
-                  css={css`
-                    color: ${linkColor};
-                  `}
+                <Link
+                  to={fullUrl}
+                  textProps={{ variant: "bm-bold", color: linkColor }}
                 >
                   {appUrl}
-                </Text>
+                </Link>
                 {' '}and claim to level up and earn rewards
               </Text>
             </Box>
