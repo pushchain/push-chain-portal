@@ -1,12 +1,22 @@
 import { useState } from "react";
-import { css } from "styled-components";
+import { css, keyframes } from "styled-components";
+import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { useAuthHeaders } from "../../context/authHeadersContext";
-import { useGetLevelProgress } from "../../queries";
-
-import { Box, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text } from "../../blocks"
-import LevelUpModal from "./LevelUpModal";
+import { useGetLevelProgress, useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
+import useMediaQuery from "../../hooks/useMediaQuery";
+
+import { device } from "../../config/globals";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
+
+import { Box, HoverableSVG, LevelUpIcon, ProgressBar, Refresh, RewardsStarGradient, Skeleton, Text } from "../../blocks"
+import LevelUpModal from "./LevelUpModal";
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
 
 interface UserLevelConfigItem {
   level: number;
@@ -82,6 +92,17 @@ export const LevelUp = () => {
     const { authHeaders } = useAuthHeaders();
     const { data: levelProgress, isLoading } = useGetLevelProgress(authHeaders);
     const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, authHeaders?.walletAddress);
+    const isMobile = useMediaQuery(device.mobileL);
+    const { universalAccount } = usePushWalletContext('wallet1');
+    const caip10WalletAddress = walletToFullCAIP10(
+      universalAccount?.address as string,
+      universalAccount?.chain,
+    );
+
+    const { isFetching, refetch } = useGetSeasonThreeUserByWallet({
+      walletAddress: caip10WalletAddress
+    });
+
 
 
     const xpNeededToLevelUp =
@@ -187,6 +208,42 @@ export const LevelUp = () => {
               progressIcon={<RewardsStarGradient size={35} />}
             />
       </Box>
+
+      {!isMobile && (<Box
+        display="flex"
+        alignItems="center"
+        cursor="pointer"
+        gap="spacing-xxs"
+        // onClick={()=> refetch()}
+        css={css`
+          border-radius: 24px;
+          border: 1px solid rgba(255, 255, 255, 0.10);
+          background: rgba(66, 67, 103, 0.20);
+          padding: 8px 12px;
+        `}
+      >
+        <HoverableSVG
+          defaultBackground="#FBE8FF"
+          hoverBackground="#FBE8FF"
+          padding="spacing-xxxs"
+          borderRadius="radius-sm"
+          icon={
+            <Box
+              css={css`
+                display: flex;
+                ${isFetching && css`animation: ${spin} 0.5s linear infinite;`}
+              `}
+            >
+              <Refresh color="icon-brand-medium" />
+            </Box>
+          }
+        ></HoverableSVG>
+        <Box margin="spacing-none spacing-none spacing-none spacing-xxxs">
+          <Text variant="bs-semibold" color="rgba(255, 255, 255, 0.75)">
+            Update Quest Progress
+          </Text>
+        </Box>
+      </Box>)}
 
 
       <LevelUpModal

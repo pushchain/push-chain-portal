@@ -1,12 +1,14 @@
+import { css } from 'styled-components';
+
+import { useRewardStatus } from '../../context/rewardStatusContext';
+
 import HeroBannerCards from './HeroBanner/HeroBannerCards';
-import ActivityStatsCards from './ActivityStats/ActivityStatsCards';
+import AppQuestSection from './AppQuests/AppQuestSection';
 import BossQuestsSection from './BossQuests/BossQuestsSection';
-import { Box, LockFilled, Text } from '../../blocks';
 import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
-import { css } from 'styled-components';
 import { LevelUp } from './LevelUp';
-import { useRewardStatus } from '../../context/rewardStatusContext';
+import { Box, LockFilled, Text } from '../../blocks';
 
 const RewardsActivities = () => {
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
@@ -70,7 +72,7 @@ const RewardsActivities = () => {
         <DailyRewardsSection />
       </Box>
 
-      <ActivityStatsCards />
+      <AppQuestSection />
 
       <BossQuestsSection />
     </Box>

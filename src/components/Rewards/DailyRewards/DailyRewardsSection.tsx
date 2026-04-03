@@ -76,7 +76,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
             Daily Check-In
           </Text>
           <Text variant="bs-regular" color="text-tertiary">
-            Stack your streak bonus, check-in daily
+            Stack your streak bonus daily
           </Text>
         </Box>
 

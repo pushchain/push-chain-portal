@@ -119,7 +119,7 @@ export const RewardsUpdatedDashboard = () => {
         css={css`
           position: relative;
           z-index: 1;
-          max-width: 900px;
+          max-width: 680px;
         `}
       >
         <Box
@@ -129,10 +129,10 @@ export const RewardsUpdatedDashboard = () => {
           textAlign="center"
         >
           <Text variant="h1-bold" color="#000000">
-            Build, Test, & Earn Rare Rewards
+              Crush quests. Claim XP, Points & Rare Passes.
           </Text>
           <Text variant="h5-regular" color="#000000">
-            Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
+              Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
           </Text>
         </Box>
 
@@ -281,7 +281,7 @@ export const RewardsUpdatedDashboard = () => {
             textAlign="center"
           >
             <Text variant="h1-bold" color="#000000">
-              Build, Test, & Earn Rare Rewards
+               Crush quests. Claim XP, Points & Rare Passes.
             </Text>
             <Text variant="h5-regular" color="#000000">
               Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!

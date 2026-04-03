@@ -181,7 +181,7 @@ export const RenderLoggedInUnverifiedState = () => {
 
         <Box display="flex" flexDirection="column" alignItems="center" gap="spacing-lg" css={css`position: relative; z-index: 1; max-width: 900px;`}>
           <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
-            <Text variant="h1-bold" color="#000000">Build, Test, & Earn Rare Rewards</Text>
+            <Text variant="h1-bold" color="#000000"> Crush quests. Claim XP, Points & Rare Passes.</Text>
             <Text variant="h5-regular" color="#000000">Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!</Text>
           </Box>
         </Box>

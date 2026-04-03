@@ -1,7 +1,7 @@
 import { Box } from '../../../blocks';
-import QuestBannerCard from './QuestBannerCard';
 import SpinToWinCard from './SpinToWinCard';
 import CollectRaresCard from './CollectRaresCard';
+import { RarePassSection } from '../Dashboard/LoggedInVerified/RarePassSection';
 
 const HeroBannerCards = () => {
   return (
@@ -12,9 +12,9 @@ const HeroBannerCards = () => {
       gap="spacing-md"
       width="100%"
     >
-      <QuestBannerCard />
       <SpinToWinCard />
       <CollectRaresCard />
+      <RarePassSection />
     </Box>
   );
 };

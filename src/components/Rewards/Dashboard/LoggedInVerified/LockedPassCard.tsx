@@ -20,14 +20,14 @@ export const LockedPassCard: FC<LockedPassCardProps> = ({ message }) => {
       css={css`
         flex: 1;
         width: 100%;
-        height: 276px;
+        height: 230px;
         background: url(${OpenPassLocked}) center center/cover no-repeat;
         background-position: center;
-        background-size: 80%;
+        background-size: contain;
         box-sizing: border-box;
 
         @media ${device.tablet} {
-            height: 350px;
+            height: 300px;
         }
 
         @media ${device.mobileL} {

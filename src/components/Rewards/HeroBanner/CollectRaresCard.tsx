@@ -10,11 +10,11 @@ const CollectRaresCard = () => {
     <Box
       display="flex"
       flexDirection="column"
-      width={{ initial: '280px', tb: '100%' }}
+      width={{ initial: '320px', tb: '100%' }}
       height={{ initial: '374px', tb: 'auto' }}
       minHeight={{ tb: '300px' }}
       padding="spacing-md"
-      borderRadius="radius-xl"
+      borderRadius="radius-lg"
       border="border-xs solid stroke-tertiary"
       position="relative"
       overflow="hidden"
@@ -54,7 +54,7 @@ const CollectRaresCard = () => {
           z-index: 1;
         `}
       >
-        <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xs" flex="1">
+        <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xs">
           <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xxs">
             <Text
               variant="h3-semibold"

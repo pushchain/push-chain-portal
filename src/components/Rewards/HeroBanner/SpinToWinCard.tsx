@@ -20,11 +20,11 @@ const SpinToWinCard = () => {
       <Box
         display="flex"
         flexDirection="column"
-        width={{ initial: '280px', tb: '100%' }}
+        width={{ initial: '320px', tb: '100%' }}
         height={{ initial: '374px', tb: 'auto' }}
         minHeight={{ tb: '300px' }}
         padding="spacing-md"
-        borderRadius="radius-xl"
+        borderRadius="radius-lg"
         position="relative"
         overflow="hidden"
         css={css`

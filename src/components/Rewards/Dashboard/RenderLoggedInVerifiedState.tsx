@@ -4,10 +4,10 @@ import { css } from 'styled-components';
 import { Box } from '../../../blocks';
 import { StatsCards } from './LoggedInVerified/StatsCards';
 import { ReferralCard } from './LoggedInVerified/ReferralCard';
-import { RarePassSection } from './LoggedInVerified/RarePassSection';
 import { DashboardHeader } from './LoggedInVerified/DashboardHeader';
 import { DashboardFooter } from './LoggedInVerified/DashboardFooter';
 import { device } from '../../../config/globals';
+import QuestBannerCard from '../HeroBanner/QuestBannerCard';
 
 export const RenderLoggedInVerifiedState: FC = () => {
   return (
@@ -42,7 +42,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
           z-index: 1;
         `}
       >
-        <DashboardHeader />
+        {/*<DashboardHeader />*/}
 
         <Box
           display="flex"
@@ -92,7 +92,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
               }
             `}
           >
-            <RarePassSection />
+            <QuestBannerCard />
           </Box>
         </Box>
       </Box>

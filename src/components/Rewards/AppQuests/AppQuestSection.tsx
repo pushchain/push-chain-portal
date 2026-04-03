@@ -1,7 +1,7 @@
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { Alert, Box } from '../../../blocks';
-import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
@@ -11,7 +11,7 @@ import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
 import { useState } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 
-const ActivityStatsCards = () => {
+const AppQuestSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext('wallet1');
 
@@ -130,4 +130,4 @@ const ActivityStatsCards = () => {
   );
 };
 
-export default ActivityStatsCards;
+export default AppQuestSection;
