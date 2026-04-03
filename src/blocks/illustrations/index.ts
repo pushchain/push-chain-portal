@@ -54,12 +54,9 @@ export { default as GreyBonusActivitySubscribers } from "./components/GreyBonusA
 
 export { default as GlowStreaks } from "./components/GlowStreaks";
 
-export { default as LevelBadge } from "./components/LevelBadge";
-
 export { default as LevelUpCart } from "./components/LevelUpCart";
 
 export { default as LevelUpIcon } from "./components/LevelUpIcon";
-
 
 export { default as Linea } from "./components/Linea";
 
@@ -84,6 +81,8 @@ export { default as Metamask } from "./components/Metamask";
 export { default as Multiplier } from "./components/Multiplier";
 
 export { default as MultipleRewardsCoin } from "./components/MultipleRewardsCoin";
+
+export { default as Noobie } from "./components/Noobie";
 
 export { default as NotificationImg } from "./components/NotificationImg";
 

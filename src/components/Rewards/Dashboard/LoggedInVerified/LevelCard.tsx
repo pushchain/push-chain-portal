@@ -1,10 +1,13 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, LevelBadge, Skeleton, Text } from '../../../../blocks';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
-import { usePushWalletContext } from '@pushchain/ui-kit';
 import { device } from '../../../../config/globals';
+
+import { Box, Noobie, Skeleton, Text } from '../../../../blocks';
+
 
 export const LevelCard: FC = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -53,7 +56,7 @@ export const LevelCard: FC = () => {
             }
 
         `}>
-        <LevelBadge />
+        <Noobie />
       </Box>
       <Skeleton isLoading={ isLoading }>
         <Box display="flex" flexDirection="column" alignItems="center" width="100%">

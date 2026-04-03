@@ -8,7 +8,7 @@ import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-
 import useMediaQuery from "../hooks/useMediaQuery";
 import { device } from "../config/globals";
 
-import { Box, LevelBadge, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
+import { Box, Multiplier, Noobie, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
 import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
@@ -81,7 +81,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
                     height: 40px;
                   `}
             >
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><LevelBadge width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Noobie width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Multiplier width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.permaMultiplier }x</Text></Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
         </Box>)}

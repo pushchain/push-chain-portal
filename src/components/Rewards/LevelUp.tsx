@@ -3,7 +3,7 @@ import { css, keyframes } from "styled-components";
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { useAuthHeaders } from "../../context/authHeadersContext";
-import { useGetLevelProgress, useGetSeasonThreeUserByWallet } from "../../queries";
+import { useGetLevelProgress, useGetQuestsProgress, useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
 import useMediaQuery from "../../hooks/useMediaQuery";
 
@@ -12,6 +12,7 @@ import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 import { Box, HoverableSVG, LevelUpIcon, ProgressBar, Refresh, RewardsStarGradient, Skeleton, Text } from "../../blocks"
 import LevelUpModal from "./LevelUpModal";
+import { useRewardStatus } from "../../context/rewardStatusContext";
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -99,9 +100,36 @@ export const LevelUp = () => {
       universalAccount?.chain,
     );
 
-    const { isFetching, refetch } = useGetSeasonThreeUserByWallet({
+    const { isLocked, isLockedStatusLoading } = useRewardStatus();
+
+
+    const rewardsLocked = (isLocked && !isLockedStatusLoading);
+
+    const { data: userDetails } = useGetSeasonThreeUserByWallet({
       walletAddress: caip10WalletAddress
     });
+
+    const { isFetching: isFetchingLastOne, refetch: refetchLastOne } = useGetQuestsProgress({
+      appId: "lastone",
+      userId: userDetails?.userId
+    });
+
+    const { isFetching: isFetchingRamenSwap, refetch: refetchRamenSwap } = useGetQuestsProgress({
+      appId: "ramen-swap",
+      userId: userDetails?.userId
+    });
+
+    const { isFetching: isFetchingBossQuests, refetch: refetchBossQuests } = useGetQuestsProgress({
+      appId: "boss-quests",
+      userId: userDetails?.userId,
+    });
+
+  const isLoadingProgress = isFetchingLastOne || isFetchingRamenSwap || isFetchingBossQuests;
+  const refetchProgress = () => {
+    refetchLastOne();
+    refetchRamenSwap();
+    refetchBossQuests();
+  }
 
 
 
@@ -196,7 +224,7 @@ export const LevelUp = () => {
             width="100%"
             css={css`
               box-sizing: border-box;
-              padding-bottom: 24px;
+              ${rewardsLocked ? 'padding-bottom: 24px;' : ''}
             `}
           >
 
@@ -209,12 +237,12 @@ export const LevelUp = () => {
             />
       </Box>
 
-      {!isMobile && (<Box
+      {!isMobile && !rewardsLocked && (<Box
         display="flex"
         alignItems="center"
         cursor="pointer"
         gap="spacing-xxs"
-        // onClick={()=> refetch()}
+        onClick={()=> refetchProgress()}
         css={css`
           border-radius: 24px;
           border: 1px solid rgba(255, 255, 255, 0.10);
@@ -231,7 +259,7 @@ export const LevelUp = () => {
             <Box
               css={css`
                 display: flex;
-                ${isFetching && css`animation: ${spin} 0.5s linear infinite;`}
+                ${isLoadingProgress && css`animation: ${spin} 0.5s linear infinite;`}
               `}
             >
               <Refresh color="icon-brand-medium" />

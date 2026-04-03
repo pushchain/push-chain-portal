@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { IllustrationWrapper } from '../IllustrationWrapper';
 import { IllustrationProps } from '../Illustrations.types';
 
-const LevelBadge: FC<IllustrationProps> = (allProps) => {
+const Noobie: FC<IllustrationProps> = (allProps) => {
   const { svgProps: props, ...restProps } = allProps;
   return (
     <IllustrationWrapper
-      componentName='LevelBadge'
+      componentName='Noobie'
       illustration={
         <svg xmlns="http://www.w3.org/2000/svg" width={restProps.width ?? "94"} height={restProps.height ?? "86"} viewBox="0 0 94 86" fill="none" {...props}>
           <path d="M91.8501 35.3613C94.4082 39.7921 94.4082 45.2512 91.8501 49.682L75.5683 77.8829C73.0101 82.3138 68.2824 85.0433 63.1661 85.0433H30.6026C25.4862 85.0433 20.7586 82.3138 18.2004 77.8829L1.91862 49.682C-0.63954 45.2512 -0.63954 39.7921 1.91862 35.3613L18.2004 7.16038C20.7586 2.72952 25.4862 0 30.6026 0H63.1661C68.2824 0 73.0101 2.72952 75.5683 7.16038L91.8501 35.3613Z" fill="#AEB4C9"/>
@@ -25,4 +25,4 @@ const LevelBadge: FC<IllustrationProps> = (allProps) => {
   );
 };
 
-export default LevelBadge;
+export default Noobie;
