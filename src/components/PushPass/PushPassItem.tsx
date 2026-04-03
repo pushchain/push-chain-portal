@@ -104,7 +104,6 @@ export const PushPassItem = () => {
         },
         onError: (err) => {
           const message = err?.response?.data?.error?.message|| "Failed to open pass. Please try again.";
-          console.log(message, 'message', err?.response)
           setGenerateError(message);
         },
       }
