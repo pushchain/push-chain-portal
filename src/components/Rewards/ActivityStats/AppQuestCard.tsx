@@ -18,7 +18,7 @@ type AppQuestCardProps = {
   appName: string;
   appUrl: string;
   description: string;
-  resetTime: string;
+  resetTime: any;
   quests: any;
   icon?: string;
   gradient?: string;
@@ -55,6 +55,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   const renderQuestItem = (quest: any, index: number) => {
     const isCompleted = completedMap[quest.id] ?? false;
     // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
+    // console.log(completedMap, 'completed', activityStatus, quest)
 
     return (
       <Box
@@ -141,7 +142,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                         activityTypeId={quest.id}
                         userId={userId as string}
                         refetchActivity={() => refetchActivities?.()}
-                        usersSingleActivity={activityStatus}
+                        usersSingleActivity={activityStatus?.[quest?.id]}
                         setErrorMessage={setErrorMessage}
                         isLoadingActivity={isLoading || false}
                         label="Claim"
@@ -235,6 +236,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             `}
           />
 
+          {resetTime &&
           <Box
             display="inline-flex"
             alignItems="center"
@@ -256,9 +258,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
 
               `}
             >
-              {resetTime}
+              New Quests in {resetTime?.days}D {resetTime?.hours}H
             </Text>
-          </Box>
+          </Box>}
 
           <Box
             display="flex"

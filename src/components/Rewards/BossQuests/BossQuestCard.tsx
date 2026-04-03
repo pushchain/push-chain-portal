@@ -10,7 +10,7 @@ type BossQuestCardProps = {
   questId?: string;
   title: string;
   description: string;
-  resetTime: string;
+  resetTime: any;
   progress?: number;
   maxProgress?: number;
   unlocks: {
@@ -112,7 +112,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
               text-align: center;
             `}
           >
-            {resetTime}
+            Resets in {resetTime?.days}D {resetTime?.days}H
           </Text>
         </Box>}
 
@@ -289,7 +289,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
                   activityTypeId={questId}
                   userId={userId}
                   refetchActivity={() => refetchActivities?.()}
-                  usersSingleActivity={activityStatus}
+                  usersSingleActivity={activityStatus?.[questId]}
                   setErrorMessage={setErrorMessage}
                   isLoadingActivity={isLoadingActivity || false}
                   label="Claim"

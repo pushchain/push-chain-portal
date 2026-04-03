@@ -3,7 +3,7 @@ import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import BossQuestCard from './BossQuestCard';
-import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 
@@ -11,6 +11,7 @@ import { Alert, Box, Quests, Text } from '../../../blocks';
 import contentBossQuestImg from '../../../../static/assets/website/rewards/ContentBossQuest.webp';
 import rarePassBossQuestImg from '../../../../static/assets/website/rewards/RarePassBossQuest.webp';
 import fiveBossQuestsImg from '../../../../static/assets/website/rewards/FiveBossQuests.webp';
+import { useCountdown } from '../hooks/useCountdown';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,12 +36,12 @@ const BossQuestsSection = () => {
 
   const bossQuestIds = bossQuests?.data?.quests?.map((q) => q.id) || [];
 
-  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
       userId: userDetails?.userId as string,
-      activities: bossQuestIds,
+      activityTypes: bossQuestIds,
     },
-    !!userDetails?.userId && bossQuestIds.length > 0
+    { enabled: !!userDetails?.userId && bossQuestIds.length > 0 }
   );
 
   const { data: bossQuestsProgress } = useGetQuestsProgress({
@@ -52,6 +53,9 @@ const BossQuestsSection = () => {
   bossQuestsProgress?.data?.quests?.forEach((q) => {
     bossCompletedMap[q.questId] = q.completed;
   });
+
+  const targetDate = "2026-04-17T13:59:59";
+  const { timeLeft } = useCountdown(targetDate);
 
   return (
     <Box width={"100%"}>
@@ -160,7 +164,7 @@ const BossQuestsSection = () => {
           <BossQuestCard
             title="Create content and tag @PushChain on X"
             description="Post a meme, thread or video about Push Chain"
-            resetTime="Resets in 6D 23H"
+            resetTime={timeLeft}
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
@@ -175,7 +179,7 @@ const BossQuestsSection = () => {
                 questId={item.id}
                 title={item?.title}
                 description={item.description}
-                resetTime={!isRarePass && "Resets in 29D 23H"}
+                resetTime={!isRarePass && timeLeft}
                 progress={0}
                 maxProgress={25}
                 unlocks={{ rarePass: isRarePass, xp: (item.baseXP > 0 && item?.baseXP) }}

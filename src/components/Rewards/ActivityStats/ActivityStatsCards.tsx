@@ -1,7 +1,7 @@
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { Alert, Box } from '../../../blocks';
-import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
@@ -9,6 +9,7 @@ import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
 import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
 import { useState } from 'react';
+import { useCountdown } from '../hooks/useCountdown';
 
 const ActivityStatsCards = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,13 +50,17 @@ const ActivityStatsCards = () => {
     ...ramenSwapQuestIds,
   ];
 
-  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
       userId: userDetails?.userId as string,
-      activities: allActivityIds,
+      activityTypes: allActivityIds,
     },
-    !!userDetails?.userId
+    { enabled: !!userDetails?.userId }
   );
+
+  const targetDate = "2026-04-17T13:59:59";
+  const { timeLeft } = useCountdown(targetDate);
 
   const lastOneCompletedMap: Record<string, boolean> = {};
   lastOneQuestsProgress?.data?.quests?.forEach((q) => {
@@ -89,7 +94,7 @@ const ActivityStatsCards = () => {
               appUrl="lastone.fun"
               bgImage={lastOneBg}
               description="Complete quests on lastone.fun and claim to level up and earn rewards"
-              resetTime="New Quests in 6D 23H"
+              resetTime={timeLeft}
               quests={lastOneQuests?.data.quests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
@@ -107,7 +112,7 @@ const ActivityStatsCards = () => {
               appUrl="ramenfi.xyz"
               bgImage={ramenBg}
               description="Complete quests on ramenfi.xyz and claim to level up and earn rewards"
-              resetTime="New Quests in 6D 23H"
+              resetTime={timeLeft}
               quests={ramenSwapQuests?.data.quests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}

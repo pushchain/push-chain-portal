@@ -104,7 +104,7 @@ export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProp
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              max-width: 24ch;
+              max-width: 20ch;
             `}
           >
             {squadName}
