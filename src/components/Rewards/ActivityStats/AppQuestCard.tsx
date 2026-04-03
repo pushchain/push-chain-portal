@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { ArrowUpRight, Box, Link, ProgressBar, RewardsStarGradient, Text, XP } from '../../../blocks';
+import { ArrowUpRight, Box, Link, ProgressBar, QuestBox, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { LinkTo } from '../../../css/SharedStyling';
@@ -54,6 +54,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
 }) => {
   const renderQuestItem = (quest: any, index: number) => {
     const isCompleted = completedMap[quest.id] ?? false;
+    const isClaimCompleted = activityStatus?.[quest?.id]?.status === 'COMPLETED';
     // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
     // console.log(completedMap, 'completed', activityStatus, quest)
 
@@ -120,7 +121,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
               <Box
                 display="inline-flex"
                 alignItems="center"
-                gap="spacing-lg"
+                gap="spacing-xxl"
                 width={{tb: '100%'}}
                 justifyContent={{ tb: 'space-between' }}
 
@@ -167,12 +168,25 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                     alignItems="center"
                     gap="spacing-xxs"
                   >
-                    <Box width="36px" height="14px">
-                      <XP />
-                    </Box>
-                    <Text variant="bm-bold" color="text-primary">
+                    {isClaimCompleted ?
+                      (<Box
+                        width="36px"
+                        height="14px"
+                        display="flex"
+                        alignItems="center"
+                       >
+                        <Tick />
+                      </Box>)
+                      : (<Box
+                      width="36px"
+                      height="14px"
+                      display="flex"
+                      alignItems="center">
+                      <QuestBox />
+                    </Box>)}
+                    {/*<Text variant="bm-bold" color="text-primary">
                       {quest.baseXP}
-                    </Text>
+                    </Text>*/}
                   </Box>
                 </Box>
               </Box>

@@ -49,7 +49,7 @@ export const ReferralCard: FC = () => {
         </Box>
 
         <NavLink
-          to='/rewar eds/squads'
+          to='/rewards/squads'
           target='_self'
           style={{ textDecoration: 'none ', color: '#C742DD'}}
          >

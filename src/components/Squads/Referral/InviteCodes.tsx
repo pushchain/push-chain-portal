@@ -212,7 +212,6 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
       <Box
         display="flex"
         flexDirection="column"
-        // gap="spacing-xs"
         css={css`
             flex: 1;
             width: 100%;

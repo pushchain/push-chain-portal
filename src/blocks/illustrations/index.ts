@@ -77,6 +77,8 @@ export { default as PCTokens } from './components/PCTokens';
 
 export { default as Quests } from "./components/Quests";
 
+export { default as QuestBox } from './components/QuestBox';
+
 export { default as Metamask } from "./components/Metamask";
 
 export { default as Multiplier } from "./components/Multiplier";
