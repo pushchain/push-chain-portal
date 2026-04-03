@@ -138,7 +138,13 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 ) : (
                   <Box display="flex" alignItems="center" justifyContent="center" width="112px">
                     <Box display="inline-flex" alignItems="flex-start">
-                      <ActivityButton
+                      {isClaimCompleted ?
+                        (<ProgressBar
+                          progress={100}
+                          max={100}
+                          size="large"
+                          progressIcon={<RewardsStarGradient size={35} />}
+                        />) : (<ActivityButton
                         activityType={quest.id as ActvityType}
                         activityTypeId={quest.id}
                         userId={userId as string}
@@ -149,7 +155,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                         label="Claim"
                         buttonVariant='primary'
                         buttonSize='small'
-                      />
+                      />)}
                     </Box>
                   </Box>
                 )}
@@ -168,25 +174,14 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                     alignItems="center"
                     gap="spacing-xxs"
                   >
-                    {isClaimCompleted ?
-                      (<Box
-                        width="36px"
-                        height="14px"
-                        display="flex"
-                        alignItems="center"
-                       >
-                        <Tick />
-                      </Box>)
-                      : (<Box
+                    <Box
                       width="36px"
                       height="14px"
                       display="flex"
-                      alignItems="center">
-                      <QuestBox />
-                    </Box>)}
-                    {/*<Text variant="bm-bold" color="text-primary">
-                      {quest.baseXP}
-                    </Text>*/}
+                      alignItems="center"
+                    >
+                      {isClaimCompleted ? <Tick color='#42DDB1' size={20} /> : <QuestBox />}
+                    </Box>
                   </Box>
                 </Box>
               </Box>
