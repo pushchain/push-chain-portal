@@ -39,41 +39,37 @@ const PushPass = () => {
     userId: userDetails?.userId ?? '',
   });
 
+
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
   const characters = userCharacterInfo?.characters || [];
-  const unmintedCharacters = characters.filter((c) => c.status === 'UNMINTED');
+  const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
+  const hasUnminted = unmintedCharacters.length > 0;
 
-  // Use history to get lock messages (level info) for dormant passes
-  const dormantHistory = (rarePassHistory?.history ?? [])
-    .filter((item) => item.activityTypeId === 'rare_pass_dormant_grant')
-    .slice(0, rareDormantCount);
+  const isEligible = isUserEligible?.eligible ?? false;
 
   const passes = [
-    // Cards for unminted characters (already generated, waiting to be minted)
-    ...unmintedCharacters.map((char, index) => ({
+    // Active rare passes — all openable
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
       id: index + 1,
       isLocked: false,
-      lockMessage: 'View Pass',
-      character: char,
+      lockMessage: 'Open Pass',
     })),
 
-    // Cards for active passes the user can claim (not yet generated)
-    ...Array.from({ length: rareActiveCount }, (_, index) => ({
-      id: unmintedCharacters.length + index + 1,
+    // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
+    ...unmintedCharacters.map((char, index) => ({
+      id: rareActiveCount + index + 1,
       isLocked: false,
-      lockMessage: 'Open Now',
+      lockMessage: 'View Pass',
+      character: char
     })),
 
-    // Cards for dormant (locked) passes
-    ...dormantHistory.map((item, index) => {
-      const level = (item.details as { level?: number })?.level;
-      return {
-        id: unmintedCharacters.length + rareActiveCount + index + 1,
-        isLocked: true,
-        lockMessage: `Unlocks at Lv. ${level}`,
-      };
-    }),
+    // Dormant passes — locked until Level 25
+    ...Array.from({ length: rareDormantCount }, (_, index) => ({
+      id: rareActiveCount + unmintedCharacters.length + index + 1,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 25',
+    })),
   ];
 
 
@@ -164,7 +160,6 @@ const PushPass = () => {
             `}
           >
             <PushPassTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
             {activeTab === 'unopened' && <UnopenedPassesContent passes={passes} />}
             {activeTab === 'collection' && <MyCollectionContent />}
           </Box>

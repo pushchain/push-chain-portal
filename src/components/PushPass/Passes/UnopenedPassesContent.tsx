@@ -105,7 +105,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
         </Text>
       </Box>}
 
-      {passes.length &&
+      {passes.length > 0 &&
        <Box
         gap="spacing-md"
         width="100%"

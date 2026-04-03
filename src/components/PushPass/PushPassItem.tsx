@@ -14,7 +14,7 @@ import {
 import { CharacterInfoResponse } from "../../queries/types/character";
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
-import { Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
+import { Alert, Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
 import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
@@ -42,6 +42,7 @@ export const PushPassItem = () => {
   const [generatedCharacterId, setGeneratedCharacterId] = useState<string>();
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
+  const [generateError, setGenerateError] = useState<string>("");
   const characterId = generatedCharacterId || (routeId === "open" ? undefined : routeId);
   const { universalAccount } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient('wallet1');
@@ -51,7 +52,7 @@ export const PushPassItem = () => {
     universalAccount?.chain,
   );
 
-  const { data: characterInfo, isLoading, refetch } = useGetCharacterInfo({
+  const { data: characterInfo, isLoading, isRefetching, refetch } = useGetCharacterInfo({
     walletAddress: caip10WalletAddress,
   });
 
@@ -92,6 +93,7 @@ export const PushPassItem = () => {
 
   const handleOpenPass = () => {
     if (!caip10WalletAddress) return;
+    setGenerateError("");
     generate(
       { userWallet: caip10WalletAddress },
       {
@@ -100,6 +102,11 @@ export const PushPassItem = () => {
             setGeneratedCharacterId(data.characterId);
           }
           refetch();
+        },
+        onError: (err) => {
+          const message = err?.response?.data?.error?.message|| "Failed to open pass. Please try again.";
+          console.log(message, 'message', err?.response)
+          setGenerateError(message);
         },
       }
     );
@@ -239,7 +246,6 @@ export const PushPassItem = () => {
         </Box>
       </Button>
 
-      {/* Loading character info */}
       {passState === "loading" && (
         <Box
           display="flex"
@@ -286,6 +292,13 @@ export const PushPassItem = () => {
             </Text>
           </Box>
 
+          {generateError &&
+            <Box width="auto" css={css`
+            margin: 12px auto 0 auto;
+            `}>
+            <Alert variant="error" description={generateError} />
+          </Box>}
+
           <Box
             display="flex"
             flexDirection="column"
@@ -294,7 +307,7 @@ export const PushPassItem = () => {
             width="100%"
             gap="spacing-xl"
             css={css`
-              margin: 40px 0px 120px 0px;
+              margin: 40px 0px;
             `}
           >
             <Image src={OpenPassImage} alt="Open Pass" width={227} />
@@ -303,20 +316,10 @@ export const PushPassItem = () => {
               variant="primary"
               onClick={handleOpenPass}
               disabled={isGenerating}
+              loading={isGenerating}
             >
-              {isGenerating ? <Spinner size="small" /> : "Open Pass"}
+              Open Pass
             </Button>
-
-            {isGenerateError && (
-              <Text
-                variant="bs-regular"
-                css={css`
-                  color: #ff6b6b;
-                `}
-              >
-                Failed to open pass. Please try again.
-              </Text>
-            )}
           </Box>
         </>
       )}
@@ -353,6 +356,14 @@ export const PushPassItem = () => {
                 : "HODL onto your passes until the burn event and be one of the lucky few to get Eternal Rewards*"}
             </Text>
           </Box>
+
+          {(isReshuffleError || isMintError || payError) && (
+            <Box width="auto" css={css`
+          margin: 12px auto 0 auto;
+          `}>
+              <Alert variant="error" description={payError || (isReshuffleError ? "Failed to reshuffle." : "Failed to mint.") + " Please try again."} />
+            </Box>
+          )}
 
           <Box
             display="flex"
@@ -401,11 +412,9 @@ export const PushPassItem = () => {
                     variant="outline"
                     onClick={handleMint}
                     disabled={isActionLoading}
-                    css={css`
-                      min-width: 140px;
-                    `}
+                    loading={isMinting}
                   >
-                    {isMinting ? <Spinner size="small" /> : "Confirm & Claim Pass"}
+                   Confirm & Claim Pass
                   </Button>
 
                   {canReshuffle && (
@@ -433,23 +442,12 @@ export const PushPassItem = () => {
                 <Text
                   variant="bs-regular"
                   css={css`
-                    color: rgba(255, 255, 255, 0.5);
+                    color: white;
                   `}
                 >
                   {reshuffleCount}/{maxReshuffles} reshuffles used
                 </Text>
               </Box>
-            )}
-
-            {(isReshuffleError || isMintError || payError) && (
-              <Text
-                variant="bs-regular"
-                css={css`
-                  color: #ff6b6b;
-                `}
-              >
-                {payError || (isReshuffleError ? "Failed to reshuffle." : "Failed to mint.") + " Please try again."}
-              </Text>
             )}
           </Box>
         </>

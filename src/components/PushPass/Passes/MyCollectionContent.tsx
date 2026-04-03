@@ -19,10 +19,11 @@ const MyCollectionContent = () => {
     walletAddress: caip10WalletAddress,
   });
 
-  const characters = characterInfo?.characters || [];
-  const hasCharacters = characters.length > 0;
 
-  console.log(characters, 'ew ew')
+
+  const characters = characterInfo?.characters || [];
+  const mintedCharacters = characters?.filter((c) => c.status === 'MINTED');
+  const hasCharacters = mintedCharacters?.length > 0;
 
   return (
     <Box
@@ -145,7 +146,7 @@ const MyCollectionContent = () => {
             }
           `}
         >
-          {characters.map((character) => (
+          {mintedCharacters?.map((character) => (
             <Box
               key={character.characterId}
             >
@@ -169,16 +170,6 @@ const MyCollectionContent = () => {
                     characterId={character.characterId}
                   />
                 </Box>
-                {/*<Text
-                  variant="bs-semibold"
-                  css={css`
-                    color: ${character.status === 'MINTED'
-                      ? 'rgba(201, 104, 231, 1)'
-                      : 'rgba(255, 255, 255, 0.75)'};
-                  `}
-                >
-                  {character.status === 'MINTED' ? 'Minted' : 'Unminted'}
-                </Text>*/}
               </Box>
             </Box>
           ))}

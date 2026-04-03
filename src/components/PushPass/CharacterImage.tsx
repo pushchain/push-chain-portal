@@ -52,7 +52,7 @@ const getImagePath = (
   value: number
 ): string => {
   const paddedValue = value.toString().padStart(2, '0');
-  return `/Otter Pass/${type}/${paddedValue}-${type}.png`;
+  return `/Otter-Pass/${type}/${paddedValue}-${type}.png`;
 };
 
 export const CharacterImage = ({ characterId, width = 248, height = 318 }: CharacterImageProps) => {
@@ -76,7 +76,7 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'rgba(255, 255, 255, 0.5)',
+          color: 'rgba(255, 255, 255, 0.1)',
           fontSize: '14px',
         }}
       >

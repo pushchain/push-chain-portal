@@ -41,11 +41,12 @@ const RarePassCard: FC<RarePassCardProps> = ({
         position: relative;
         flex: 1;
         background: ${isLocked
-                  ? `url(${OpenPassLockedImage}) center/cover`
-                  : `url(${OpenPassImage}) center/cover`
+                    ? `url(${OpenPassLockedImage}) center/cover`
+                    : `url(${OpenPassImage}) center/cover`
                 };
       `}
     >
+
       <Box
         height="379px"
         gap="spacing-xxs"
