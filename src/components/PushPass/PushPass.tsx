@@ -23,21 +23,23 @@ const PushPass = () => {
     universalAccount?.chain,
   );
 
-  const { data: userCharacterInfo, isLoading } = useGetCharacterInfo({
+  const { data: userCharacterInfo, isLoading: isLoadingCharacters } = useGetCharacterInfo({
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userDetails, isLoading: isLoadingUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: isUserEligible } = useGetCharacterEligible({
+  const { data: isUserEligible, isLoading: isLoadingEligible } = useGetCharacterEligible({
     userWallet: caip10WalletAddress
   });
 
-  const { data: rarePassHistory } = useGetRarePassHistory({
+  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
     userId: userDetails?.userId ?? '',
   });
+
+  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingEligible || isLoadingHistory;
 
 
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
@@ -160,7 +162,7 @@ const PushPass = () => {
             `}
           >
             <PushPassTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            {activeTab === 'unopened' && <UnopenedPassesContent passes={passes} />}
+            {activeTab === 'unopened' && <UnopenedPassesContent passes={passes} isLoading={isLoading} />}
             {activeTab === 'collection' && <MyCollectionContent />}
           </Box>
         </Box>

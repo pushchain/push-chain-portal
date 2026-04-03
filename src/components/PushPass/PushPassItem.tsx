@@ -42,7 +42,9 @@ export const PushPassItem = () => {
   const [generatedCharacterId, setGeneratedCharacterId] = useState<string>();
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
-  const [generateError, setGenerateError] = useState<string>("");
+  const [generateError, setGenerateError] = useState("");
+  const [reshuffleError, setReshuffleError] = useState("");
+  const [mintError, setMintError] = useState("");
   const characterId = generatedCharacterId || (routeId === "open" ? undefined : routeId);
   const { universalAccount } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient('wallet1');
@@ -63,19 +65,16 @@ export const PushPassItem = () => {
   const {
     mutate: generate,
     isPending: isGenerating,
-    isError: isGenerateError,
   } = useGenerateCharacter();
 
   const {
     mutate: reshuffle,
     isPending: isReshuffling,
-    isError: isReshuffleError,
   } = useReshuffleCharacter();
 
   const {
     mutate: mint,
     isPending: isMinting,
-    isError: isMintError,
   } = useMintCharacter();
 
   const passState = getPassState(isLoading, characterId, characterInfo);
@@ -115,6 +114,7 @@ export const PushPassItem = () => {
   const handleReshuffle = async () => {
     if (!caip10WalletAddress || !characterId || !canReshuffle) return;
     setPayError("");
+    setReshuffleError("");
 
     if (nextFeeType === 'tweet') {
       const tweetText = encodeURIComponent("I just rerolled my Rare Pass on @pushchain! 🎲✨");
@@ -133,6 +133,10 @@ export const PushPassItem = () => {
             }
             refetch();
             refetchFee();
+          },
+          onError: (err: any) => {
+            const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
+            setReshuffleError(message);
           },
         }
       );
@@ -167,6 +171,10 @@ export const PushPassItem = () => {
               refetch();
               refetchFee();
             },
+            onError: (err: any) => {
+              const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
+              setReshuffleError(message);
+            },
             onSettled: () => {
               setIsPaying(false);
             },
@@ -182,6 +190,7 @@ export const PushPassItem = () => {
 
   const handleMint = () => {
     if (!caip10WalletAddress) return;
+    setMintError("");
     mint(
       {
         userWallet: caip10WalletAddress,
@@ -190,6 +199,10 @@ export const PushPassItem = () => {
       {
         onSuccess: () => {
           refetch();
+        },
+        onError: (err: any) => {
+          const message = err?.response?.data?.error?.message || "Failed to mint. Please try again.";
+          setMintError(message);
         },
       }
     );
@@ -357,11 +370,9 @@ export const PushPassItem = () => {
             </Text>
           </Box>
 
-          {(isReshuffleError || isMintError || payError) && (
-            <Box width="auto" css={css`
-          margin: 12px auto 0 auto;
-          `}>
-              <Alert variant="error" description={payError || (isReshuffleError ? "Failed to reshuffle." : "Failed to mint.") + " Please try again."} />
+          {(reshuffleError || mintError || payError) && (
+            <Box width="auto" css={css`margin: 12px auto 0 auto;`}>
+              <Alert variant="error" description={payError || reshuffleError || mintError} />
             </Box>
           )}
 

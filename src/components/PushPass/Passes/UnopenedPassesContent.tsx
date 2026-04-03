@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, RarePassIcon, Text } from '../../../blocks';
+import { Box, RarePassIcon, Spinner, Text } from '../../../blocks';
 import RarePassCard from './RarePassCard';
 import { device } from '../../../config/globals';
 
@@ -17,9 +17,10 @@ type Pass = {
 
 type UnopenedPassesContentProps = {
   passes: Pass[];
+  isLoading?: boolean;
 };
 
-const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
+const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoading }) => {
   return (
     <Box
       width="100%"
@@ -83,7 +84,21 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
       </Box>
       </Box>
 
-      {!passes.length &&
+      {isLoading && (
+        <Box
+          width="100%"
+          css={css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 125px;
+          `}
+        >
+          <Spinner size="medium" />
+        </Box>
+      )}
+
+      {!isLoading && !passes.length &&
       <Box
         width="100%"
         css={css`
@@ -105,7 +120,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes }) => {
         </Text>
       </Box>}
 
-      {passes.length > 0 &&
+      {!isLoading && passes.length > 0 &&
        <Box
         gap="spacing-md"
         width="100%"
