@@ -51,9 +51,10 @@ const getImagePath = (
   type: 'Accessory' | 'Body' | 'Headgear' | 'Head',
   value: number
 ): string => {
-  const base = import.meta.env.BASE_URL || '/';
+  const rawBase = import.meta.env.BASE_URL || '/';
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
   const paddedValue = value.toString().padStart(2, '0');
-  return `${base}/Otter-Pass/${type}/${paddedValue}-${type}.png`;
+  return `${base}Otter-Pass/${type}/${paddedValue}-${type}.png`;
 };
 
 export const CharacterImage = ({ characterId, width = 248, height = 318 }: CharacterImageProps) => {
