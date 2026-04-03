@@ -137,7 +137,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                   </Box>
                 ) : (
                   <Box display="flex" alignItems="center" justifyContent="center" width="112px">
-                    <Box display="inline-flex" alignItems="flex-start">
+                    <Box display="inline-flex" width="112px" alignItems="flex-start">
                       {isClaimCompleted ?
                         (<ProgressBar
                           progress={100}

@@ -8,7 +8,6 @@ const StyledProgressBarContainer = styled.div<{
   size: "small" | "large";
   progressIcon: ReactNode;
 }>`
-  // background-color: var(--components-progress-bar-background-default);
   width: 100%;
   height: ${({ size }) => (size == "large" ? "8px" : "4px")};
   border-radius: var(--radius-xxs, 8px);
@@ -82,7 +81,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
       {progressIcon && (
         <ProgressMarker position={progressPosition}>
-           <ProgressIcon>{progressIcon}</ProgressIcon>
+          {progress !== 100 &&  <ProgressIcon>{progressIcon}</ProgressIcon>}
           {progressIconText && <ProgressText>{progressIconText}</ProgressText>}
         </ProgressMarker>
       )}
