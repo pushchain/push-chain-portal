@@ -62,11 +62,13 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
 
   useEffect(() => {
     const parsed = parseCharacterId(characterId);
+    console.log('[CharacterImage] characterId:', characterId, 'parsed:', parsed, 'BASE_URL:', import.meta.env.BASE_URL);
     setTraits(parsed);
     setImageError(false);
   }, [characterId]);
 
   if (imageError || !traits) {
+    console.log('[CharacterImage] Showing fallback — imageError:', imageError, 'traits:', traits, 'characterId:', characterId);
     return (
       <div
         style={{
@@ -113,28 +115,28 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
         src={bodyPath}
         alt={`Body ${traits.body}`}
         style={{ ...imgStyle, zIndex: 1 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Head */}
       <img
         src={headPath}
         alt={`Head ${traits.head}`}
         style={{ ...imgStyle, zIndex: 2 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Accessory */}
       <img
         src={accessoryPath}
         alt={`Accessory ${traits.accessory}`}
         style={{ ...imgStyle, zIndex: 3 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Headgear */}
       <img
         src={headgearPath}
         alt={`Headgear ${traits.headgear}`}
         style={{ ...imgStyle, zIndex: 4 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
 
       {/* Reflection effect */}
