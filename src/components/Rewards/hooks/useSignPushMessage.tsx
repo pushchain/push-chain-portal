@@ -17,8 +17,7 @@ export const getSiweDomainAndUri = () => {
   if (isLocalhost) {
     return { domain: "wallet.push.org", uri: "https://wallet.push.org" };
   }
-  // return { domain: host, uri: window.location.origin };
-  return { domain: "wallet.push.org", uri: "https://wallet.push.org" };
+  return { domain: host, uri: window.location.origin };
 
 };
 
