@@ -6,7 +6,8 @@ import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { device } from '../../../../config/globals';
 
-import { Box, Noobie, Skeleton, Text } from '../../../../blocks';
+import { Box, Skeleton, Text } from '../../../../blocks';
+import { getLevelBadge } from '../../../../helpers/getLevelBadge';
 
 
 export const LevelCard: FC = () => {
@@ -19,6 +20,8 @@ export const LevelCard: FC = () => {
   const { data: userDetails, isLoading } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
+
+  const { name: badgeName, Icon: BadgeIcon } = getLevelBadge(userDetails?.level);
 
   return (
     <Box
@@ -56,7 +59,7 @@ export const LevelCard: FC = () => {
             }
 
         `}>
-        <Noobie />
+        <BadgeIcon />
       </Box>
       <Skeleton isLoading={ isLoading }>
         <Box display="flex" flexDirection="column" alignItems="center" width="100%">
@@ -64,7 +67,7 @@ export const LevelCard: FC = () => {
             variant="h5-semibold"
             color="text-tertiary"
             textAlign="center">
-            Noobie
+            {badgeName}
           </Text>
           <Text
             variant="h1-bold"

@@ -8,10 +8,11 @@ import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-
 import useMediaQuery from "../hooks/useMediaQuery";
 import { device } from "../config/globals";
 
-import { Box, Multiplier, Noobie, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
+import { Box, Multiplier, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
 import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
+import { getLevelBadge } from "../helpers/getLevelBadge";
 
 
 interface HeaderProps {
@@ -41,6 +42,9 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
 
   const isLoadingUserData = isLoadingSeasonThree;
   const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails;
+
+  const { Icon: BadgeIcon } = getLevelBadge(userSeasonThreeDetails?.level);
+
 
   return (
     <Box
@@ -81,9 +85,9 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
                     height: 40px;
                   `}
             >
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Noobie width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><BadgeIcon width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Multiplier width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.permaMultiplier }x</Text></Box>
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={30} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
         </Box>)}
 
         {!isTablet && (<PushUniversalAccountButton uid='wallet1' />)}
