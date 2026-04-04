@@ -44,7 +44,7 @@ const QuestItem: FC<QuestItemProps> = ({
   });
 
   const handleClaim = () => {
-    if (!userId) return;
+    if (!userId || verifyingRewards) return;
     handleRewardsVerification(userId);
   };
 
@@ -456,7 +456,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
           >
             {quests?.map((quest: any, index: number) => (
               <QuestItem
-                key={index}
+                key={quest.id}
                 quest={quest}
                 index={index}
                 isClaimCompleted={activityStatus?.[quest?.id]?.status === 'COMPLETED'}
