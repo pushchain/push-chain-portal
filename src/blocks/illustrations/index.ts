@@ -36,6 +36,8 @@ export { default as Discord } from "./components/Discord";
 
 export { default as DiscordProfile } from "./components/DiscordProfile";
 
+export { default as DiscordWhite } from "./components/DiscordWhite";
+
 export { default as EarnOnPush } from "./components/EarnOnPush";
 
 export { default as EmailProfile } from "./components/EmailProfile";

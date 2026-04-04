@@ -16,6 +16,9 @@ import {
   Cross,
   SquadsIcon,
   Cult,
+  Twitter,
+  Discord,
+  DiscordWhite,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
@@ -325,39 +328,19 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
             </Box>
           ))}
 
-          {/*<Box
+
+          <Box
             display="flex"
             alignItems="center"
-            justifyContent="space-between"
-            gap="spacing-xxs"
-            padding="spacing-xxs spacing-sm"
-            borderRadius="radius-xs"
-            css={getItemStyles(activeItemId === 'more')}
-            onClick={() => handleItemClick('more')}
+            gap="spacing-md"
           >
-            <Box display="flex" alignItems="center" gap="spacing-xxs">
-              <DotsThree size={24} color="icon-brand-medium" />
-              <Text
-                variant={activeItemId === 'more' ? 'h5-semibold' : 'h5-regular'}
-                color="text-primary"
-              >
-                More
-              </Text>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              width="21px"
-              height="21px"
-              borderRadius="radius-xxxs"
-              css={css`
-                background-color: #4f4072;
-              `}
-            >
-              <CaretLeftCircle size={21} color="text-primary" />
-            </Box>
-          </Box>*/}
+            <a href="https://x.com/PushChain" target="_blank" rel="noopener noreferrer">
+              <Twitter width={30} height={30} />
+            </a>
+            <a href="https://discord.com/invite/pushchain" target="_blank" rel="noopener noreferrer">
+              <DiscordWhite width={38} />
+            </a>
+          </Box>
         </Box>
       </Box>
     </>
