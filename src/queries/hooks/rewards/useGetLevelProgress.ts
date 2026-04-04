@@ -1,15 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { levelProgress } from "../../queryKeys";
 import { getLevelProgress } from "../../services";
-import { AuthHeaders } from "../../types";
 
-export const useGetLevelProgress = (authHeaders?: AuthHeaders) => {
-  const isValid = authHeaders?.message && authHeaders?.signature && authHeaders?.walletAddress;
-
+export const useGetLevelProgress = (userId?: string) => {
   return useQuery({
-    queryKey: [levelProgress, authHeaders?.walletAddress],
-    queryFn: () => getLevelProgress(authHeaders!),
+    queryKey: [levelProgress, userId],
+    queryFn: () => getLevelProgress(userId!),
     retry: false,
-    enabled: !!isValid,
+    enabled: !!userId,
   });
 };

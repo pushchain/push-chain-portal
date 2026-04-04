@@ -6,32 +6,38 @@ import { css } from "styled-components";
 import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 // type
-import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails } from "../../../queries";
+import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails, useGetSeasonThreeUserByWallet } from "../../../queries";
 
 // components
 import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text } from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-  const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards, isRefetching } = useGetDailyCheckInDetails(authHeaders);
+  const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards, isRefetching } = useGetDailyCheckInDetails(userDetails?.userId);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
 
   const isBusy = isClaimingRewards || isRefetching;
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
-  const handleClaimRewards = () => {
-    if (!authHeaders) return;
-    claimDailyRewards(authHeaders, {
+  const handleClaimRewards = async () => {
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (!headers) return;
+    claimDailyRewards(headers, {
       onSuccess: () => { refetch(); },
       onError: (error) => { console.error(error); },
     });

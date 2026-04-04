@@ -108,6 +108,7 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
 
     if (!universalAccount || !caip10WalletAddress) return null;
     if (FLAGS.CULT) return null;
+    if (location.pathname === '/discord/verification') return null;
 
 
     const signFn = isSolana ? signMessageSolana : signMessageEthereum;
@@ -144,20 +145,19 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Auto-sign on wallet connect so authHeaders is ready before user interaction
-  //
-  useEffect(() => {
-      if (!walletAddress || FLAGS.CULT) return;
-      if (location.pathname === '/discord/verification') return
-      if (!isSignerReady) return;
-      if (authHeaders) return;
+  // useEffect(() => {
+  //     if (!walletAddress || FLAGS.CULT) return;
+  //     if (location.pathname === '/discord/verification') return
+  //     if (!isSignerReady) return;
+  //     if (authHeaders) return;
 
-      const stored = getStoredAuthHeaders(walletAddress);
-      if (stored) {
-        setAuthHeaders(stored);
-        return;
-      }
-      getAuthHeaders();
-    }, [walletAddress, isSignerReady]);
+  //     const stored = getStoredAuthHeaders(walletAddress);
+  //     if (stored) {
+  //       setAuthHeaders(stored);
+  //       return;
+  //     }
+  //     getAuthHeaders();
+  //   }, [walletAddress, isSignerReady]);
 
   const clearAuthHeaders = useCallback(() => {
     setAuthHeaders(undefined);

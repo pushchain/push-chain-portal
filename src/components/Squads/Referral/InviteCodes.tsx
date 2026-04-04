@@ -2,8 +2,7 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 
-import { useGetAllInvites, useGetUserCultStatus } from "../../../queries";
-import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../../../queries";
 import { device } from "../../../config/globals";
 
 import { Box, Text, Copy, Button, Spinner } from "../../../blocks"
@@ -120,14 +119,13 @@ type InviteCodesProps = {
 export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: InviteCodesProps) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const { authHeaders } = useAuthHeaders();
   const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
-  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(authHeaders);
-
- const caip10WalletAddress = walletToFullCAIP10(
-		universalAccount?.address as string,
-		universalAccount?.chain,
-	);
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(userDetails?.userId);
 
  const { data: userCultStatus } = useGetUserCultStatus({
 		wallet: caip10WalletAddress

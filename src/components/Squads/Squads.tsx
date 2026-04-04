@@ -13,7 +13,7 @@ import { Box, Link, Text } from "../../blocks"
 
 export const Squads = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -23,14 +23,15 @@ export const Squads = () => {
     walletAddress: caip10WalletAddress
   });
 
-  const { data: squadsDetails, refetch: refetchSquadsDetails } = useGetSquadsDetails(authHeaders);
-  const { data: inviteCodeDetails, refetch } = useGetAllInvites(authHeaders);
+  const { data: squadsDetails, refetch: refetchSquadsDetails } = useGetSquadsDetails(seasonThreeDetails?.userId);
+  const { data: inviteCodeDetails, refetch } = useGetAllInvites(seasonThreeDetails?.userId);
   const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
-  const requestInvitesCode = () => {
-    if (!authHeaders) return;
+  const requestInvitesCode = async () => {
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (!headers) return;
     requestForInviteCode(
-      { payload: { count: 5 }, authHeaders },
+      { payload: { count: 5 }, authHeaders: headers },
       {
         onSuccess: () => { refetch(); },
         onError: (error: Error) => { console.log("Error in creating activity", error); },

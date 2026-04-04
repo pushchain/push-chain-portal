@@ -123,6 +123,8 @@ export const walletToFullCAIP10 = (
   chain: string,
   chainId?: string
 ): string => {
+  if (!account || !chain) return '';
+
   if (account?.includes(":")) {
     return account;
   }

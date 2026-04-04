@@ -31,7 +31,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites(authHeaders);
+  const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites();
   const { mutate: acceptInvite, isPending: isAccepting } = useAcceptSquadInvite();
   const { mutate: rejectInvite, isPending: isRejecting } = useRejectSquadInvite();
 

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { css, keyframes } from "styled-components";
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useAuthHeaders } from "../../context/authHeadersContext";
 import { useGetLevelProgress, useGetQuestsProgress, useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
 import useMediaQuery from "../../hooks/useMediaQuery";
@@ -90,24 +89,21 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
 
 export const LevelUp = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { authHeaders } = useAuthHeaders();
-    const { data: levelProgress, isLoading } = useGetLevelProgress(authHeaders);
-    const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, authHeaders?.walletAddress);
     const isMobile = useMediaQuery(device.mobileL);
     const { universalAccount } = usePushWalletContext('wallet1');
     const caip10WalletAddress = walletToFullCAIP10(
       universalAccount?.address as string,
       universalAccount?.chain,
     );
-
     const { isLocked, isLockedStatusLoading } = useRewardStatus();
-
-
     const rewardsLocked = (isLocked && !isLockedStatusLoading);
 
     const { data: userDetails } = useGetSeasonThreeUserByWallet({
       walletAddress: caip10WalletAddress
     });
+
+    const { data: levelProgress, isLoading } = useGetLevelProgress(userDetails?.userId);
+    const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, caip10WalletAddress);
 
     const { isFetching: isFetchingLastOne, refetch: refetchLastOne } = useGetQuestsProgress({
       appId: "lastone",

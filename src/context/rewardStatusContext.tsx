@@ -11,7 +11,6 @@ import {
   useGetSybilStatus,
 } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
-import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardStatusContextType {
   isLocked: boolean;

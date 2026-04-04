@@ -1,16 +1,19 @@
 import { css } from "styled-components"
 import Lottie from "lottie-react"
 
-import { useGetDailyCheckInDetails } from "../../queries";
-import { useAuthHeaders } from "../../context/authHeadersContext";
+import { useGetDailyCheckInDetails, useGetSeasonThreeUserByWallet } from "../../queries";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"
 import StreakFireAnimation from "../../../static/assets/website/rewards/streak-fire.json"
 
 export const StreakDays = () => {
-  const { authHeaders } = useAuthHeaders();
-  const { data: getDailyCheckInDetails } = useGetDailyCheckInDetails(authHeaders);
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { data: getDailyCheckInDetails } = useGetDailyCheckInDetails(userDetails?.userId);
 
   return(
     <Box

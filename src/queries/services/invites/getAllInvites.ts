@@ -1,16 +1,11 @@
 import axios from "axios";
 import { getAllInvitesModel } from "../../models";
 import { getSeasonThreeBaseURL } from "../../baseURL";
-import { AuthHeaders } from "../../types";
 
-export const getAllInvites = (authHeaders: AuthHeaders) =>
+export const getAllInvites = (userId: string) =>
   axios({
     method: "GET",
     url: `${getSeasonThreeBaseURL()}/api/v3/user/invites`,
-    headers: {
-      "Content-Type": "application/json",
-      "x-message": JSON.stringify(authHeaders.message),
-      "x-signature": authHeaders.signature,
-      "x-wallet-address": authHeaders.walletAddress,
-    },
+    params: { userId },
+    headers: { "Content-Type": "application/json" },
   }).then((response) => getAllInvitesModel(response.data));

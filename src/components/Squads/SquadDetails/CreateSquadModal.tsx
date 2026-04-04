@@ -2,6 +2,9 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { AxiosError } from "axios";
 import { useCreateSquad, useGetSquadsDetails } from "../../../queries/hooks";
+import { useGetSeasonThreeUserByWallet } from "../../../queries";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
@@ -17,21 +20,25 @@ type CreateSquadModalProps = {
 export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => {
   const [squadName, setSquadName] = useState("");
   const [error, setError] = useState("");
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
 
   const { mutate: createSquad, isPending } = useCreateSquad();
-  const { refetch } = useGetSquadsDetails(authHeaders);
+  const { refetch } = useGetSquadsDetails(userDetails?.userId);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!squadName.trim()) {
       setError("Squad name is required");
       return;
     }
 
     setError("");
-    if (!authHeaders) return;
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (!headers) return;
     createSquad(
-      { params: { name: squadName }, authHeaders },
+      { params: { name: squadName }, authHeaders: headers },
       {
         onSuccess: () => {
           setSquadName("");
