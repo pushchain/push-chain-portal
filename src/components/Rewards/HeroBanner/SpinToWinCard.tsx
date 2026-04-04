@@ -15,6 +15,8 @@ const SpinToWinCard = () => {
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
 
+  const hasFreeSpin = remainingSpins === 5;
+
   return (
     <>
       <Box
@@ -118,7 +120,7 @@ const SpinToWinCard = () => {
               Spin to Win
             </Text>
 
-            <Box
+            {hasFreeSpin && (<Box
               display="inline-flex"
               alignItems="center"
               justifyContent="center"
@@ -129,7 +131,7 @@ const SpinToWinCard = () => {
               <Text variant="bs-bold" color="text-on-dark-bg">
                 1 FREE Spin/Day
               </Text>
-            </Box>
+            </Box>)}
 
 
           </Box>
