@@ -7,6 +7,7 @@ import React, {
 
 import {
   GetSybilStatusResponse,
+  useGetSeasonThreeUserByWallet,
   useGetSybilStatus,
 } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
@@ -22,7 +23,6 @@ interface RewardStatusContextType {
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
 
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
-  const { authHeaders } = useAuthHeaders();
 
   const { universalAccount } = usePushWalletContext("wallet1");
   const account = universalAccount?.address as string;
@@ -33,11 +33,12 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
     universalAccount?.chain,
   );
 
-
+  const { data: userSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  })
 
   const { data: sybilStatusData, isFetched, refetch: refetchSybilStatus } = useGetSybilStatus({
-    walletAddress: caip10WalletAddress,
-    authHeaders: authHeaders,
+    userId: userSeasonThreeDetails?.userId
   });
 
   const isLockedStatusLoading = isWalletConnected && !isFetched;

@@ -1,10 +1,64 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
+import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Box, Text, ArrowRight, Link } from '../../../../blocks';
+import { Box, Text, ArrowRight, Link, Lock, Button, Skeleton } from '../../../../blocks';
 import { LockedPassCard } from './LockedPassCard';
+import { useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../../../queries';
+import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
+import { useNavigate } from 'react-router-dom';
+import OpenPassImage from '../../../../../static/assets/website/pushpass/OpenPass.webp';
+import OpenPassLockedImage from '../../../../../static/assets/website/pushpass/OpenPassLocked.webp';
+import { device } from '../../../../config/globals';
 
 export const RarePassSection: FC = () => {
+  const navigate = useNavigate();
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userCharacterInfo, isLoading: isLoadingCharacters } = useGetCharacterInfo({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: userDetails, isLoading: isLoadingUserDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
+  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
+    userId: userDetails?.userId ?? '',
+  });
+
+  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
+
+  const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
+  const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const characters = userCharacterInfo?.characters || [];
+  const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
+
+  const passes = [
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
+      id: index + 1,
+      isLocked: false,
+      lockMessage: 'Open Pass',
+    })),
+    ...unmintedCharacters.map((char, index) => ({
+      id: rareActiveCount + index + 1,
+      isLocked: false,
+      lockMessage: 'View Pass',
+      character: char,
+    })),
+    ...Array.from({ length: rareDormantCount }, (_, index) => ({
+      id: rareActiveCount + unmintedCharacters.length + index + 1,
+      isLocked: true,
+      lockMessage: 'Unlocks at Lv. 25',
+    })),
+  ];
+
+  const displayPasses = passes.slice(0, 2);
+
   return (
     <Box
       borderRadius="radius-lg"
@@ -76,9 +130,82 @@ export const RarePassSection: FC = () => {
           gap="spacing-xxs"
           width="100%"
           flexDirection='row'
+          css={css`
+            z-index: 99;
+          `}
         >
-          <LockedPassCard message="Unlocks at Lv. 15" />
-          <LockedPassCard message="Spin to Unlock" />
+          {isLoading ? (
+            <>
+              <Skeleton isLoading width="100%" height="230px" borderRadius="radius-xs" />
+              <Skeleton isLoading width="100%" height="230px" borderRadius="radius-xs" />
+            </>
+          ) : displayPasses.length > 0 ? (
+            displayPasses?.map((pass) => (
+              <Box
+                key={pass.id}
+                borderRadius="radius-xs"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                padding="spacing-sm"
+                cursor={!pass.isLocked ? 'pointer' : 'default'}
+                onClick={() => {
+
+                  if (!pass.isLocked) {
+                    if ('character' in pass && pass.character) {
+                      navigate(`/rewards/pushpass/${(pass as any).character.characterId}`);
+                    } else {
+                      navigate('/rewards/pushpass/open');
+                    }
+                  }
+                }}
+                css={css`
+                  flex: 1;
+                  width: 100%;
+                  height: 230px;
+                  background: url(${pass.isLocked ? OpenPassLockedImage : OpenPassImage}) center center/cover no-repeat;
+                  background-size: contain;
+                  box-sizing: border-box;
+
+                  @media ${device.tablet} {
+                    height: 300px;
+                  }
+
+                  @media ${device.mobileL} {
+                    height: 200px;
+                  }
+                `}
+              >
+                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" height="100%" width="100%">
+                  {pass.isLocked ? (
+                    <>
+                      <Lock size={32} color="icon-primary" />
+                      <Text variant="bs-bold" color="text-primary" textAlign="center" css={css`text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);`}>
+                        {pass.lockMessage}
+                      </Text>
+                    </>
+                  ) : (
+                    <Button
+                      size="small"
+                      variant="primary"
+                      css={css`
+                        background: #d548ec;
+                        box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+                      `}
+                    >
+                      {pass.lockMessage}
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+            ))
+          ) : (
+            <>
+              <LockedPassCard message="Unlocks at Lv. 15" />
+              <LockedPassCard message="Spin to Unlock" />
+            </>
+          )}
         </Box>
       </Box>
     </Box>
