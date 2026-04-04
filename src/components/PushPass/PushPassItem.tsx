@@ -97,8 +97,9 @@ export const PushPassItem = () => {
       { userWallet: caip10WalletAddress },
       {
         onSuccess: (data) => {
-          if (data?.characterId) {
-            setGeneratedCharacterId(data.characterId);
+          const response = data?.characterId || data?.data?.characterId
+          if (response) {
+            setGeneratedCharacterId(response);
           }
           refetch();
         },

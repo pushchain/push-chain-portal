@@ -19,6 +19,7 @@ import {
   Twitter,
   Discord,
   DiscordWhite,
+  Link,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
@@ -340,6 +341,16 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
             <a href="https://discord.com/invite/pushchain" target="_blank" rel="noopener noreferrer">
               <DiscordWhite width={38} />
             </a>
+          </Box>
+
+          <Box display='flex' flexDirection='row' gap='spacing-sm'>
+            <Link to='https://push.org/tos' title='Terms of Service' target='_blank'>
+              Terms of Service
+            </Link>
+
+            <Link to='https://push.org/privacy' title='Privacy Policy' target='_blank'>
+              Privacy Policy
+            </Link>
           </Box>
         </Box>
       </Box>

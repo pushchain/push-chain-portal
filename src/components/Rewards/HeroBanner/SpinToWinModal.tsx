@@ -12,6 +12,8 @@ import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } fro
 import { Image } from '../../../css/SharedStyling';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+import useMediaQuery from '../../../hooks/useMediaQuery';
+import { device } from '../../../config/globals';
 
 // import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
 // import PointsAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
@@ -53,6 +55,7 @@ const getPrizeBySlotId = (slotId: number): SpinPrize | undefined =>
   spinConfig.find(item => item.slotId === slotId);
 
 const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
+  const isTablet = useMediaQuery(device.tablet);
   const [isSpinning, setIsSpinning] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [countdown, setCountdown] = useState('');
@@ -244,12 +247,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="small"
+      size={isTablet ? "small" : "large"}
       css={css`
-        border-radius: var(--radius-lg, 32px);
+        border-radius: var(--radius-lg, 37px);
         outline: none;
         background: url(${ModalBg}) no-repeat center center;
-        background-size: cover;
+        background-size: auto;
+
 
         & > div:last-child:empty {
           display: none;
