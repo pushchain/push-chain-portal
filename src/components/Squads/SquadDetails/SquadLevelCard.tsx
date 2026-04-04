@@ -16,7 +16,20 @@ const squadLevels = [
 
 const MAX_LEVEL = squadLevels[squadLevels.length - 1].level;
 
-const getLevelProgress = (level: number, totalXp: number) => {
+const deriveLevel = (totalXp: number): number => {
+  let level = 1;
+  for (const entry of squadLevels) {
+    if (totalXp >= entry.totalXPRequired) {
+      level = entry.level;
+    } else {
+      break;
+    }
+  }
+  return level;
+};
+
+const getLevelProgress = (totalXp: number) => {
+  const level = deriveLevel(totalXp);
   const isMaxLevel = level >= MAX_LEVEL;
 
   const currentLevelData = squadLevels.find((l) => l.level === level);
@@ -38,10 +51,11 @@ const getLevelProgress = (level: number, totalXp: number) => {
   const xpNeededForLevel = nextLevelXP - currentLevelXP;
   const xpInLevel = totalXp - currentLevelXP;
   const progressPercent = xpNeededForLevel > 0
-    ? Math.min((totalXp / xpNeededForLevel) * 100, 100)
+    ? Math.min((xpInLevel / xpNeededForLevel) * 100, 100)
     : 0;
 
   return {
+    level,
     xpInLevel,
     xpNeededForLevel,
     progressPercent,
@@ -52,15 +66,14 @@ const getLevelProgress = (level: number, totalXp: number) => {
 
 type SquadLevelCardProps = {
   squadName: string;
-  level: number;
   totalXp: number;
 }
 
 
-export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProps) => {
-  const { xpNeededForLevel, progressPercent, isMaxLevel } = getLevelProgress(level, totalXp);
+export const SquadLevelCard = ({ squadName, totalXp }: SquadLevelCardProps) => {
+  const { level, xpInLevel, xpNeededForLevel, progressPercent, isMaxLevel } = getLevelProgress(totalXp);
 
-  const remainingXP = xpNeededForLevel - totalXp;
+  const remainingXP = xpNeededForLevel - xpInLevel;
 
 
   return (

@@ -189,7 +189,6 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
           >
             <SquadLevelCard
               squadName={squadData.data.name}
-              level={squadData.data.squadLevel}
               totalXp={squadData.data.totalXPSquad}
             />
           </Box>
