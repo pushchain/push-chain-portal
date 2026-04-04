@@ -14,9 +14,6 @@ export const getSiweDomainAndUri = () => {
     host === "localhost" ||
     host === "127.0.0.1" ||
     host.endsWith(".localhost");
-  if (isLocalhost) {
-    return { domain: "wallet.push.org", uri: "https://wallet.push.org" };
-  }
   return { domain: host, uri: window.location.origin };
 
 };
@@ -30,7 +27,6 @@ interface PushMessageData {
   chainId: string;
   nonce: string;
   issuedAt: string;
-  statement: string;
 }
 
 interface SignMessageResult {
@@ -95,7 +91,6 @@ export const useSignPushMessage = () => {
           chainId: String(chainId),
           nonce,
           issuedAt: new Date().toISOString(),
-          statement: "Sign in to Push Chain",
           ...extraData,
         };
 
@@ -103,6 +98,8 @@ export const useSignPushMessage = () => {
         const messageBytes = new TextEncoder().encode(messageString);
         const signedMessageBytes = await handleSignMessage(messageBytes);
         const signature = ethers.utils.hexlify(signedMessageBytes);
+
+        console.log(messageToSend, 'messageToSend');
 
         setSignature(signature);
 
