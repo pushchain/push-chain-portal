@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { css } from "styled-components"
-import { Box, Button, Link, SeasonThreeEllipse, Text } from "../../../blocks"
+import { usePushWalletContext } from "@pushchain/ui-kit"
+
 import { SquadHeader } from "./SquadHeader"
 import { SquadLevelCard } from "./SquadLevelCard"
 import { SquadStatsRow } from "./SquadStatsRow"
@@ -8,9 +9,11 @@ import { SquadMembersTable } from "./SquadMembersTable"
 import { device } from "../../../config/globals"
 import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite, useGetSeasonThreeUserByWallet } from "../../../queries"
 import { useAuthHeaders } from "../../../context/authHeadersContext"
-import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { SquadsDetailsResponse } from "../../../queries/types/squads"
+
+import { Box, Button, Link, SeasonThreeEllipse, Text } from "../../../blocks"
+
 
 type SquadSectionProps = {
   squadData?: SquadsDetailsResponse;
@@ -31,7 +34,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites();
+  const { data: getSquadsPendingInvites, refetch: refetchPendingInvites } = useGetSquadsPendingInvites(seasonThreeUserDetails?.userId);
   const { mutate: acceptInvite, isPending: isAccepting } = useAcceptSquadInvite();
   const { mutate: rejectInvite, isPending: isRejecting } = useRejectSquadInvite();
 
