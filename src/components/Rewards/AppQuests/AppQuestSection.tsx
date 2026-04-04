@@ -2,6 +2,7 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { Alert, Box } from '../../../blocks';
 import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
@@ -62,15 +63,23 @@ const AppQuestSection = () => {
   const targetDate = "2026-04-17T13:59:59";
   const { timeLeft } = useCountdown(targetDate);
 
-  const lastOneCompletedMap: Record<string, boolean> = {};
-  lastOneQuestsProgress?.data?.quests?.forEach((q) => {
-    lastOneCompletedMap[q.questId] = q.completed;
-  });
+  const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-  const ramenSwapCompletedMap: Record<string, boolean> = {};
-  ramenSwapQuestsProgress?.data?.quests?.forEach((q) => {
-    ramenSwapCompletedMap[q.questId] = q.completed;
-  });
+  const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
+    const map: Record<string, boolean> = {};
+    quests?.forEach((q) => {
+      if (q.frequency === 'REPEATABLE' && q.completed && q.completedAt) {
+        const timeSinceCompleted = Date.now() - new Date(q.completedAt).getTime();
+        map[q.questId] = timeSinceCompleted < ONE_WEEK_MS;
+      } else {
+        map[q.questId] = q.completed;
+      }
+    });
+    return map;
+  };
+
+  const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
+  const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
 
   return (
     <Box

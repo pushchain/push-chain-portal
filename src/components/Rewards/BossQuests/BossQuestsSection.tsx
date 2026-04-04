@@ -3,7 +3,7 @@ import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import BossQuestCard from './BossQuestCard';
-import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRarePassHistory, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 
@@ -48,6 +48,24 @@ const BossQuestsSection = () => {
     appId: "boss-quests",
     userId: userDetails?.userId,
   });
+
+  const { data: lastOneQuestsProgress } = useGetQuestsProgress({
+    appId: "lastone",
+    userId: userDetails?.userId
+  });
+
+  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
+    appId: "ramen-swap",
+    userId: userDetails?.userId
+  });
+
+  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
+    userId: userDetails?.userId ?? '',
+  });
+
+  const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
+
+  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0, ramenSwapQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
@@ -180,8 +198,8 @@ const BossQuestsSection = () => {
                 title={item?.title}
                 description={item.description}
                 resetTime={!isRarePass && timeLeft}
-                progress={0}
-                maxProgress={25}
+                progress={isRarePass ? rarePassesProgress : questsProgress}
+                maxProgress={isRarePass ? 5 : 100}
                 unlocks={{ rarePass: isRarePass, xp: (item.baseXP > 0 && item?.baseXP) }}
                 isLocked={rewardsLocked}
                 isLockedStatusLoading={isLockedStatusLoading}

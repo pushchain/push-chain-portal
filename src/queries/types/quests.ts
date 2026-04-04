@@ -47,6 +47,7 @@ export type QuestProgress = {
   status: "ENABLED" | "DISABLED";
   completed: boolean;
   completionCount: number;
+  completedAt: string | null;
 };
 
 export type GetQuestsProgressResponse = {
@@ -57,6 +58,7 @@ export type GetQuestsProgressResponse = {
     appStatus: string;
     quests: QuestProgress[];
     totalCompleted: number;
+    progressPercentage?: number;
     totalQuests: number;
   };
 };

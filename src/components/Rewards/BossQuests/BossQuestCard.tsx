@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { css } from 'styled-components';
 import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Skeleton, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
@@ -37,8 +37,8 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   title,
   description,
   resetTime,
-  progress = 0,
-  maxProgress = 0,
+  progress,
+  maxProgress,
   unlocks,
   isLocked,
   isLockedStatusLoading = false,
@@ -206,8 +206,8 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
 
             {icon && (
               <ProgressBar
-                progress={(0) || null}
-                max={100}
+                progress={progress ||(0) || null}
+                max={maxProgress}
                 size="large"
                 progressIcon={<RewardsStarGradient size={35} />}
               />
