@@ -97,7 +97,7 @@ export const PushPassItem = () => {
       { userWallet: caip10WalletAddress },
       {
         onSuccess: (data) => {
-          const response = data?.characterId || data?.data?.characterId
+          const response = data?.characterId || data?.data?.characterId;
           if (response) {
             setGeneratedCharacterId(response);
           }
@@ -128,8 +128,9 @@ export const PushPassItem = () => {
         },
         {
           onSuccess: (data) => {
-            if (data?.newCharacterId) {
-              setGeneratedCharacterId(data.newCharacterId);
+            const response = data?.newCharacterId || data?.data?.newCharacterId;
+            if (response) {
+              setGeneratedCharacterId(response);
             }
             refetch();
             refetchFee();
@@ -165,8 +166,9 @@ export const PushPassItem = () => {
           },
           {
             onSuccess: (data) => {
-              if (data?.newCharacterId) {
-                setGeneratedCharacterId(data.newCharacterId);
+              const response = data?.newCharacterId || data?.data?.newCharacterId;
+              if (response) {
+                setGeneratedCharacterId(response);
               }
               refetch();
               refetchFee();
