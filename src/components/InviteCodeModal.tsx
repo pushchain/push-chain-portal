@@ -41,8 +41,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 		wallet: caip10WalletAddress
   });
 
-  console.log('connectionType', connectionType);
-
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
@@ -62,9 +60,8 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
 
     try {
-        // TODO: find out way to check social login vs push wallet user
         if (isPushSocialWalletUser) {
-          const { signature: newSignature, messageToSend, error } = await signMessageWithPush();
+          const { signature: newSignature, messageToSend ,error } = await signMessageWithPush();
 
           if (error || !newSignature) {
             setError(error || "Failed to sign message");
@@ -73,7 +70,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
           signature = newSignature;
           dataPayload = messageToSend;
-
         } else {
           const { signature: newSignature, messageToSend, messageString, error } = isSolana
             ? await signMessageWithSolana()
