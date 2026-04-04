@@ -1,9 +1,15 @@
 import { FC } from 'react';
-import { css } from 'styled-components';
-import { ArrowUpRight, Box, Link, ProgressBar, QuestBox, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
+import { css, keyframes } from 'styled-components';
+import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
+import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
 
 // type Quest = {
 //   title: string;
@@ -13,6 +19,187 @@ import { LinkTo } from '../../../css/SharedStyling';
 //   isCompleted: boolean;
 //   isDisabled: boolean;
 // };
+
+type QuestItemProps = {
+  quest: any;
+  index: number;
+  isClaimCompleted: boolean;
+  userId: string;
+  refetchActivities?: () => void;
+  setErrorMessage: (errorMessage: string) => void;
+};
+
+const QuestItem: FC<QuestItemProps> = ({
+  quest,
+  index,
+  isClaimCompleted,
+  userId,
+  refetchActivities,
+  setErrorMessage,
+}) => {
+  const { handleRewardsVerification, verifyingRewards, progressPercent } = useVerifyRewards({
+    activityTypeId: quest.id,
+    refetchActivity: () => refetchActivities?.(),
+    setErrorMessage,
+  });
+
+  const handleClaim = () => {
+    if (!userId) return;
+    handleRewardsVerification(userId);
+  };
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-start"
+      gap="spacing-xxs"
+      padding="spacing-none spacing-md"
+      width="100%"
+      css={css`
+        box-sizing: border-box;
+      `}
+    >
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-start"
+        gap="spacing-xxxs"
+        padding="spacing-sm spacing-none"
+        alignSelf="stretch"
+        css={css`
+          border-top: ${index > 0 ? "1px solid #2D263D" : 'transparent'};
+        `}
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          height={{initial: "24px", tb: "100%"}}
+          alignItems="center"
+          justifyContent="center"
+          gap="spacing-xs"
+          alignSelf="stretch"
+          css={css`
+            min-width: 0;
+          `}
+        >
+          <Box
+            display="flex"
+            flexDirection={{ initial: 'row', tb:'column'}}
+            gap={{ tb: "spacing-xs", initial: 'spacing-md'}}
+            alignItems={{initial: "center", tb: "flex-start"}}
+            justifyContent="space-between"
+            alignSelf="stretch"
+            css={css`
+              flex: 1;
+            `}
+          >
+            <Text
+              variant="bs-semibold"
+              color="text-primary"
+              css={css`
+                text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+                overflow-wrap: break-word;
+                word-break: break-word;
+                min-width: 0;
+              `}
+            >
+              {quest.title}
+            </Text>
+
+            <Box
+              display="inline-flex"
+              alignItems="center"
+              gap="spacing-xxl"
+              width={{tb: '100%'}}
+              justifyContent={{ tb: 'space-between' }}
+            >
+              <Box display="flex" alignItems="center" justifyContent="center" width="112px">
+                <Box display="inline-flex" width="112px" alignItems="flex-start">
+                  {isClaimCompleted ? (
+                    <ProgressBar
+                      progress={100}
+                      max={100}
+                      size="large"
+                      progressIcon={<RewardsStarGradient size={35} />}
+                    />
+                  ) : (
+                    <Box width="112px" height="8px">
+                      <ProgressBar
+                        progress={progressPercent ?? null}
+                        max={100}
+                        size="large"
+                        progressIcon={<RewardsStarGradient size={35} />}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="flex-end"
+                gap="spacing-md"
+                css={css`
+                  flex-shrink: 0;
+                `}
+              >
+                <Box
+                  display="inline-flex"
+                  alignItems="center"
+                  gap="spacing-xxs"
+                  minWidth="80px"
+                  justifyContent="flex-end"
+                >
+                  <Box
+                    width="36px"
+                    height="14px"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    {isClaimCompleted ? <Tick color='#42DDB1' size={20} /> : <QuestBox />}
+                  </Box>
+
+                  {!isClaimCompleted && (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      cursor="pointer"
+                      gap="spacing-xxs"
+                      onClick={handleClaim}
+                      css={css`
+                        border-radius: 24px;
+                        border: 1px solid rgba(255, 255, 255, 0.25);
+                      `}
+                    >
+                      <HoverableSVG
+                        defaultBackground="transparent"
+                        hoverBackground="#C742DD"
+                        padding="spacing-xxxs"
+                        borderRadius="radius-sm"
+                        icon={
+                          <Box
+                            css={css`
+                              display: flex;
+                              ${verifyingRewards && css`animation: ${spin} 0.5s linear infinite;`}
+                            `}
+                          >
+                            <Refresh color="rgba(255, 255, 255, 0.25)" />
+                          </Box>
+                        }
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
 type AppQuestCardProps = {
   appName: string;
@@ -52,145 +239,6 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   completedMap = {},
   setErrorMessage,
 }) => {
-  const renderQuestItem = (quest: any, index: number) => {
-    const isCompleted = completedMap[quest.id] ?? false;
-    const isClaimCompleted = activityStatus?.[quest?.id]?.status === 'COMPLETED';
-    // const showProgress = typeof quest.progress !== 'undefined' && typeof quest.maxProgress !== 'undefined';
-    // console.log(completedMap, 'completed', activityStatus, quest)
-
-    return (
-      <Box
-        key={index}
-        display="flex"
-        flexDirection="column"
-        alignItems="flex-start"
-        gap="spacing-xxs"
-        padding="spacing-none spacing-md"
-        width="100%"
-        css={css`
-          box-sizing: border-box;
-        `}
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          gap="spacing-xxxs"
-          padding={index === 0 ? "spacing-sm spacing-none" : "spacing-sm spacing-none"}
-          alignSelf="stretch"
-          css={css`
-            border-top: ${index > 0 ? "1px solid #2D263D" : 'transparent'};
-          `}
-        >
-          <Box
-            display="flex"
-            flexDirection="column"
-            height={{initial: "24px", tb: "100%"}}
-            alignItems="center"
-            justifyContent="center"
-            gap="spacing-xs"
-            alignSelf="stretch"
-            css={css`
-              min-width: 0;
-            `}
-          >
-            <Box
-              display="flex"
-              flexDirection={{ initial: 'row', tb:'column'}}
-              gap={{ tb: "spacing-xs", initial: 'spacing-none'}}
-              alignItems={{initial: "center", tb: "flex-start"}}
-              justifyContent="space-between"
-              alignSelf="stretch"
-              css={css`
-                flex: 1;
-              `}
-            >
-              <Text
-                variant="bs-semibold"
-                color="text-primary"
-                css={css`
-                  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-                  overflow-wrap: break-word;
-                  word-break: break-word;
-                  min-width: 0;
-                `}
-              >
-                {quest.title}
-              </Text>
-
-              <Box
-                display="inline-flex"
-                alignItems="center"
-                gap="spacing-xxl"
-                width={{tb: '100%'}}
-                justifyContent={{ tb: 'space-between' }}
-
-              >
-                {!isCompleted ? (
-                  <Box width="112px" height="8px">
-                    <ProgressBar
-                      progress={(0) || null}
-                      max={100}
-                      size="large"
-                      progressIcon={<RewardsStarGradient size={35} />}
-                    />
-                  </Box>
-                ) : (
-                  <Box display="flex" alignItems="center" justifyContent="center" width="112px">
-                    <Box display="inline-flex" width="112px" alignItems="flex-start">
-                      {isClaimCompleted ?
-                        (<ProgressBar
-                          progress={100}
-                          max={100}
-                          size="large"
-                          progressIcon={<RewardsStarGradient size={35} />}
-                        />) : (<ActivityButton
-                        activityType={quest.id as ActvityType}
-                        activityTypeId={quest.id}
-                        userId={userId as string}
-                        refetchActivity={() => refetchActivities?.()}
-                        usersSingleActivity={activityStatus?.[quest?.id]}
-                        setErrorMessage={setErrorMessage}
-                        isLoadingActivity={isLoading || false}
-                        label="Claim"
-                        buttonVariant='primary'
-                        buttonSize='small'
-                      />)}
-                    </Box>
-                  </Box>
-                )}
-
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="flex-end"
-                  gap="spacing-md"
-                  css={css`
-                    flex-shrink: 0;
-                  `}
-                >
-                  <Box
-                    display="inline-flex"
-                    alignItems="center"
-                    gap="spacing-xxs"
-                  >
-                    <Box
-                      width="36px"
-                      height="14px"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      {isClaimCompleted ? <Tick color='#42DDB1' size={20} /> : <QuestBox />}
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    );
-  };
 
   const fullUrl = appUrl?.startsWith("http") ? appUrl : `https://${appUrl}`;
 
@@ -406,7 +454,17 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             alignItems="flex-start"
             padding="spacing-lg spacing-none spacing-none spacing-none"
           >
-            {quests?.map((quest, index) => renderQuestItem(quest, index))}
+            {quests?.map((quest: any, index: number) => (
+              <QuestItem
+                key={index}
+                quest={quest}
+                index={index}
+                isClaimCompleted={activityStatus?.[quest?.id]?.status === 'COMPLETED'}
+                userId={userId as string}
+                refetchActivities={refetchActivities}
+                setErrorMessage={setErrorMessage!}
+              />
+            ))}
           </Box>
         </Box>
       </Box>

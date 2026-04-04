@@ -31,6 +31,7 @@ const useVerifyRewards = ({
   onStartClaim,
 }: UseVerifyRewardsParams) => {
   const [verifyingRewards, setVerifyingRewards] = useState(false);
+  const [progressPercent, setProgressPercent] = useState<number | null>(null);
   const [rewardsActivityStatus, setRewardsActivityStatus] = useState<
     "Claimed" | "Pending" | null
   >(null);
@@ -144,8 +145,13 @@ const useVerifyRewards = ({
         onError: (error: any) => {
           console.log("Error in creating activity", error);
           setVerifyingRewards(false);
-          if (error?.name) {
-            setErrorMessage(error?.response?.data?.error);
+          const errorData = error?.response?.data?.error;
+          console.log(errorData?.progress_percent, 'error')
+          if (errorData) {
+            setErrorMessage(typeof errorData === 'string' ? errorData : errorData?.message);
+            if (errorData?.progress_percent != null) {
+              setProgressPercent(errorData.progress_percent);
+            }
           }
         },
       },
@@ -156,6 +162,7 @@ const useVerifyRewards = ({
     verifyingRewards,
     rewardsActivityStatus,
     handleRewardsVerification,
+    progressPercent,
   };
 };
 
