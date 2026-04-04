@@ -14,7 +14,7 @@ import {
 import { CharacterInfoResponse } from "../../queries/types/character";
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
-import { Alert, Back, Box, Button, Spinner, Text, Twitter } from "../../blocks";
+import { Alert, Back, Box, Button, Skeleton, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
 import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
@@ -40,6 +40,7 @@ export const PushPassItem = () => {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const [generatedCharacterId, setGeneratedCharacterId] = useState<string>();
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
   const [generateError, setGenerateError] = useState("");
@@ -77,7 +78,7 @@ export const PushPassItem = () => {
     isPending: isMinting,
   } = useMintCharacter();
 
-  const passState = getPassState(isLoading, characterId, characterInfo);
+  const passState = getPassState(!caip10WalletAddress || isLoading || isTransitioning, characterId, characterInfo);
   const character = characterInfo?.characters?.find((c) => c.characterId === characterId);
   const isMinted = character?.status === "MINTED";
   const isActionLoading = isGenerating || isReshuffling || isMinting || isPaying;
@@ -98,10 +99,11 @@ export const PushPassItem = () => {
       {
         onSuccess: (data) => {
           const response = data?.characterId || data?.data?.characterId;
+          setIsTransitioning(true);
           if (response) {
             setGeneratedCharacterId(response);
           }
-          refetch();
+          refetch().finally(() => setIsTransitioning(false));
         },
         onError: (err) => {
           const message = err?.response?.data?.error?.message|| "Failed to open pass. Please try again.";
@@ -129,11 +131,11 @@ export const PushPassItem = () => {
         {
           onSuccess: (data) => {
             const response = data?.newCharacterId || data?.data?.newCharacterId;
+            setIsTransitioning(true);
             if (response) {
               setGeneratedCharacterId(response);
             }
-            refetch();
-            refetchFee();
+            Promise.all([refetch(), refetchFee()]).finally(() => setIsTransitioning(false));
           },
           onError: (err: any) => {
             const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
@@ -167,11 +169,11 @@ export const PushPassItem = () => {
           {
             onSuccess: (data) => {
               const response = data?.newCharacterId || data?.data?.newCharacterId;
+              setIsTransitioning(true);
               if (response) {
                 setGeneratedCharacterId(response);
               }
-              refetch();
-              refetchFee();
+              Promise.all([refetch(), refetchFee()]).finally(() => setIsTransitioning(false));
             },
             onError: (err: any) => {
               const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
@@ -200,7 +202,8 @@ export const PushPassItem = () => {
       },
       {
         onSuccess: () => {
-          refetch();
+          setIsTransitioning(true);
+          refetch().finally(() => setIsTransitioning(false));
         },
         onError: (err: any) => {
           const message = err?.response?.data?.error?.message || "Failed to mint. Please try again.";
@@ -265,14 +268,47 @@ export const PushPassItem = () => {
         <Box
           display="flex"
           flexDirection="column"
-          justifyContent="center"
           alignItems="center"
           width="100%"
-          css={css`
-            margin: 80px 0px;
-          `}
+          gap="spacing-md"
         >
-          <Spinner size="large" />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            width="100%"
+            gap="spacing-xxs"
+          >
+            <Skeleton isLoading width="60%" height="32px" borderRadius="radius-xs" />
+            <Skeleton isLoading width="40%" height="18px" borderRadius="radius-xs" />
+          </Box>
+
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            width="100%"
+            gap="spacing-md"
+            css={css`
+              margin: 40px 0px;
+            `}
+          >
+            {characterId && characterId !== "open" ? (
+              <>
+                <Skeleton isLoading width="248px" height="318px" borderRadius="radius-md" />
+                <Box display="flex" flexDirection="row" gap="spacing-md">
+                  <Skeleton isLoading width="180px" height="40px" borderRadius="radius-xs" />
+                  <Skeleton isLoading width="140px" height="40px" borderRadius="radius-xs" />
+                </Box>
+                <Skeleton isLoading width="150px" height="16px" borderRadius="radius-xs" />
+              </>
+            ) : (
+              <>
+                <Skeleton isLoading width="227px" height="290px" borderRadius="radius-md" />
+                <Skeleton isLoading width="140px" height="40px" borderRadius="radius-xs" />
+              </>
+            )}
+          </Box>
         </Box>
       )}
 
