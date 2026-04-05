@@ -1,24 +1,9 @@
 import { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { usePushWalletContext } from "@pushchain/ui-kit";
-import { generateNonce } from "siwe";
+import { SiweMessage, generateNonce } from "siwe";
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
-
-export const getSiweDomainAndUri = () => {
-  if (typeof window === "undefined") {
-    return { domain: "wallet.push.org", uri: "https://wallet.push.org" };
-  }
-  const host = window.location.hostname;
-  const isLocalhost =
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host.endsWith(".localhost");
-  if (isLocalhost) {
-    return { domain: "wallet.push.org", uri: "https://wallet.push.org" };
-  }
-  return { domain: host, uri: window.location.origin };
-};
 
 interface PushMessageData {
   [key: string]: string | undefined;
@@ -29,7 +14,6 @@ interface PushMessageData {
   chainId: string;
   nonce: string;
   issuedAt: string;
-  statement: string;
 }
 
 interface SignMessageResult {
@@ -39,29 +23,6 @@ interface SignMessageResult {
   error?: string;
   isLoading: boolean;
 }
-
-const buildPushSignInMessage = (payload: PushMessageData): string => {
-  const { domain, address, uri, version, chainId, nonce, issuedAt, statement, ...extra } = payload;
-
-  const lines = [
-    `${domain} wants you to sign in with your Push account:`,
-    address,
-    "",
-    statement,
-    "",
-    `URI: ${uri}`,
-    `Version: ${version}`,
-    `Chain ID: ${chainId}`,
-    `Nonce: ${nonce}`,
-    `Issued At: ${issuedAt}`,
-  ];
-
-  Object.entries(extra).forEach(([k, v]) => {
-    if (v != null) lines.push(`${k}: ${v}`);
-  });
-
-  return lines.join("\n");
-};
 
 export const useSignPushMessage = () => {
   const { universalAccount, handleSignMessage } = usePushWalletContext("wallet1");
@@ -77,8 +38,9 @@ export const useSignPushMessage = () => {
           throw new Error("Push Wallet is not connected");
         }
 
-        const { domain, uri } = getSiweDomainAndUri();
+        const domain = window.location.hostname;
         const nonce = generateNonce();
+        const origin = window.location.origin;
         const rawAddress = universalAccount.address;
         const { chainId } = parseCAIP(universalAccount?.chain);
 
@@ -89,16 +51,16 @@ export const useSignPushMessage = () => {
         const messageToSend: PushMessageData = {
           domain,
           address,
-          uri,
+          uri: origin,
           version: "1",
           chainId: String(chainId),
           nonce,
           issuedAt: new Date().toISOString(),
-          statement: "Sign in to Push Chain",
           ...extraData,
         };
 
-        const messageString = buildPushSignInMessage(messageToSend);
+        const siweMessage = new SiweMessage(messageToSend);
+        const messageString = siweMessage.prepareMessage();
         const messageBytes = new TextEncoder().encode(messageString);
         const signedMessageBytes = await handleSignMessage(messageBytes);
         const signature = ethers.utils.hexlify(signedMessageBytes);

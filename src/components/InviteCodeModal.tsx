@@ -19,7 +19,7 @@ type InviteCodeModalProps = {
 };
 
 export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
-  const { universalAccount, handleUserLogOutEvent } = usePushWalletContext('wallet1');
+  const { universalAccount, handleUserLogOutEvent, connectionType } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -39,14 +39,14 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
   const { refetch: refetchCultStatus } = useGetUserCultStatus({
 		wallet: caip10WalletAddress
-	});
+  });
 
   const ueaAccount = pushChainClient?.universal?.account;
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
   const { signMessage: signMessageWithPush } = useSignPushMessage();
 
-  const isPushWalletUser = PUSH_CHAIN_IDS.includes(chainId);
+  const isPushSocialWalletUser = connectionType === 'social';
   const isSolana = chainId === WalletChainType.SOLANA;
 
   const handleSubmit = async () => {
@@ -55,25 +55,24 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         return;
       }
 
-      let signature: string;
+    let signature: string;
     let dataPayload: string;
 
-    console.log('handle submit')
+    console.log(connectionType, 'isSocial')
+
 
     try {
-        // TODO: find out way to check social login vs push wallet user
-        // if (isPushWalletUser) {
-        //   const { signature: newSignature, messageString, error } = await signMessageWithPush();
+        if (isPushSocialWalletUser) {
+          const { signature: newSignature, messageToSend ,error } = await signMessageWithPush();
 
-        //   if (error || !newSignature) {
-        //     setError(error || "Failed to sign message");
-        //     return;
-        //   }
+          if (error || !newSignature) {
+            setError(error || "Failed to sign message");
+            return;
+          }
 
-        //   signature = newSignature;
-        //   dataPayload = messageString;
-
-        // } else {
+          signature = newSignature;
+          dataPayload = messageToSend;
+        } else {
           const { signature: newSignature, messageToSend, messageString, error } = isSolana
             ? await signMessageWithSolana()
             : await signMessage();
@@ -85,7 +84,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
           signature = newSignature;
           dataPayload = isSolana ? messageString : messageToSend;
-        // }
+        }
       } catch (err) {
         console.error("Signing failed. Please try again", err)
         setError("Signing failed. Please try again.");

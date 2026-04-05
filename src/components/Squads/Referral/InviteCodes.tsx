@@ -5,7 +5,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../../../queries";
 import { device } from "../../../config/globals";
 
-import { Box, Text, Copy, Button, Spinner } from "../../../blocks"
+import { Box, Text, Copy, Button, Skeleton } from "../../../blocks"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 
@@ -207,6 +207,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
         </Box>
       </Box>
 
+
       <Box
         display="flex"
         flexDirection="column"
@@ -215,33 +216,40 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
             width: 100%;
           `}
       >
-        {isWalletConnected ?
-          <Box>
-            {(isLoading || !isSuccess) &&
+        {isWalletConnected ? (
+          <>
+            {(isLoading || !isSuccess) && (
               <Box
+                display="flex"
+                flexDirection="column"
+                gap="spacing-xs"
                 width="100%"
-                height="100%"
-                alignItems="center"
-                justifyContent="center"
-                css={css`
-                  margin: auto auto;
-                  flex: 1;
-              `}>
-                <Spinner variant="primary" size="extraLarge" css={css`margin: auto auto;`} />
-              </Box>}
-          </Box> :
-           <Box
+              >
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} isLoading>
+                    <Box css={css`
+                      width: 100%;
+                      height: 40px;
+                    `} />
+                  </Skeleton>
+                ))}
+              </Box>
+            )}
+          </>
+        ) : (
+          <Box
             display="flex"
             justifyContent="center"
             css={css`
               width: 100%;
               height: 100%;
-            `}>
+            `}
+          >
             <Text variant="h1-bold" color="text-primary">-</Text>
           </Box>
-          }
+        )}
 
-        {isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && !isCultUser && (
+        {!isLoading && isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && !isCultUser && (
           <Button
             variant="outline"
             size="extraSmall"
@@ -257,20 +265,22 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           </Button>
         )}
 
-       {connectionStatus === "connected" && isCultUser && ( <Button
-          variant="primary"
-          size="small"
-          onClick={() => requestInvitesCode()}
-          loading={isFetchingInviteCode}
-          disabled={isFetchingInviteCode}
-          css={css`
-            margin: 0 auto auto auto;
-            cursor: pointer;
-            width: 100%;
-          `}
-        >
-          Generate Invite Code
-        </Button>)}
+        {!isLoading && isWalletConnected && isCultUser && (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={() => requestInvitesCode()}
+            loading={isFetchingInviteCode}
+            disabled={isFetchingInviteCode}
+            css={css`
+              margin: 0 auto auto auto;
+              cursor: pointer;
+              width: 100%;
+            `}
+          >
+            Generate Invite Code
+          </Button>
+        )}
 
         <Box
           display="flex"

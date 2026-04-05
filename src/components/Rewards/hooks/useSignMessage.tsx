@@ -73,6 +73,8 @@ export const useSignMessageWithEthereum = () => {
         const signedMessageBytes = await handleSignMessage(messageBytes);
         const signature = ethers.utils.hexlify(signedMessageBytes);
 
+        console.log(messageToSend, 'messageToSend');
+
         setSignature(signature);
 
         return { signature, messageToSend, isLoading: false };
