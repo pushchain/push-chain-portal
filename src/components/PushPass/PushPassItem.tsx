@@ -440,10 +440,10 @@ export const PushPassItem = () => {
                 background: url(${RarePassBg}) center/cover;
                 width: 249px;
                 height: 329px;
-                overflow: hidden;
+                overflow: visible;
               `}
             >
-              <CharacterImage characterId={characterId} width={249} height={326} />
+              <CharacterImage characterId={characterId} width={249} height={326} reflectionBg={`url(${RarePassBg}) center/cover`} />
             </Box>
 
 

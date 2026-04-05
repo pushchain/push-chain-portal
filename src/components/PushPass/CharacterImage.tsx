@@ -11,6 +11,7 @@ type CharacterImageProps = {
   characterId: string;
   width?: number;
   height?: number;
+  reflectionBg?: string;
 };
 
 /**
@@ -57,7 +58,7 @@ const getImagePath = (
   return `${base}Otter-Pass/${type}/${paddedValue}-${type}.png`;
 };
 
-export const CharacterImage = ({ characterId, width = 248, height = 318 }: CharacterImageProps) => {
+export const CharacterImage = ({ characterId, width = 248, height = 318, reflectionBg }: CharacterImageProps) => {
   const [traits, setTraits] = useState<CharacterTraits | null>(null);
   const [imageError, setImageError] = useState(false);
 
@@ -152,9 +153,9 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
           opacity: 0.15,
           filter: 'blur(4px)',
           overflow: 'hidden',
-          background: '#ececb4',
+          background: reflectionBg || 'transparent',
           borderRadius: '24px',
-          zIndex: -2,
+          zIndex: 5,
         }}
       >
         <img src={bodyPath} alt="" style={imgStyle} />
