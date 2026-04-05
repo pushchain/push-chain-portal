@@ -25,3 +25,5 @@ export * from './useGetLevelProgress';
 export * from './usePushWalletSybilCheck';
 export * from './useGetSybilStatus';
 export * from './useVerifySybilWallet';
+export * from './useGetPCTokenBalance';
+export * from './useClaimPCTokens';

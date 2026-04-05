@@ -9,9 +9,11 @@ import useMediaQuery from "../../hooks/useMediaQuery";
 import { device } from "../../config/globals";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
-import { Box, HoverableSVG, LevelUpIcon, ProgressBar, Refresh, RewardsStarGradient, Skeleton, Text } from "../../blocks"
+import { Box, Button, HoverableSVG, LevelUpIcon, ProgressBar, Refresh, RewardsStarGradient, Skeleton, Text } from "../../blocks"
 import LevelUpModal from "./LevelUpModal";
+import ClaimPCTokenModal from "./ClaimPCTokenModal";
 import { useRewardStatus } from "../../context/rewardStatusContext";
+import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -89,6 +91,7 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
 
 export const LevelUp = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
     const isMobile = useMediaQuery(device.mobileL);
     const { universalAccount } = usePushWalletContext('wallet1');
     const caip10WalletAddress = walletToFullCAIP10(
@@ -105,29 +108,10 @@ export const LevelUp = () => {
     const { data: levelProgress, isLoading } = useGetLevelProgress(userDetails?.userId);
     const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, caip10WalletAddress);
 
-    const { isFetching: isFetchingLastOne, refetch: refetchLastOne } = useGetQuestsProgress({
-      appId: "lastone",
-      userId: userDetails?.userId
-    });
+    const { data: getTokenBalance, isLoading: isLoadingPCTokens } = useGetPCTokenBalance(userDetails?.userId);
 
-    const { isFetching: isFetchingRamenSwap, refetch: refetchRamenSwap } = useGetQuestsProgress({
-      appId: "ramen-swap",
-      userId: userDetails?.userId
-    });
-
-    const { isFetching: isFetchingBossQuests, refetch: refetchBossQuests } = useGetQuestsProgress({
-      appId: "boss-quests",
-      userId: userDetails?.userId,
-    });
-
-  const isLoadingProgress = isFetchingLastOne || isFetchingRamenSwap || isFetchingBossQuests;
-  const refetchProgress = () => {
-    refetchLastOne();
-    refetchRamenSwap();
-    refetchBossQuests();
-  }
-
-
+    const canClaimPCTokens = getTokenBalance?.claimableTokens > 0 && !rewardsLocked;
+    const isLoadingClaimButton = isLoadingPCTokens && isLockedStatusLoading;
 
     const xpNeededToLevelUp =
       levelProgress?.nextLevelConfig?.xpNeeded - levelProgress?.xp;
@@ -233,41 +217,23 @@ export const LevelUp = () => {
             />
       </Box>
 
-      {/*{!isMobile && !rewardsLocked && (<Box
-        display="flex"
-        alignItems="center"
-        cursor="pointer"
-        gap="spacing-xxs"
-        onClick={()=> refetchProgress()}
+      <Skeleton isLoading={isLoadingClaimButton}>
+      {canClaimPCTokens &&
+        <Button
+        onClick={() => setIsClaimModalOpen(true)}
         css={css`
-          border-radius: 24px;
-          border: 1px solid rgba(255, 255, 255, 0.10);
-          background: rgba(66, 67, 103, 0.20);
-          padding: 8px 12px;
-        `}
-      >
-        <HoverableSVG
-          defaultBackground="#FBE8FF"
-          hoverBackground="#FBE8FF"
-          padding="spacing-xxxs"
-          borderRadius="radius-sm"
-          icon={
-            <Box
-              css={css`
-                display: flex;
-                ${isLoadingProgress && css`animation: ${spin} 0.5s linear infinite;`}
-              `}
-            >
-              <Refresh color="icon-brand-medium" />
-            </Box>
-          }
-        ></HoverableSVG>
-        <Box margin="spacing-none spacing-none spacing-none spacing-xxxs">
-          <Text variant="bs-semibold" color="rgba(255, 255, 255, 0.75)">
-            Update Quest Progress
-          </Text>
-        </Box>
-      </Box>)}*/}
+            width: fit-content;
+            margin: 0 auto;
+        `}>
+        Claim PC Token Rewards
+        </Button>
+        }
+      </Skeleton>
+
+      <ClaimPCTokenModal
+        isOpen={isClaimModalOpen}
+        onClose={() => setIsClaimModalOpen(false)}
+      />
 
 
       <LevelUpModal
