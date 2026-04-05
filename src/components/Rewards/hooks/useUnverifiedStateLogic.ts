@@ -101,9 +101,12 @@ export const useUnverifiedStateLogic = () => {
 
   // EVM user → advancedSybilCheck
   const runEvmCheck = async () => {
-    const headers = authHeaders ?? (await getAuthHeaders());
-    if (!universalAccount?.address || !headers) return;
     setIsVerifying(true);
+    const headers = authHeaders ?? (await getAuthHeaders());
+    if (!universalAccount?.address || !headers) {
+      setIsVerifying(false)
+      return;
+    }
 
     pushCheck(
       { address: caip10, authHeaders: headers},
@@ -116,10 +119,12 @@ export const useUnverifiedStateLogic = () => {
 
   // Push wallet user → pushWalletSybilCheck (uses linked wallet2)
   const runPushCheck = async () => {
-    const headers = authHeaders ?? (await getAuthHeaders());
-    if (!linkedAccount?.address || !headers) return;
     setIsVerifying(true);
-
+    const headers = authHeaders ?? (await getAuthHeaders());
+    if (!linkedAccount?.address || !headers) {
+      setIsVerifying(false)
+      return;
+    }
     console.log('try call 2', linkedWalletAddress)
 
 

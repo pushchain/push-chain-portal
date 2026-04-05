@@ -255,7 +255,6 @@ function App() {
   const walletConfig: ProviderConfigProps = {
     uid: 'wallet1',
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
-    // NOTE: comment socials till S3 launch
     login: {
       email: true,
       google: true,
@@ -292,6 +291,8 @@ function App() {
          phone: false,
          wallet: {
            enabled: true,
+           excludedChains: [PushUI.CONSTANTS.CHAIN.PUSH],
+
          },
          socials: {
            discord: false,

@@ -12,6 +12,7 @@ import {
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
+import { useSignPushMessage } from "./useSignPushMessage";
 import { WalletChainType } from "../utils/wallet";
 import { SKIP_VERIFICATION_ACTIVITIES } from "../utils/skipVerificationActivities";
 
@@ -40,10 +41,13 @@ const useVerifyRewards = ({
 
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext('wallet1');
+  const { universalAccount, connectionType } = usePushWalletContext('wallet1');
   const { chainId } = parseCAIP(universalAccount?.chain);
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessageWithPush } = useSignPushMessage();
+
+  const isPushSocialWallet = connectionType === 'social';
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -86,37 +90,32 @@ const useVerifyRewards = ({
     if (!skipVerification) {
       const isSolana = chainId == WalletChainType.SOLANA;
 
-      if (isSolana) {
-        const {
-          signature,
-          messageToSend: signedMessage,
-          error,
-        } = await signMessageWithSolana();
-        if (error || !signature) {
-          console.log(error);
-          setErrorMessage(error);
-          setVerifyingRewards(false);
-          return;
-        }
+      const signFn = isPushSocialWallet
+        ? signMessageWithPush
+        : isSolana
+          ? signMessageWithSolana
+          : signMessage;
 
-        verificationProof = signature;
-        messageToSend = signedMessage;
-      } else {
-        const {
-          signature,
-          messageToSend: signedMessage,
-          error,
-        } = await signMessage();
-        if (error || !signature) {
-          console.log(error);
-          setErrorMessage(error);
-          setVerifyingRewards(false);
-          return;
-        }
+      const {
+        signature,
+        messageToSend: signedMessage,
+        messageString,
+        error,
+      } = await signFn();
 
-        verificationProof = signature;
-        messageToSend = signedMessage as Record<string, string | undefined>;
+      if (error || !signature) {
+        console.log(error);
+        setErrorMessage(error);
+        setVerifyingRewards(false);
+        return;
       }
+
+      verificationProof = signature;
+      messageToSend = (isPushSocialWallet
+        ? signedMessage
+        : isSolana
+          ? signedMessage
+          : signedMessage) as Record<string, string | undefined>;
 
       if (!verificationProof) {
         setErrorMessage('Invalid Verification Proof');

@@ -17,7 +17,7 @@
     "@babel/runtime": "^7.26.9",
     "@emotion/react": "^11.14.0",
     "@metamask/eth-sig-util": "^4.0.0",
-    "@pushchain/ui-kit": "^5.1.0",
+    "@pushchain/ui-kit": "^5.2.0-alpha.0",
     "@pushprotocol/push-chain": "^0.1.7",
     "@pushprotocol/restapi": "^1.7.31",
     "@pushprotocol/uiweb": "1.7.1",

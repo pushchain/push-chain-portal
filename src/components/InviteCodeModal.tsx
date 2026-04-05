@@ -58,9 +58,6 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     let signature: string;
     let dataPayload: string;
 
-    console.log(connectionType, 'isSocial')
-
-
     try {
         if (isPushSocialWalletUser) {
           const { signature: newSignature, messageToSend ,error } = await signMessageWithPush();

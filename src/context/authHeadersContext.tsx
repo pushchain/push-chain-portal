@@ -10,6 +10,7 @@ import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 
 import { useSignMessageWithEthereum } from "../components/Rewards/hooks/useSignMessage";
 import { useSignMessageWithSolana } from "../components/Rewards/hooks/useSignMessageWithSolana";
+import { useSignPushMessage } from "../components/Rewards/hooks/useSignPushMessage";
 import { AuthHeaders } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { WalletChainType } from "../components/Rewards/utils/wallet";
@@ -62,10 +63,13 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [isSigningMessage, setIsSigningMessage] = useState(false);
   const location = useLocation();
 
-  const { universalAccount } = usePushWalletContext("wallet1");
+  const { universalAccount, connectionType } = usePushWalletContext("wallet1");
   const { pushChainClient } = usePushChainClient('wallet1');
   const { signMessage: signMessageEthereum } = useSignMessageWithEthereum();
   const { signMessage: signMessageSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessagePush } = useSignPushMessage();
+
+  const isPushSocialWallet = connectionType === 'social';
 
   const walletAddress = universalAccount?.address;
   const chain = universalAccount?.chain;
@@ -111,10 +115,13 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
     if (location.pathname === '/discord/verification') return null;
 
 
-    const signFn = isSolana ? signMessageSolana : signMessageEthereum;
+    const signFn = isPushSocialWallet
+      ? signMessagePush
+      : isSolana
+        ? signMessageSolana
+        : signMessageEthereum;
 
       setIsSigningMessage(true);
-
 
       try {
         const { signature, messageToSend, messageString, error } =
@@ -122,7 +129,11 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
 
         if (error || !signature) return null;
 
-        const messagePayload = isSolana ? messageString : messageToSend;
+        const messagePayload = isPushSocialWallet
+          ? messageToSend
+          : isSolana
+            ? messageString
+            : messageToSend;
 
         if (!messagePayload) return null;
 
