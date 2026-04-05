@@ -59,10 +59,11 @@ const PushPass = () => {
     })),
 
     // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
+    // show in grayscale
     ...unmintedCharacters.map((char, index) => ({
       id: rareActiveCount + index + 1,
       isLocked: false,
-      lockMessage: 'Mint/Re-roll Pass',
+      lockMessage: 'Confirm/Mint Pass',
       character: char
     })),
 

@@ -71,59 +71,75 @@ const useVerifyRewards = ({
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
 
+  const SKIP_VERIFICATION_ACTIVITIES = [
+      "lastone_place_bid",
+      "lastone_win_50pc_claim",
+      "lastone_win_3_rounds_claim",
+      "lastone_bid_10_single_round",
+      "lastone_participate_25_rounds",
+      "ramen_swap_one_swap",
+      "ramen_swap_stablecoin_to_push",
+      "ramen_swap_five_swaps",
+      "ramen_swap_hold_three_chain_tokens"
+  ];
+
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    let verificationProof;
+    const skipVerification = SKIP_VERIFICATION_ACTIVITIES.some(
+      (prefix) => activityTypeId.startsWith(prefix)
+    );
+
+    let verificationProof: string | undefined;
     let messageToSend: Record<string, string | undefined> = {};
 
-    const isSolana = chainId == WalletChainType.SOLANA;
+    if (!skipVerification) {
+      const isSolana = chainId == WalletChainType.SOLANA;
 
-    if (isSolana) {
-      const {
-        signature,
-        messageToSend: signedMessage,
-        error,
-      } = await signMessageWithSolana();
-      if (error || !signature) {
-        console.log(error);
-        setErrorMessage(error);
+      if (isSolana) {
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessageWithSolana();
+        if (error || !signature) {
+          console.log(error);
+          setErrorMessage(error);
+          setVerifyingRewards(false);
+          return;
+        }
+
+        verificationProof = signature;
+        messageToSend = signedMessage;
+      } else {
+        const {
+          signature,
+          messageToSend: signedMessage,
+          error,
+        } = await signMessage();
+        if (error || !signature) {
+          console.log(error);
+          setErrorMessage(error);
+          setVerifyingRewards(false);
+          return;
+        }
+
+        verificationProof = signature;
+        messageToSend = signedMessage as Record<string, string | undefined>;
+      }
+
+      if (!verificationProof) {
+        setErrorMessage('Invalid Verification Proof');
         setVerifyingRewards(false);
         return;
       }
-
-      verificationProof = signature;
-      messageToSend = signedMessage;
-    } else {
-      const {
-        signature,
-        messageToSend: signedMessage,
-        error,
-      } = await signMessage();
-      if (error || !signature) {
-        console.log(error);
-        setErrorMessage(error);
-        setVerifyingRewards(false);
-        return;
-      }
-
-      verificationProof = signature;
-      messageToSend = signedMessage as Record<string, string | undefined>;
     }
-
-    if (!verificationProof) {
-      setErrorMessage('Invalid Verification Proof');
-      setVerifyingRewards(false);
-    }
-
-    console.log(verificationProof, messageToSend, 'got here')
 
     claimRewardsActivity(
       {
         userId: updatedId || (userId as string),
         activityTypeId,
-        data: messageToSend,
-        verificationProof,
+        ...(skipVerification ? {} : { data: messageToSend, verificationProof }),
       },
       {
         onSuccess: (response) => {
