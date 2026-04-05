@@ -284,21 +284,35 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
           >
             <Skeleton isLoading={isWalletConnected && isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
               {!isLocked && questId && userId && (
-                <ActivityButton
-                  activityType={questId as ActvityType}
-                  activityTypeId={questId}
-                  userId={userId}
-                  refetchActivity={() => refetchActivities?.()}
-                  usersSingleActivity={activityStatus?.[questId]}
-                  setErrorMessage={setErrorMessage}
-                  isLoadingActivity={isLoadingActivity || false}
-                  label="Claim"
-                  buttonSize="small"
-                  buttonVariant="primary"
-                  buttonCss={css`
-                    width: 100%;
-                  `}
-                />
+                showProgress && progress < maxProgress ? (
+                  <Button
+                    variant="outline"
+                    size="small"
+                    disabled
+                    css={css`
+                      width: 100%;
+                      background: transparent;
+                    `}
+                  >
+                    Claim
+                  </Button>
+                ) : (
+                  <ActivityButton
+                    activityType={questId as ActvityType}
+                    activityTypeId={questId}
+                    userId={userId}
+                    refetchActivity={() => refetchActivities?.()}
+                    usersSingleActivity={activityStatus?.[questId]}
+                    setErrorMessage={setErrorMessage}
+                    isLoadingActivity={isLoadingActivity || false}
+                    label="Claim"
+                    buttonSize="small"
+                    buttonVariant="primary"
+                    buttonCss={css`
+                      width: 100%;
+                    `}
+                  />
+                )
             )}
 
             {(isLocked) && (

@@ -174,8 +174,10 @@ const QuestItem: FC<QuestItemProps> = ({
                       `}
                     >
                       <HoverableSVG
-                        defaultBackground="transparent"
+                        defaultBackground={verifyingRewards ? "#C742DD" :"transparent"}
+                        defaultColor={verifyingRewards ? "#FFFFFF" : "rgba(255, 255, 255, 0.25)"}
                         hoverBackground="#C742DD"
+                        hoverColor="#FFFFFF"
                         padding="spacing-xxxs"
                         borderRadius="radius-sm"
                         icon={
@@ -185,7 +187,7 @@ const QuestItem: FC<QuestItemProps> = ({
                               ${verifyingRewards && css`animation: ${spin} 0.5s linear infinite;`}
                             `}
                           >
-                            <Refresh color="rgba(255, 255, 255, 0.25)" />
+                            <Refresh color="currentColor" />
                           </Box>
                         }
                       />
