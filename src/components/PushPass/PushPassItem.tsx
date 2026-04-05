@@ -59,7 +59,7 @@ export const PushPassItem = () => {
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: reshuffleFeeData, refetch: refetchFee } = useGetNextReshuffleFee({
+  const { data: reshuffleFeeData, isLoading: isFeeLoading, refetch: refetchFee } = useGetNextReshuffleFee({
     characterId: characterId as string,
   });
 
@@ -452,50 +452,54 @@ export const PushPassItem = () => {
                   margin-top: 24px;
                 `}
               >
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  gap="spacing-md"
-                >
-                  <Button
-                    variant="outline"
-                    onClick={handleMint}
-                    disabled={isActionLoading}
-                    loading={isMinting}
+                <Skeleton isLoading={isFeeLoading} width="340px" height="40px" borderRadius="radius-xs">
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    gap="spacing-md"
                   >
-                   Confirm & Claim Pass
-                  </Button>
-
-                  {canReshuffle && (
                     <Button
-                      variant="primary"
-                      onClick={handleReshuffle}
+                      variant="outline"
+                      onClick={handleMint}
                       disabled={isActionLoading}
-                      css={css`
-                        min-width: 140px;
-                      `}
+                      loading={isMinting}
                     >
-                      {isReshuffling || isPaying ? (
-                        <Spinner size="small" />
-                      ) : nextFeeType === 'tweet' ? (
-                        <><Twitter width={20} height={20} /> Tweet to Reroll</>
-                      ) : nextFeeType === 'PC' ? (
-                        <>Reroll ({nextFee} PC)</>
-                      ) : (
-                        "Reroll"
-                      )}
+                     Confirm & Claim Pass
                     </Button>
-                  )}
-                </Box>
 
-                <Text
-                  variant="bs-regular"
-                  css={css`
-                    color: white;
-                  `}
-                >
-                  {reshuffleCount}/{maxReshuffles} reshuffles used
-                </Text>
+                    {canReshuffle && (
+                      <Button
+                        variant="primary"
+                        onClick={handleReshuffle}
+                        disabled={isActionLoading}
+                        css={css`
+                          min-width: 140px;
+                        `}
+                      >
+                        {isReshuffling || isPaying ? (
+                          <Spinner size="small" />
+                        ) : nextFeeType === 'tweet' ? (
+                          <><Twitter width={20} height={20} /> Tweet to Reroll</>
+                        ) : nextFeeType === 'PC' ? (
+                          <>Reroll ({nextFee} PC)</>
+                        ) : (
+                          "Reroll"
+                        )}
+                      </Button>
+                    )}
+                  </Box>
+                </Skeleton>
+
+                <Skeleton isLoading={isFeeLoading} width="150px" height="16px" borderRadius="radius-xs">
+                  <Text
+                    variant="bs-regular"
+                    css={css`
+                      color: white;
+                    `}
+                  >
+                    {reshuffleCount}/{maxReshuffles} reshuffles used
+                  </Text>
+                </Skeleton>
               </Box>
             )}
           </Box>
