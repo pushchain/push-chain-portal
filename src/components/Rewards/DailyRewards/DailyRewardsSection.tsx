@@ -15,6 +15,7 @@ import { DailyRewardsItem } from "./DailyRewardsItem";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import { walletToFullCAIP10 } from "../../../helpers/web3helper";
+import { DAILY_REWARDS } from "../utils/dailyRewardsConfig";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
@@ -43,15 +44,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     });
   };
 
-  const dailyRewardsActivities = [
-    { id: 1, text: "Day 1", points: 100 },
-    { id: 2, text: "Day 2", points: 130 },
-    { id: 3, text: "Day 3", points: 160 },
-    { id: 4, text: "Day 4", points: 200 },
-    { id: 5, text: "Day 5", points: 240 },
-    { id: 6, text: "Day 6", points: 280 },
-    { id: 7, text: "Day 7", points: 300 },
-  ];
+  const dailyRewardsActivities = DAILY_REWARDS;
 
   return (
     <Box

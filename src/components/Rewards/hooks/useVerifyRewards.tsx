@@ -13,6 +13,7 @@ import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { WalletChainType } from "../utils/wallet";
+import { SKIP_VERIFICATION_ACTIVITIES } from "../utils/skipVerificationActivities";
 
 export type UseVerifyRewardsParams = {
   activityTypeId: string;
@@ -71,17 +72,6 @@ const useVerifyRewards = ({
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
 
-  const SKIP_VERIFICATION_ACTIVITIES = [
-      "lastone_place_bid",
-      "lastone_win_50pc_claim",
-      "lastone_win_3_rounds_claim",
-      "lastone_bid_10_single_round",
-      "lastone_participate_25_rounds",
-      "ramen_swap_one_swap",
-      "ramen_swap_stablecoin_to_push",
-      "ramen_swap_five_swaps",
-      "ramen_swap_hold_three_chain_tokens"
-  ];
 
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
