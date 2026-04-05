@@ -18,9 +18,12 @@ type LevelUpModalProps = {
   onClose: () => void;
   level: number;
   rewards: LevelUpReward[];
+  quest?: boolean;
+  basePoints?: number;
+  baseXP?: number;
 };
 
-const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) => {
+const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, baseXP }: LevelUpModalProps) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -69,13 +72,14 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
               -webkit-text-fill-color: transparent;
             `}
           >
-            Your Rewards!
+            {quest ? "Quest Rewards!" : "Your Rewards!"}
           </Text>
 
-          <Box display="flex" alignItems="center" gap="spacing-xxs">
+          {!quest &&
+            <Box display="flex" alignItems="center" gap="spacing-xxs">
             <LevelUpIcon />
             <Text variant="h3-bold">Lv.{level}</Text>
-          </Box>
+          </Box>}
         </Box>
 
         <Box margin="spacing-sm spacing-none spacing-none spacing-none">

@@ -9,6 +9,7 @@ import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
 import { LevelUp } from './LevelUp';
 import { Box, LockFilled, Text } from '../../blocks';
+import { sha512 } from 'ethers/lib/utils';
 
 const RewardsActivities = () => {
   const { isLocked, isLockedStatusLoading } = useRewardStatus();

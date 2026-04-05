@@ -35,6 +35,7 @@ const useVerifyRewards = ({
   const [rewardsActivityStatus, setRewardsActivityStatus] = useState<
     "Claimed" | "Pending" | null
   >(null);
+  const [claimResponse, setClaimResponse] = useState<any>(null);
 
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
@@ -129,6 +130,7 @@ const useVerifyRewards = ({
           // TODO: fix this later
           if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
             setRewardsActivityStatus("Claimed");
+            setClaimResponse(response.data || response);
             // if (setCurrentLevel) {
             //   setCurrentLevel(activityTypeId);
             // }
@@ -163,6 +165,7 @@ const useVerifyRewards = ({
     rewardsActivityStatus,
     handleRewardsVerification,
     progressPercent,
+    claimResponse,
   };
 };
 

@@ -1,10 +1,11 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { css, keyframes } from 'styled-components';
 import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
+import LevelUpModal from '../LevelUpModal';
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -37,9 +38,14 @@ const QuestItem: FC<QuestItemProps> = ({
   refetchActivities,
   setErrorMessage,
 }) => {
-  const { handleRewardsVerification, verifyingRewards, progressPercent } = useVerifyRewards({
+  const [showLevelUp, setShowLevelUp] = useState(false);
+
+  const { handleRewardsVerification, verifyingRewards, progressPercent, claimResponse } = useVerifyRewards({
     activityTypeId: quest.id,
-    refetchActivity: () => refetchActivities?.(),
+    refetchActivity: () => {
+      refetchActivities?.();
+      setShowLevelUp(true);
+    },
     setErrorMessage,
   });
 
@@ -199,6 +205,21 @@ const QuestItem: FC<QuestItemProps> = ({
           </Box>
         </Box>
       </Box>
+
+      {showLevelUp && (
+        <LevelUpModal
+          isOpen={showLevelUp}
+          onClose={() => setShowLevelUp(false)}
+          level={claimResponse?.level ?? 0}
+          quest={true}
+          basePoints={claimResponse?.points}
+          baseXP={claimResponse?.multiplier}
+          rewards={[
+            ...(claimResponse?.points ? [{ id: 1, value: String(claimResponse.points), label: 'Points', type: 'points' }] : []),
+            ...(claimResponse?.multiplier ? [{ id: 2, value: `${claimResponse.multiplier}x`, label: 'XP Boost', type: 'xp_boost' }] : []),
+          ]}
+        />
+      )}
     </Box>
   );
 };
@@ -461,7 +482,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 key={quest.id}
                 quest={quest}
                 index={index}
-                isClaimCompleted={activityStatus?.[quest?.id]?.status === 'COMPLETED'}
+                isClaimCompleted={completedMap[quest?.id] ?? (activityStatus?.[quest?.id]?.status === 'COMPLETED')}
                 userId={userId as string}
                 refetchActivities={refetchActivities}
                 setErrorMessage={setErrorMessage!}

@@ -84,10 +84,10 @@ const AppQuestSection = () => {
   return (
     <Box
       width="100%">
-      {errorMessage &&
+      {/*{errorMessage &&
         <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
           <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
-        </Box>}
+        </Box>}*/}
 
         <Box
           display="flex"
