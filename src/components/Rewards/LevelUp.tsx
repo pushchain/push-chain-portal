@@ -220,7 +220,7 @@ export const LevelUp = () => {
             width="100%"
             css={css`
               box-sizing: border-box;
-              ${rewardsLocked ? 'padding-bottom: 24px;' : ''}
+              padding-bottom: 24px;
             `}
           >
 
@@ -233,7 +233,7 @@ export const LevelUp = () => {
             />
       </Box>
 
-      {!isMobile && !rewardsLocked && (<Box
+      {/*{!isMobile && !rewardsLocked && (<Box
         display="flex"
         alignItems="center"
         cursor="pointer"
@@ -267,7 +267,7 @@ export const LevelUp = () => {
             Update Quest Progress
           </Text>
         </Box>
-      </Box>)}
+      </Box>)}*/}
 
 
       <LevelUpModal
