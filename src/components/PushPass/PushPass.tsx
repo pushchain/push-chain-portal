@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetCharacterEligible, useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
+import { useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import PushPassTabs from './Tabs/PushPassTabs';
@@ -31,31 +31,25 @@ const PushPass = () => {
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: isUserEligible, isFetching: isLoadingEligible } = useGetCharacterEligible({
-    userWallet: caip10WalletAddress
-  });
-
   const { data: rarePassHistory, isFetching: isLoadingHistory } = useGetRarePassHistory({
     userId: userDetails?.userId ?? '',
   });
 
-  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingEligible || isLoadingHistory;
+  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
 
 
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
   const characters = userCharacterInfo?.characters || [];
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
-  const hasUnminted = unmintedCharacters.length > 0;
 
-  const isEligible = isUserEligible?.eligible ?? false;
 
   const passes = [
     // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
     ...unmintedCharacters.map((char, index) => ({
       id: rareActiveCount + index + 1,
       isLocked: false,
-      lockMessage: 'Confirm/Mint Pass',
+      lockMessage: 'Confirm/Reroll Pass',
       character: char
     })),
 

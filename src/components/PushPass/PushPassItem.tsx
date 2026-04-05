@@ -20,6 +20,9 @@ import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
+import RarePassAnimation from "../../../static/assets/website/pushpass/rare-glow.json";
+import Lottie from "lottie-react";
+
 
 
 type PassState = "loading" | "unopened" | "opened" | "minted";
@@ -428,6 +431,7 @@ export const PushPassItem = () => {
               margin: 40px 0px 60px 0px;
             `}
           >
+
             <Box
               display="flex"
               flexDirection="column"
@@ -441,6 +445,42 @@ export const PushPassItem = () => {
             >
               <CharacterImage characterId={characterId} width={249} height={326} />
             </Box>
+
+
+            {/*TODO: test animations flow later*/}
+            {/*<Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              position="relative"
+              width="100%"
+              margin="spacing-sm spacing-none spacing-none spacing-none"
+            >
+              <Lottie
+                animationData={RarePassAnimation}
+                loop
+                style={{ width: '100%', margin: '-60px 0' }}
+              />
+
+
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                position="absolute"
+                css={css`
+                  background: url(${RarePassBg}) center/cover;
+                  width: 249px;
+                  height: 329px;
+                  overflow: hidden;
+
+                  top: 150px;
+
+                `}
+              >
+                <CharacterImage characterId={characterId} width={249} height={326} />
+              </Box>
+            </Box>*/}
 
             {!isMinted && (
               <Box

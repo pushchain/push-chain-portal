@@ -39,17 +39,22 @@ export const RarePassSection: FC = () => {
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
 
   const passes = [
+    // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
+    ...unmintedCharacters.map((char, index) => ({
+      id: rareActiveCount + index + 1,
+      isLocked: false,
+      lockMessage: 'Confirm/Reroll Pass',
+      character: char
+    })),
+
+    // Active rare passes — all openable
     ...Array.from({ length: rareActiveCount }, (_, index) => ({
       id: index + 1,
       isLocked: false,
       lockMessage: 'Open Pass',
     })),
-    ...unmintedCharacters.map((char, index) => ({
-      id: rareActiveCount + index + 1,
-      isLocked: false,
-      lockMessage: 'View Pass',
-      character: char,
-    })),
+
+    // Dormant passes — locked until Level 25
     ...Array.from({ length: rareDormantCount }, (_, index) => ({
       id: rareActiveCount + unmintedCharacters.length + index + 1,
       isLocked: true,
@@ -190,8 +195,8 @@ export const RarePassSection: FC = () => {
                       size="small"
                       variant="primary"
                       css={css`
-                        background: #d548ec;
-                        box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+                      background: #d548ec;
+                      box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
                       `}
                     >
                       {pass.lockMessage}
