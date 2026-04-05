@@ -28,3 +28,4 @@ export * from './getSybilStatus';
 export * from './verifySybilWallet';
 export * from './getPCTokenBalance';
 export * from './claimPCTokens';
+export * from './getUserLevelConfig';

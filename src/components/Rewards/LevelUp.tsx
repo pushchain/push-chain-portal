@@ -1,43 +1,24 @@
 import { useState } from "react";
-import { css, keyframes } from "styled-components";
+import { css } from "styled-components";
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetLevelProgress, useGetQuestsProgress, useGetSeasonThreeUserByWallet } from "../../queries";
+import { useGetLevelProgress, useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetNewLevelStatus } from "./hooks/useGetNewLevelStatus";
 import useMediaQuery from "../../hooks/useMediaQuery";
 
 import { device } from "../../config/globals";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
-import { Box, Button, HoverableSVG, LevelUpIcon, ProgressBar, Refresh, RewardsStarGradient, Skeleton, Text } from "../../blocks"
+import { Box, Button, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text } from "../../blocks"
 import LevelUpModal from "./LevelUpModal";
 import ClaimPCTokenModal from "./ClaimPCTokenModal";
 import { useRewardStatus } from "../../context/rewardStatusContext";
 import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
+import { useGetUserLevelConfig } from "../../queries/hooks/rewards/useGetUserLevelConfig";
+import { UserLevelConfigItem } from "../../queries/services/rewards/getUserLevelConfig";
 
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
-interface UserLevelConfigItem {
-  level: number;
-  xpNeeded: number;
-  pointsReward: number;
-  pcTokensReward: number;
-  milestones?: {
-    rarePassDormant?: boolean;
-    rarePassActive?: boolean;
-    eternalTorch?: boolean;
-    referralThaw?: boolean;
-    questXPMultiplier?: number;
-    cashInjection?: string;
-    paragonMode?: boolean;
-  };
-}
-
-const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
-  { level: 1, xpNeeded: 0, pointsReward: 500, pcTokensReward: 0, milestones: {} },
+const FALLBACK_LEVEL_CONFIG: UserLevelConfigItem[] = [
+  { level: 1, xpNeeded: 0, pointsReward: 500, pcTokensReward: 0 },
   { level: 2, xpNeeded: 500, pointsReward: 1100, pcTokensReward: 10 },
   { level: 3, xpNeeded: 1000, pointsReward: 1150, pcTokensReward: 10 },
   { level: 4, xpNeeded: 1500, pointsReward: 1200, pcTokensReward: 10 },
@@ -56,7 +37,7 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
   { level: 17, xpNeeded: 10500, pointsReward: 1850, pcTokensReward: 10 },
   { level: 18, xpNeeded: 11500, pointsReward: 1900, pcTokensReward: 10 },
   { level: 19, xpNeeded: 12500, pointsReward: 1950, pcTokensReward: 10 },
-  { level: 20, xpNeeded: 13700, pointsReward: 2000, pcTokensReward: 70, milestones: { questXPMultiplier: 1.05, cashInjection: "small" } },
+  { level: 20, xpNeeded: 13700, pointsReward: 2000, pcTokensReward: 70, milestones: { questXPMultiplier: "1.05", cashInjection: "small" } },
   { level: 21, xpNeeded: 14900, pointsReward: 2050, pcTokensReward: 10 },
   { level: 22, xpNeeded: 16100, pointsReward: 2100, pcTokensReward: 10 },
   { level: 23, xpNeeded: 17300, pointsReward: 2150, pcTokensReward: 10 },
@@ -66,7 +47,7 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
   { level: 27, xpNeeded: 21700, pointsReward: 2350, pcTokensReward: 10 },
   { level: 28, xpNeeded: 22700, pointsReward: 2400, pcTokensReward: 10 },
   { level: 29, xpNeeded: 23700, pointsReward: 2450, pcTokensReward: 10 },
-  { level: 30, xpNeeded: 24700, pointsReward: 2500, pcTokensReward: 100, milestones: { questXPMultiplier: 1.10, cashInjection: "mid" } },
+  { level: 30, xpNeeded: 24700, pointsReward: 2500, pcTokensReward: 100, milestones: { questXPMultiplier: "1.10", cashInjection: "mid" } },
   { level: 31, xpNeeded: 25700, pointsReward: 2550, pcTokensReward: 10 },
   { level: 32, xpNeeded: 26700, pointsReward: 2600, pcTokensReward: 10 },
   { level: 33, xpNeeded: 27700, pointsReward: 2650, pcTokensReward: 10 },
@@ -76,7 +57,7 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
   { level: 37, xpNeeded: 31700, pointsReward: 2850, pcTokensReward: 10 },
   { level: 38, xpNeeded: 32700, pointsReward: 2900, pcTokensReward: 10 },
   { level: 39, xpNeeded: 33700, pointsReward: 2950, pcTokensReward: 10 },
-  { level: 40, xpNeeded: 34700, pointsReward: 3000, pcTokensReward: 100, milestones: { questXPMultiplier: 1.15, cashInjection: "large" } },
+  { level: 40, xpNeeded: 34700, pointsReward: 3000, pcTokensReward: 100, milestones: { questXPMultiplier: "1.15", cashInjection: "large" } },
   { level: 41, xpNeeded: 35700, pointsReward: 3050, pcTokensReward: 10 },
   { level: 42, xpNeeded: 36700, pointsReward: 3100, pcTokensReward: 10 },
   { level: 43, xpNeeded: 37500, pointsReward: 3150, pcTokensReward: 10 },
@@ -86,7 +67,7 @@ const DEFAULT_USER_LEVEL_CONFIG: UserLevelConfigItem[] = [
   { level: 47, xpNeeded: 40700, pointsReward: 3350, pcTokensReward: 10 },
   { level: 48, xpNeeded: 41500, pointsReward: 3400, pcTokensReward: 10 },
   { level: 49, xpNeeded: 42300, pointsReward: 3450, pcTokensReward: 10 },
-  {   level: 50, xpNeeded: 44500, pointsReward: 3500, pcTokensReward: 210, milestones: { rarePassActive: true, paragonMode: true } },
+  { level: 50, xpNeeded: 44500, pointsReward: 3500, pcTokensReward: 210, milestones: { rarePassActive: true, paragonMode: true } },
 ];
 
 export const LevelUp = () => {
@@ -109,19 +90,20 @@ export const LevelUp = () => {
     const { hasLevelledUp, dismiss } = useGetNewLevelStatus(levelProgress?.level, caip10WalletAddress);
 
     const { data: getTokenBalance, isLoading: isLoadingPCTokens } = useGetPCTokenBalance(userDetails?.userId);
+    const { data: levelConfig } = useGetUserLevelConfig();
 
     const canClaimPCTokens = getTokenBalance?.claimableTokens > 0 && !rewardsLocked;
     const isLoadingClaimButton = isLoadingPCTokens && isLockedStatusLoading;
 
     const xpNeededToLevelUp =
-      levelProgress?.nextLevelConfig?.xpNeeded - levelProgress?.xp;
-
-    const progressPercentage =
-      levelProgress?.nextLevelConfig?.xpNeeded
-        ? (levelProgress?.xp / levelProgress?.nextLevelConfig?.xpNeeded) * 100
+      levelProgress?.xpProgress?.xpNeededForNextLevel != null
+        ? levelProgress.xpProgress.xpNeededForNextLevel - levelProgress.xpProgress.currentXPInLevel
         : 0;
 
-    const currentLevelConfig = DEFAULT_USER_LEVEL_CONFIG.find(
+    const progressPercentage = levelProgress?.xpProgress?.progressPercentage ?? 0;
+
+    const levelConfigData = levelConfig?.data ?? FALLBACK_LEVEL_CONFIG;
+    const currentLevelConfig = levelConfigData.find(
       (config) => config.level === levelProgress?.level
     );
 
