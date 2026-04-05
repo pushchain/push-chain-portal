@@ -187,12 +187,20 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       }
 
       return {
-        label: 'Close',
-        onClick: handleClose,
-        disabled: false };
+        label: `More spins unlock in ${countdown}`,
+        disabled: true,
+        variant: 'outline',
+      };
     }
 
     if (!canSpin) {
+      if (currentSpinCount >= 5) {
+        return {
+          label: `More spins unlock in ${countdown}`,
+          disabled: true,
+          variant: 'outline',
+        };
+      }
       if (!hasEnoughPoints) {
         return {
           label:
@@ -324,7 +332,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
             <Box css={css`
               position: absolute;
-              top: -15%;
+              top: -5%;
               left: 50%;
               transform: translate(-50%, -50%);
             `}>
@@ -335,7 +343,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
               {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
               {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
               {isXPBoostWinning && <Multiplier width={80} height={80} />}
-              {isPCTokenWinning && <PCTokens width={80} height={80} />}
+              {isPCTokenWinning && <PCTokens width={153} height={137} />}
             </Box>
 
             <Box css={css`width: 100%;`}>

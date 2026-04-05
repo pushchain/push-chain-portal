@@ -9,7 +9,7 @@ import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails, useGetSeasonThreeUserByWallet } from "../../../queries";
 
 // components
-import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text } from "../../../blocks";
+import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text, XP } from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
@@ -32,7 +32,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards, isRefetching } = useGetDailyCheckInDetails(userDetails?.userId);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
 
-  const isBusy = isClaimingRewards || isRefetching;
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
   const handleClaimRewards = async () => {
@@ -104,7 +103,18 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
             >
               <SeasonThreePoints width={28} height={28} />
               <Text variant="bm-bold">{ dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.points }</Text>
-          </Box>}
+            </Box>}
+
+            {dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.xp && <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="spacing-xxs"
+            >
+              <XP width={36} height={14} />
+              <Text variant="bm-bold">{ dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.xp }</Text>
+            </Box>}
         </Box>
 
         {rewardsLocked && (
@@ -119,30 +129,24 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         )}
 
         {!rewardsLocked && (
-          <>
-            {!canClaimRewards && !isBusy && (
-              <Skeleton isLoading={isLockedStatusLoading}>
-                <Button variant="tertiary" size="small" disabled>
-                  Claimed
-                </Button>
-              </Skeleton>
+          <Skeleton isLoading={isLockedStatusLoading || isLoadingRewards || isRefetching}>
+            {canClaimRewards ? (
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={handleClaimRewards}
+                disabled={isClaimingRewards}
+                loading={isClaimingRewards}
+              >
+                Claim
+              </Button>
+            ) : (
+              <Button variant="tertiary" size="small" disabled>
+                Claimed
+              </Button>
             )}
-
-            {(canClaimRewards || isBusy) && (
-              <Skeleton isLoading={isLockedStatusLoading}>
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  onClick={handleClaimRewards}
-                  disabled={isBusy}
-                  loading={isBusy}
-                >
-                  Claim
-                </Button>
-              </Skeleton>
-            )}
-          </>
-          )}
+          </Skeleton>
+        )}
         </Box>
       </Box>
 

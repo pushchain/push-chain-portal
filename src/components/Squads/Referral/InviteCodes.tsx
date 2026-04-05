@@ -225,7 +225,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
                 gap="spacing-xs"
                 width="100%"
               >
-                {Array.from({ length: 3 }).map((_, i) => (
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} isLoading>
                     <Box css={css`
                       width: 100%;
@@ -286,6 +286,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           display="flex"
           flexDirection="column"
           gap="spacing-xs"
+          customScrollbar
           css={css`
             overflow-y: auto;
             max-height: ${isCultUser ? '200px' : '260px'};
