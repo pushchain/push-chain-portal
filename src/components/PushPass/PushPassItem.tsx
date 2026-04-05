@@ -19,6 +19,9 @@ import { Image } from "../../css/SharedStyling";
 import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
+import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
+
+
 type PassState = "loading" | "unopened" | "opened" | "minted";
 
 const getPassState = (
@@ -429,17 +432,14 @@ export const PushPassItem = () => {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              gap="spacing-sm"
-              borderRadius="radius-md"
               css={css`
-                background: #ececb4;
-                width: 248px;
-                height: 318px;
-                aspect-ratio: 124/159;
-                overflow: 'hidden';
+                background: url(${RarePassBg}) center/cover;
+                width: 249px;
+                height: 329px;
+                overflow: hidden;
               `}
             >
-              <CharacterImage characterId={characterId} width={248} height={318} />
+              <CharacterImage characterId={characterId} width={249} height={326} />
             </Box>
 
             {!isMinted && (

@@ -1,12 +1,14 @@
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Box, RarePassIcon, Spinner, Text } from '../../../blocks';
-import { CharacterImage } from '../CharacterImage';
 import { useGetCharacterInfo } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { device } from '../../../config/globals';
+
 import RarePassBg from '../../../../static/assets/website/pushpass/RarePassBG.webp';
+import { Box, RarePassIcon, Spinner, Text } from '../../../blocks';
+import { CharacterImage } from '../CharacterImage';
+
 
 const MyCollectionContent = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -169,6 +171,8 @@ const MyCollectionContent = () => {
                 >
                   <CharacterImage
                     characterId={character.characterId}
+                    width={249}
+                    height={326}
                   />
                 </Box>
               </Box>
