@@ -70,7 +70,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const spinboardRef = useRef<SpinboardHandle>(null);
 
   const { spinStatus, authHeaders, refetch } = useSpinStatus();
-  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userSeasonThreeDetails, refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   })
   const { mutate: spin } = useSpinTheWheel();
@@ -194,17 +194,19 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
         return {
           label:
             <>
-              Spin The Wheel
+              Not enough Points to Spin
               <Box
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
                 margin="spacing-none spacing-none spacing-none spacing-xxs"
                 gap="spacing-xxxs">
-                  <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+                  <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> <Text color='#FE5454'>{nextSpinCost}</Text>
               </Box>
             </>,
-          disabled: true };
+          disabled: true,
+          variant: 'outline'
+        };
       }
       return {
         label: 'No Spins Available',
@@ -369,6 +371,17 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           {buttonConfig.label}
         </Button>
 
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          gap="spacing-xxs"
+        >
+          <SeasonThreePoints width={35} />
+          <Text variant='h6-regular'>
+            Balance: {userSeasonThreeDetails?.totalPoints.toLocaleString()}</Text>
+        </Box>
+        {/*
         {isFirstSpin && (
           <Text variant='bes-semibold'>Come back daily for a free spin</Text>
         )}
@@ -383,7 +396,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           <Text variant='bes-semibold'>
             Check back tomorrow for new spins
           </Text>
-        )}
+        )}*/}
 
       </Box>
     </Modal>

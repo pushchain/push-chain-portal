@@ -174,7 +174,7 @@ const AppContent = () => {
           background: url(${SeasonBg}) no-repeat center center fixed;
           background-size: cover;
           pointer-events: none;
-          z-index: 0;
+          z-index: -1;
         `}
       />)}
 
@@ -194,7 +194,8 @@ const AppContent = () => {
         )}
         <Box
           width="100%"
-          maxWidth={hideSideBar ? "100%" : "1200px"}
+          // maxWidth={hideSideBar ? "100%" : "100%"}
+          customScrollbar
           padding={{
             initial: "spacing-none spacing-md",
             tb: "spacing-none spacing-xs",
@@ -205,6 +206,11 @@ const AppContent = () => {
             margin: ${hideSideBar ? "0" : "0 auto"};
           `}
         >
+          <Box
+            css={css`
+              max-width: 1200px;
+              margin: 0 auto;
+            `}>
           <Routes>
             {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
             <Route path="/admin/controls" element={<AdminPage />} />
@@ -231,7 +237,8 @@ const AppContent = () => {
               <Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />
             </>}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </Box>
         </Box>
       </Box>
 

@@ -82,7 +82,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
           </Box>}
         </Box>
 
-        <Box margin="spacing-sm spacing-none spacing-none spacing-none">
+        <Box width="250px" margin="spacing-sm spacing-none spacing-none spacing-none">
             <Lottie
               animationData={BoxAnimation}
               loop
