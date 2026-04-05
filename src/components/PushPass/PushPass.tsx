@@ -23,7 +23,7 @@ const PushPass = () => {
     universalAccount?.chain,
   );
 
-  const { data: userCharacterInfo, isLoading: isLoadingCharacters } = useGetCharacterInfo({
+  const { data: userCharacterInfo, isFetching: isLoadingCharacters } = useGetCharacterInfo({
     walletAddress: caip10WalletAddress,
   });
 
@@ -31,11 +31,11 @@ const PushPass = () => {
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: isUserEligible, isLoading: isLoadingEligible } = useGetCharacterEligible({
+  const { data: isUserEligible, isFetching: isLoadingEligible } = useGetCharacterEligible({
     userWallet: caip10WalletAddress
   });
 
-  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
+  const { data: rarePassHistory, isFetching: isLoadingHistory } = useGetRarePassHistory({
     userId: userDetails?.userId ?? '',
   });
 
@@ -51,20 +51,19 @@ const PushPass = () => {
   const isEligible = isUserEligible?.eligible ?? false;
 
   const passes = [
-    // Active rare passes — all openable
-    ...Array.from({ length: rareActiveCount }, (_, index) => ({
-      id: index + 1,
-      isLocked: false,
-      lockMessage: 'Open Pass',
-    })),
-
     // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
-    // show in grayscale
     ...unmintedCharacters.map((char, index) => ({
       id: rareActiveCount + index + 1,
       isLocked: false,
       lockMessage: 'Confirm/Mint Pass',
       character: char
+    })),
+
+    // Active rare passes — all openable
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
+      id: index + 1,
+      isLocked: false,
+      lockMessage: 'Open Pass',
     })),
 
     // Dormant passes — locked until Level 25

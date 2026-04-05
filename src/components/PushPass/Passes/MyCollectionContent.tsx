@@ -6,6 +6,7 @@ import { CharacterImage } from '../CharacterImage';
 import { useGetCharacterInfo } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { device } from '../../../config/globals';
+import RarePassBg from '../../../../static/assets/website/pushpass/RarePassBG.webp';
 
 const MyCollectionContent = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -159,10 +160,10 @@ const MyCollectionContent = () => {
                 `}
               >
                 <Box
-                  borderRadius="radius-md"
                   css={css`
-                    background: #ececb4;
-                    width: 100%;
+                    background: url(${RarePassBg}) center/cover;
+                    width: 249px;
+                    height: 329px;
                     overflow: hidden;
                   `}
                 >

@@ -40,7 +40,7 @@ const RarePassCard: FC<RarePassCardProps> = ({
         justify-content: flex-end;
         position: relative;
         flex: 1;
-        background: ${isLocked
+        background: ${(isLocked || characterId)
                     ? `url(${OpenPassLockedImage}) center/cover`
                     : `url(${OpenPassImage}) center/cover`
                 };

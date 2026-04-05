@@ -14,6 +14,7 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import { device } from '../../../config/globals';
+import { useAuthHeaders } from '../../../context/authHeadersContext';
 
 // import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
 // import PointsAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
@@ -61,6 +62,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const [countdown, setCountdown] = useState('');
   const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
   const { universalAccount } = usePushWalletContext('wallet1');
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -69,7 +71,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
   const spinboardRef = useRef<SpinboardHandle>(null);
 
-  const { spinStatus, authHeaders, refetch } = useSpinStatus();
+  const { spinStatus, refetch } = useSpinStatus();
   const { data: userSeasonThreeDetails, refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   })
@@ -116,14 +118,15 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     return () => clearInterval(interval);
   }, [spinStatus?.resetsAt]);
 
-  const handleSpinClick = () => {
-    if (isSpinning || !canSpin || !authHeaders) return;
+  const handleSpinClick = async () => {
+    const headers = authHeaders ?? await getAuthHeaders();
+    if (isSpinning || !canSpin || !headers) return;
 
     setShowResult(false);
     setIsSpinning(true);
     spinboardRef.current?.startSpin();
 
-    spin(authHeaders, {
+    spin(headers, {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
         spinboardRef.current?.landOn(slotId);

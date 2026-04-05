@@ -12,6 +12,7 @@ import {
   useGetNextReshuffleFee,
 } from "../../queries";
 import { CharacterInfoResponse } from "../../queries/types/character";
+import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
 import { Alert, Back, Box, Button, Skeleton, Spinner, Text, Twitter } from "../../blocks";
@@ -432,11 +433,10 @@ export const PushPassItem = () => {
               gap="spacing-sm"
               borderRadius="radius-md"
               css={css`
-                background: #ececb4;
+                background: url(${RarePassBg}) center/cover;
                 width: 248px;
                 height: 318px;
-                aspect-ratio: 124/159;
-                overflow: 'hidden';
+                overflow: hidden;
               `}
             >
               <CharacterImage characterId={characterId} width={248} height={318} />

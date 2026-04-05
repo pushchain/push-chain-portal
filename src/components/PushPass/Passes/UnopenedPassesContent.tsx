@@ -1,8 +1,39 @@
 import { FC } from 'react';
-import { css } from 'styled-components';
-import { Box, RarePassIcon, Spinner, Text } from '../../../blocks';
+import styled, { css, keyframes } from 'styled-components';
+import { Box, RarePassIcon, Text } from '../../../blocks';
 import RarePassCard from './RarePassCard';
 import { device } from '../../../config/globals';
+import OpenPassImage from '../../../../static/assets/website/pushpass/OpenPass.webp';
+
+const shimmer = keyframes`
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+`;
+
+const SkeletonCard = styled.div`
+  height: 379px;
+  width: 100%;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  position: relative;
+  background: url(${OpenPassImage}) center/cover;
+  filter: brightness(0.4) saturate(0.5);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(171, 70, 248, 0.08) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(171, 70, 248, 0.08) 75%,
+      transparent 100%
+    );
+    animation: ${shimmer} 1.8s ease-in-out infinite;
+  }
+`;
 
 type Pass = {
   id: number;
@@ -86,15 +117,26 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
 
       {isLoading && (
         <Box
+          gap="spacing-md"
           width="100%"
           css={css`
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 125px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-lg);
+            position: relative;
+
+            @media ${device.tablet} {
+              grid-template-columns: repeat(2, 1fr);
+            }
+
+            @media ${device.mobileL} {
+              grid-template-columns: repeat(1, 1fr);
+            }
           `}
         >
-          <Spinner size="medium" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </Box>
       )}
 
