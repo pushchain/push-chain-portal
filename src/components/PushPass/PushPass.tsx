@@ -62,7 +62,7 @@ const PushPass = () => {
     ...unmintedCharacters.map((char, index) => ({
       id: rareActiveCount + index + 1,
       isLocked: false,
-      lockMessage: 'View Pass',
+      lockMessage: 'Mint/Re-roll Pass',
       character: char
     })),
 
