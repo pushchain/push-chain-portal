@@ -6,6 +6,7 @@ import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
+import { useRewardStatus } from '../../../context/rewardStatusContext';
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -28,6 +29,7 @@ type QuestItemProps = {
   userId: string;
   refetchActivities?: () => void;
   setErrorMessage: (errorMessage: string) => void;
+  rewardsLocked: boolean;
 };
 
 const QuestItem: FC<QuestItemProps> = ({
@@ -37,6 +39,7 @@ const QuestItem: FC<QuestItemProps> = ({
   userId,
   refetchActivities,
   setErrorMessage,
+  rewardsLocked
 }) => {
   const [showLevelUp, setShowLevelUp] = useState(false);
 
@@ -53,6 +56,8 @@ const QuestItem: FC<QuestItemProps> = ({
     if (!userId || verifyingRewards) return;
     handleRewardsVerification(userId);
   };
+
+  const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
 
   return (
     <Box
@@ -163,11 +168,13 @@ const QuestItem: FC<QuestItemProps> = ({
                     height="14px"
                     display="flex"
                     alignItems="center"
+                    justifyContent="flex-end"
+
                   >
                     {isClaimCompleted ? <Tick color='#42DDB1' size={20} /> : <QuestBox />}
                   </Box>
 
-                  {!isClaimCompleted && (
+                  {canShowClaimButton && (
                     <Box
                       display="flex"
                       alignItems="center"
@@ -265,6 +272,9 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
 
   const fullUrl = appUrl?.startsWith("http") ? appUrl : `https://${appUrl}`;
 
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
   return (
     <Box
       display="flex"
@@ -486,6 +496,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 userId={userId as string}
                 refetchActivities={refetchActivities}
                 setErrorMessage={setErrorMessage!}
+                rewardsLocked={rewardsLocked}
               />
             ))}
           </Box>
