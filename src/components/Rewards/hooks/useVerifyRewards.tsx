@@ -74,13 +74,13 @@ const useVerifyRewards = ({
     walletAddress: caip10WalletAddress,
   });
 
-  const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
+  const { mutateAsync: claimRewardsActivity } = useClaimRewardsActivity();
 
 
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    const skipVerification = SKIP_VERIFICATION_ACTIVITIES?.filter(
+    const skipVerification = SKIP_VERIFICATION_ACTIVITIES?.some(
       (item) => activityTypeId === item
     );
 
@@ -124,45 +124,35 @@ const useVerifyRewards = ({
       }
     }
 
-    claimRewardsActivity(
-      {
+    try {
+      const response = await claimRewardsActivity({
         userId: updatedId || (userId as string),
         activityTypeId,
         ...(skipVerification ? { data: {}} : { data: messageToSend, verificationProof }),
-      },
-      {
-        onSuccess: (response) => {
-          // TODO: fix this later
-          if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
-            setRewardsActivityStatus("Claimed");
-            setClaimResponse(response.data || response);
-            // if (setCurrentLevel) {
-            //   setCurrentLevel(activityTypeId);
-            // }
-            refetchActivity();
-            refetchUserDetails();
-            setVerifyingRewards(false);
-          }
-          if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
-            setRewardsActivityStatus("Pending");
-            refetchActivity();
-            setVerifyingRewards(false);
-          }
-        },
-        onError: (error: any) => {
-          console.log("Error in creating activity", error);
-          setVerifyingRewards(false);
-          const errorData = error?.response?.data?.error;
-          console.log(errorData?.progress_percent, 'error')
-          if (errorData) {
-            setErrorMessage(typeof errorData === 'string' ? errorData : errorData?.message);
-            if (errorData?.progress_percent != null) {
-              setProgressPercent(errorData.progress_percent);
-            }
-          }
-        },
-      },
-    );
+      });
+
+      if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
+        setRewardsActivityStatus("Claimed");
+        setClaimResponse(response.data || response);
+        refetchActivity();
+        refetchUserDetails();
+      }
+      if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
+        setRewardsActivityStatus("Pending");
+        refetchActivity();
+      }
+    } catch (error: any) {
+      console.log("Error in creating activity", error);
+      const errorData = error?.response?.data?.error;
+      if (errorData) {
+        setErrorMessage(typeof errorData === 'string' ? errorData : errorData?.message);
+        if (errorData?.progress_percent != null) {
+          setProgressPercent(errorData.progress_percent);
+        }
+      }
+    } finally {
+      setVerifyingRewards(false);
+    }
   };
 
   return {

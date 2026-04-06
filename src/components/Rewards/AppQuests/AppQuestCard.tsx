@@ -66,7 +66,8 @@ const QuestItem: FC<QuestItemProps> = ({
       !hasAutoChecked.current &&
       userId &&
       !isClaimCompleted &&
-      !rewardsLocked
+      !rewardsLocked &&
+      !verifyingRewards
     ) {
       hasAutoChecked.current = true;
       handleRewardsVerification(userId);
@@ -74,6 +75,8 @@ const QuestItem: FC<QuestItemProps> = ({
   }, [userId, isClaimCompleted, rewardsLocked]);
 
   const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
+
+  console.log(verifyingRewards, 'verifyingRewards');
 
   return (
     <Box
