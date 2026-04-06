@@ -8,7 +8,7 @@ import { SquadStatsRow } from "./SquadStatsRow"
 import { SquadMembersTable } from "./SquadMembersTable"
 import { device } from "../../../config/globals"
 import { useGetSquadsPendingInvites, useAcceptSquadInvite, useRejectSquadInvite, useGetSeasonThreeUserByWallet } from "../../../queries"
-import { useAuthHeaders } from "../../../context/authHeadersContext"
+import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { SquadsDetailsResponse } from "../../../queries/types/squads"
 
@@ -21,9 +21,10 @@ type SquadSectionProps = {
 }
 
 export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionProps) => {
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const { universalAccount } = usePushWalletContext('wallet1');
   const [activeInviteId, setActiveInviteId] = useState<string | null>(null);
+  const [isSigning, setIsSigning] = useState(false);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -38,11 +39,14 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
   const { mutate: acceptInvite, isPending: isAccepting } = useAcceptSquadInvite();
   const { mutate: rejectInvite, isPending: isRejecting } = useRejectSquadInvite();
 
-  const handleAcceptInvite = (inviteId: string) => {
-    if (!authHeaders) return;
+  const handleAcceptInvite = async (inviteId: string) => {
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
     setActiveInviteId(inviteId);
     acceptInvite(
-      { params: { inviteId }, authHeaders },
+      { params: { inviteId }, authHeaders: headers },
       {
         onSuccess: () => {
           setActiveInviteId(null);
@@ -54,11 +58,14 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
     );
   };
 
-  const handleDeclineInvite = (inviteId: string) => {
-    if (!authHeaders) return;
+  const handleDeclineInvite = async (inviteId: string) => {
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
     setActiveInviteId(inviteId);
     rejectInvite(
-      { params: { inviteId }, authHeaders },
+      { params: { inviteId }, authHeaders: headers },
       {
         onSuccess: () => {
           setActiveInviteId(null);
@@ -126,15 +133,15 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
               <Button
                 variant="outline"
                 onClick={() => handleDeclineInvite(invite.id)}
-                loading={isRejecting && activeInviteId === invite.id}
-                disabled={isRejecting && activeInviteId === invite.id}
+                loading={(isRejecting && activeInviteId === invite.id) || isSigning}
+                disabled={(isRejecting && activeInviteId === invite.id) || isSigning}
               >
                 Decline
               </Button>
               <Button
                 onClick={() => handleAcceptInvite(invite.id)}
-                loading={isAccepting && activeInviteId === invite.id}
-                disabled={isAccepting && activeInviteId === invite.id}
+                loading={(isAccepting && activeInviteId === invite.id) || isSigning}
+                disabled={(isAccepting && activeInviteId === invite.id) || isSigning}
               >
                 Accept Invite
               </Button>

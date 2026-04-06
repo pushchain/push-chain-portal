@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 
@@ -14,6 +15,7 @@ import { Box, Link, Text } from "../../blocks"
 export const Squads = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -28,7 +30,9 @@ export const Squads = () => {
   const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
   const requestInvitesCode = async () => {
+    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
     if (!headers) return;
     requestForInviteCode(
       { payload: { count: 5 }, authHeaders: headers },
@@ -106,6 +110,7 @@ export const Squads = () => {
             <InviteCodes
               requestInvitesCode={ requestInvitesCode }
               isFetchingInviteCode={ isFetchingInviteCode }
+              isSigning={ isSigning }
             />
           </Box>
         </Box>

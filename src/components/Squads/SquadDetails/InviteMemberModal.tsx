@@ -29,14 +29,15 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
   const [walletAddress, setWalletAddress] = useState("");
   const [chainId, setChainId] = useState(CHAIN_OPTIONS[0].value);
   const [error, setError] = useState("");
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
 
   const { mutate: resolveWallet, isPending: isResolving } = useResolveWallet();
   const { mutate: sendInvite, isPending: isSending } = useSendSquadInvite();
+  const [isSigning, setIsSigning] = useState(false);
 
-  const isLoading = isResolving || isSending;
+  const isLoading = isResolving || isSending || isSigning;
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (!walletAddress.trim()) {
       setError("User address is required");
       return;
@@ -49,10 +50,13 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
 
     setError("");
 
-    if (!authHeaders) return;
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
 
     resolveWallet(
-      { params: { chainId, walletAddress: walletAddress.trim() }, authHeaders },
+      { params: { chainId, walletAddress: walletAddress.trim() }, authHeaders: headers },
       {
         onSuccess: (response) => {
           const userId = response?.data?.userId;
@@ -61,7 +65,7 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
             return;
           }
           sendInvite(
-            { params: { squadId, userId }, authHeaders },
+            { params: { squadId, userId }, authHeaders: headers },
             {
               onSuccess: () => {
                 setWalletAddress("");

@@ -63,6 +63,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
   const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -119,8 +120,11 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   }, [spinStatus?.resetsAt]);
 
   const handleSpinClick = async () => {
+    if (isSpinning || !canSpin) return;
+    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? await getAuthHeaders();
-    if (isSpinning || !canSpin || !headers) return;
+    setIsSigning(false);
+    if (!headers) return;
 
     setShowResult(false);
     setIsSpinning(true);
@@ -156,6 +160,12 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   };
 
   const getButtonConfig = (): ButtonConfig => {
+    if (isSigning) {
+      return {
+        label: 'Spinning...',
+        disabled: true };
+    }
+
     if (isSpinning) {
       return {
         label: 'Spinning...',
@@ -392,22 +402,6 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           <Text variant='h6-regular'>
             Balance: {userSeasonThreeDetails?.totalPoints.toLocaleString()}</Text>
         </Box>
-        {/*
-        {isFirstSpin && (
-          <Text variant='bes-semibold'>Come back daily for a free spin</Text>
-        )}
-
-        {!isFirstSpin && currentSpinCount < 5 && wonPrize?.rewardType !== "RARE_PASS" && (
-          <Text variant='bes-semibold'>
-            Spin again for better rewards {currentSpinCount}/5
-          </Text>
-        )}
-
-        {!isFirstSpin && (currentSpinCount >= 5 || wonPrize?.rewardType === "RARE_PASS") && (
-          <Text variant='bes-semibold'>
-            Check back tomorrow for new spins
-          </Text>
-        )}*/}
 
       </Box>
     </Modal>

@@ -22,6 +22,7 @@ export type DailyRewardsSectionProps = Record<string, never>;
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
   const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
   const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
@@ -35,7 +36,9 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
   const handleClaimRewards = async () => {
+    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
     if (!headers) return;
     claimDailyRewards(headers, {
       onSuccess: () => { refetch(); },
@@ -135,8 +138,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
                 variant="tertiary"
                 size="small"
                 onClick={handleClaimRewards}
-                disabled={isClaimingRewards}
-                loading={isClaimingRewards}
+                disabled={isClaimingRewards || isSigning}
+                loading={isClaimingRewards || isSigning}
               >
                 Claim
               </Button>

@@ -21,6 +21,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
   const [squadName, setSquadName] = useState("");
   const [error, setError] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
   const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
   const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
@@ -35,7 +36,9 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
     }
 
     setError("");
+    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
     if (!headers) return;
     createSquad(
       { params: { name: squadName }, authHeaders: headers },
@@ -77,8 +80,8 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
       acceptButtonProps={{
         children: isPending ? "Creating..." : "Create Squad",
         onClick: handleCreate,
-        disabled: isPending,
-        loading: isPending,
+        disabled: isPending || isSigning,
+        loading: isPending || isSigning,
         block: true,
       }}
       cancelButtonProps={null}

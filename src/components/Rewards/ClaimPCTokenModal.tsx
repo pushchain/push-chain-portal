@@ -21,6 +21,7 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -34,7 +35,9 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
   const { mutate: claimTokens, isPending: isClaiming } = useClaimPCTokens();
 
   const handleClaim = async () => {
+    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
     if (!headers || !tokenBalance?.claimableTokens) return;
     setClaimError("");
 
@@ -174,8 +177,8 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
           size="medium"
           variant="primary"
           onClick={claimed ? handleClose : handleClaim}
-          disabled={isClaiming || (!claimed && !tokenBalance?.claimableTokens)}
-          loading={isClaiming}
+          disabled={isClaiming || isSigning || (!claimed && !tokenBalance?.claimableTokens)}
+          loading={isClaiming || isSigning}
           css={css`
             width: 100%;
           `}

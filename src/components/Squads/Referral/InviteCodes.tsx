@@ -114,9 +114,10 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
 type InviteCodesProps = {
   requestInvitesCode: () => void;
   isFetchingInviteCode: boolean;
+  isSigning?: boolean;
 }
 
-export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: InviteCodesProps) => {
+export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSigning }: InviteCodesProps) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
@@ -254,8 +255,8 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
             variant="outline"
             size="extraSmall"
             onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode}
-            disabled={isFetchingInviteCode}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
             css={css`
               margin: auto auto;
               cursor: pointer;
@@ -270,8 +271,8 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
             variant="primary"
             size="small"
             onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode}
-            disabled={isFetchingInviteCode}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
             css={css`
               margin: 0 auto auto auto;
               cursor: pointer;
