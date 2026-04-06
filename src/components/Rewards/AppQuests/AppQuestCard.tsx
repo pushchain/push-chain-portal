@@ -1,9 +1,10 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect, useRef } from 'react';
 import { css, keyframes } from 'styled-components';
 import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
+import { SKIP_VERIFICATION_ACTIVITIES } from '../utils/skipVerificationActivities';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
@@ -56,6 +57,23 @@ const QuestItem: FC<QuestItemProps> = ({
     if (!userId || verifyingRewards) return;
     handleRewardsVerification(userId);
   };
+
+  // Auto-check progress on mount for uncompleted quests
+  const hasAutoChecked = useRef(false);
+
+  useEffect(() => {
+    if (
+      !hasAutoChecked.current &&
+      userId &&
+      !isClaimCompleted &&
+      !rewardsLocked
+    ) {
+      hasAutoChecked.current = true;
+      // TODO: uncomment when BE removes verification proof check
+      // handleRewardsVerification(userId);
+      // setTimeout(() => setErrorMessage(""), 100);
+    }
+  }, [userId, isClaimCompleted, rewardsLocked]);
 
   const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
 
