@@ -220,6 +220,9 @@ const AppContent = () => {
             css={css`
               max-width: 1200px;
               margin: 0 auto;
+              min-height: 100%;
+              display: flex;
+              flex-direction: column;
             `}>
           <Routes>
             {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
