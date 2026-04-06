@@ -69,9 +69,7 @@ const QuestItem: FC<QuestItemProps> = ({
       !rewardsLocked
     ) {
       hasAutoChecked.current = true;
-      // TODO: uncomment when BE removes verification proof check
-      // handleRewardsVerification(userId);
-      // setTimeout(() => setErrorMessage(""), 100);
+      handleRewardsVerification(userId);
     }
   }, [userId, isClaimCompleted, rewardsLocked]);
 

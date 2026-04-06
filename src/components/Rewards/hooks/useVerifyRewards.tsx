@@ -80,8 +80,8 @@ const useVerifyRewards = ({
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    const skipVerification = SKIP_VERIFICATION_ACTIVITIES.some(
-      (prefix) => activityTypeId.startsWith(prefix)
+    const skipVerification = SKIP_VERIFICATION_ACTIVITIES?.filter(
+      (item) => activityTypeId === item
     );
 
     let verificationProof: string | undefined;
@@ -128,7 +128,7 @@ const useVerifyRewards = ({
       {
         userId: updatedId || (userId as string),
         activityTypeId,
-        ...(skipVerification ? {} : { data: messageToSend, verificationProof }),
+        ...(skipVerification ? { data: {}} : { data: messageToSend, verificationProof }),
       },
       {
         onSuccess: (response) => {
