@@ -76,6 +76,8 @@ const QuestItem: FC<QuestItemProps> = ({
 
   const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
 
+  console.log(claimResponse)
+
   return (
     <Box
       display="flex"
@@ -237,11 +239,7 @@ const QuestItem: FC<QuestItemProps> = ({
           level={claimResponse?.level ?? 0}
           quest={true}
           basePoints={claimResponse?.points}
-          baseXP={claimResponse?.multiplier}
-          rewards={[
-            ...(claimResponse?.points ? [{ id: 1, value: String(claimResponse.points), label: 'Points', type: 'points' }] : []),
-            ...(claimResponse?.multiplier ? [{ id: 2, value: `${claimResponse.multiplier}x`, label: 'XP Boost', type: 'xp_boost' }] : []),
-          ]}
+          baseXP={300}
         />
       )}
     </Box>

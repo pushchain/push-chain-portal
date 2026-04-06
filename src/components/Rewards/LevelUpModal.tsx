@@ -17,7 +17,7 @@ type LevelUpModalProps = {
   isOpen: boolean;
   onClose: () => void;
   level: number;
-  rewards: LevelUpReward[];
+  rewards?: LevelUpReward[];
   quest?: boolean;
   basePoints?: number;
   baseXP?: number;
@@ -28,10 +28,10 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
     ? [
         ...(basePoints ? [{ id: 100, value: String(basePoints), label: 'Points', type: 'points' }] : []),
         ...(baseXP ? [{ id: 101, value: `${baseXP}`, label: 'XP', type: 'xp' }] : []),
-        ...rewards,
       ]
     : rewards;
 
+  console.log(basePoints, baseXP)
   return (
     <Modal
       isOpen={isOpen}
@@ -132,7 +132,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
                         {reward.type === 'pc_tokens' && <RewardsCoin width={60} height={60} />}
                         {reward.type === 'points' && <SeasonThreePoints width={50} height={50} />}
                         {reward.type === 'xp_boost' && <Multiplier width={50} height={50} />}
-                        {reward.type === 'xp' && <XP width={60} />}
+                        {reward.type === 'xp' && <XP width={75} height={45} />}
               </Box>
 
               <Box
