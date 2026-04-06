@@ -121,6 +121,7 @@ export const useUnverifiedStateLogic = () => {
     setIsVerifying(true);
     const headers = authHeaders ?? (await getAuthHeaders());
     if (!linkedAccount?.address || !headers) {
+      disconnectLinkedWallet();
       setIsVerifying(false)
       return;
     }
