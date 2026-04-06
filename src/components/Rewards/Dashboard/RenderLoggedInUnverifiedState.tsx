@@ -143,6 +143,9 @@ export const RenderLoggedInUnverifiedState = () => {
 		{ enabled: !!userDetails?.userId },
     );
 
+  const isStep1Complete = !!sybilStatusData?.data?.advanced?.completed;
+  const isStep2Complete = userActivity?.follow_push_on_twitter?.status === 'COMPLETED';
+
   return (
     <Box
       display="flex"
@@ -179,7 +182,7 @@ export const RenderLoggedInUnverifiedState = () => {
           <GlowStreaks /><GlowStreaks /><GlowStreaks />
         </Box>
 
-        <Box display="flex" flexDirection="column" alignItems="center" gap="spacing-lg" css={css`position: relative; z-index: 1; max-width: 900px;`}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap="spacing-lg" css={css`position: relative; z-index: 1; max-width: 680px;`}>
           <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
             <Text variant="h1-bold" color="#000000"> Crush quests. Claim XP, Points & Rare Passes.</Text>
             <Text variant="h5-regular" color="#000000">Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!</Text>
@@ -201,10 +204,16 @@ export const RenderLoggedInUnverifiedState = () => {
             width="100%"
             padding="spacing-sm spacing-md"
             gap="spacing-xs"
-            css={css`border-radius: var(--radius-md, 24px); border: 1px solid #fff; background: rgba(255, 255, 255, 0.4); box-sizing: border-box;`}
+            css={css`
+              border-radius: var(--radius-md, 24px);
+              border: ${isStep1Complete ? '1px solid #fff' : '2px solid var(--stroke-brand-medium, #D548EC)'};
+              background: rgba(255, 255, 255, 0.4);
+              box-sizing: border-box;
+            `}
           >
             <RewardsActivityIcon type={WALLET_ACTIVITY.icon} />
             <Box margin="spacing-none spacing-none spacing-none spacing-xs">
+              <Text variant="bes-bold" color="#C742DD">STEP 1</Text>
               <RewardsActivityTitle activityTitle={isPushWalletUser ? WALLET_ACTIVITY.activityTitle : EVM_WALLET_ACTIVITY.activityTitle} variant="h4-semibold" isLoading={false} color="#17181B" />
               <Text variant="bm-regular" color="#313338">Linked wallet will be bound to Push account for Season 3</Text>
             </Box>
@@ -219,35 +228,65 @@ export const RenderLoggedInUnverifiedState = () => {
             />
           </Box>
 
+          {/* Step 2 & 3: Social Verifications */}
           <Box display="flex" flexDirection={{ initial: "row", tb: "column" }} gap="spacing-sm" width="100%">
             {ACTIVITY_LIST.map((item, index) => {
+              const stepNumber = index + 2;
+              const isStep2 = stepNumber === 2;
+              const isLocked = isStep2
+                ? !isStep1Complete
+                : !isStep2Complete;
+              const isCompleted = isStep2 ? isStep2Complete : userActivity?.follow_push_on_discord?.status === 'COMPLETED';
+              const isActive = !isLocked && !isCompleted;
+
               return (
                 <Box
                   key={index}
                   display="flex"
                   flexDirection={{ initial: "row", tb: "column" }}
                   alignItems="center"
-                  padding="spacing-sm spacing-md"
+                  padding="spacing-md"
+                  // padding="spacing-sm spacing-md"
                   gap="spacing-xs"
-                  css={css`flex: 1; border-radius: var(--radius-md, 24px); border: 1px solid #fff; background: rgba(255, 255, 255, 0.4); box-sizing: border-box;`}
+                  css={css`
+                    flex: 1;
+                    border-radius: var(--radius-md, 24px);
+                    border: ${isActive ? '2px solid var(--stroke-brand-medium, #D548EC)' : '1px solid #fff'};
+                    background: rgba(255, 255, 255, ${isLocked ? '0.2' : '0.4'});
+                    box-sizing: border-box;
+                    transition: opacity 0.3s ease;
+                  `}
                 >
                   <RewardsActivityIcon type={item.icon} />
-                  <RewardsActivityTitle activityTitle={item.activityTitle} variant="h4-semibold" isLoading={false} color="#17181B" />
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                  >
+                    <Text variant="bes-bold" color="#C742DD">STEP {stepNumber}</Text>
+                    <RewardsActivityTitle activityTitle={item.activityTitle} variant="h4-semibold" isLoading={false} color="#17181B" />
+                  </Box>
                   <Box css={css`margin-left: auto;`}>
-                    <ActivityButton
-                      activityType={item.activityType as ActvityType}
-                      activityTypeId={item.activityTypeId}
-                      userId={userDetails?.userId as string}
-                      refetchActivity={() => {
-                        refetch();
-                        refetchActivities();
-                        refetchSybilStatus();
-                      }}
-                      usersSingleActivity={userActivity?.[item.activityType]}
-                      setErrorMessage={setErrorMessage}
-                      isLoadingActivity={isLoading || isLoadingActivities}
-                      label="Verify"
-                    />
+                    {isLocked ? (
+                      <Button variant="tertiary" size="medium" disabled>
+                        Verify
+                      </Button>
+                    ) : (
+                      <ActivityButton
+                        activityType={item.activityType as ActvityType}
+                        activityTypeId={item.activityTypeId}
+                        userId={userDetails?.userId as string}
+                        refetchActivity={() => {
+                          refetch();
+                          refetchActivities();
+                          refetchSybilStatus();
+                        }}
+                        usersSingleActivity={userActivity?.[item.activityType]}
+                        setErrorMessage={setErrorMessage}
+                        isLoadingActivity={isLoading || isLoadingActivities}
+                        label="Verify"
+                      />
+                    )}
                   </Box>
                 </Box>
               );

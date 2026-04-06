@@ -69,7 +69,6 @@ export const useUnverifiedStateLogic = () => {
       !!user?.userId
     );
 
-  const { mutate: evmCheck } = useAdvancedSybilCheck();
   const { mutate: pushCheck } = usePushWalletSybilCheck();
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -125,7 +124,6 @@ export const useUnverifiedStateLogic = () => {
       setIsVerifying(false)
       return;
     }
-    console.log('try call 2', linkedWalletAddress)
 
 
     pushCheck(
