@@ -73,8 +73,6 @@ const QuestItem: FC<QuestItemProps> = ({
 
   const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
 
-  console.log(claimResponse)
-
   return (
     <Box
       display="flex"
