@@ -47,6 +47,7 @@ import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
 import { ActivityContextProvider } from "./context/activityContext";
+import { trackEvent } from "./helpers/analytics";
 
 
 const GlobalStyle = createGlobalStyle`
@@ -134,6 +135,15 @@ const AppContent = () => {
   const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress,
   });
+
+  const prevConnectionStatus = React.useRef(connectionStatus);
+
+  useEffect(() => {
+    if (prevConnectionStatus.current !== 'connected' && connectionStatus === 'connected') {
+      trackEvent('wallet_connected', { event_category: 'auth', event_label: 'login_success' });
+    }
+    prevConnectionStatus.current = connectionStatus;
+  }, [connectionStatus]);
 
   useEffect(() => {
     if (connectionStatus !== 'connected') return;

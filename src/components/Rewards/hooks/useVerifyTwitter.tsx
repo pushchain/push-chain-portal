@@ -23,6 +23,7 @@ import appConfig from "../../../config";
 
 const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseConfig) : getApps()[0];
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
+import { trackEvent } from "../../../helpers/analytics";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 
@@ -68,6 +69,7 @@ const useVerifyTwitter = ({
   const handleTwitterVerification = (userId: string) => {
     setUpdatedId(userId);
     setVerifyingTwitter(true);
+    trackEvent('sybil_verify_twitter_clicked', { event_category: 'verification' });
 
     handleVerify(userId);
   };
@@ -153,6 +155,7 @@ const useVerifyTwitter = ({
             onSuccess: (response) => {
               if (response.data.status === "COMPLETED") {
                 setTwitterActivityStatus("Claimed");
+                trackEvent('sybil_verify_twitter_completed', { event_category: 'verification' });
                 refetchActivity();
                 refetchUserDetails();
                 setVerifyingTwitter(false);

@@ -15,6 +15,7 @@ import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { useSignPushMessage } from "./useSignPushMessage";
 import { WalletChainType } from "../utils/wallet";
 import { SKIP_VERIFICATION_ACTIVITIES } from "../utils/skipVerificationActivities";
+import { trackEvent } from "../../../helpers/analytics";
 
 export type UseVerifyRewardsParams = {
   activityTypeId: string;
@@ -61,6 +62,7 @@ const useVerifyRewards = ({
   const handleRewardsVerification = (userId: string) => {
     setUpdatedId(userId);
     setVerifyingRewards(true);
+    trackEvent(`${activityTypeId}_claim_clicked`, { event_category: 'rewards', event_label: activityTypeId });
 
     // Signal that we're starting the claim process
     if (onStartClaim) {
@@ -134,6 +136,7 @@ const useVerifyRewards = ({
       if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
         setRewardsActivityStatus("Claimed");
         setClaimResponse(response.data || response);
+        trackEvent(`${activityTypeId}_claimed`, { event_category: 'quests', event_label: activityTypeId });
         refetchActivity();
         refetchUserDetails();
       }

@@ -6,6 +6,7 @@ import { useSpinStatus } from '../hooks/useSpinStatus';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
+import { trackEvent } from '../../../helpers/analytics';
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -157,7 +158,10 @@ const SpinToWinCard = () => {
               <Button
                 size="medium"
                 variant="primary"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  trackEvent('spin_modal_opened', { event_category: 'rewards' });
+                  setIsModalOpen(true);
+                }}
                 css={css`
                   width: 100%;
                   position: relative;

@@ -6,6 +6,7 @@ import { useResolveWallet, useSendSquadInvite } from "../../../queries/hooks";
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { trackEvent } from "../../../helpers/analytics";
 
 const CHAIN_OPTIONS = [
   { label: "Push Chain", value: "42101" },
@@ -68,6 +69,7 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
             { params: { squadId, userId }, authHeaders: headers },
             {
               onSuccess: () => {
+                trackEvent('squad_invite_sent', { event_category: 'squads' });
                 setWalletAddress("");
                 setChainId(CHAIN_OPTIONS[0].value);
                 onClose();

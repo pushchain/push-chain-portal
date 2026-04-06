@@ -16,6 +16,7 @@ import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { DAILY_REWARDS } from "../utils/dailyRewardsConfig";
+import { trackEvent } from "../../../helpers/analytics";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
@@ -40,8 +41,12 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     const headers = authHeaders ?? await getAuthHeaders();
     setIsSigning(false);
     if (!headers) return;
+    const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
-      onSuccess: () => { refetch(); },
+      onSuccess: () => {
+        trackEvent(`daily_reward_day_${currentDay}_claimed`, { event_category: 'rewards', event_label: `day_${currentDay}` });
+        refetch();
+      },
       onError: (error) => { console.error(error); },
     });
   };

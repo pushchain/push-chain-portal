@@ -6,6 +6,7 @@ import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus }
 import { device } from "../../../config/globals";
 
 import { Box, Text, Copy, Button, Skeleton } from "../../../blocks"
+import { trackEvent } from "../../../helpers/analytics"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 
@@ -141,6 +142,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSignin
 
     await navigator.clipboard.writeText(code);
     setCopiedCode(code);
+    trackEvent('invite_code_copied', { event_category: 'invites', event_label: code });
     setTimeout(() => {
       setCopiedCode(null);
     }, 2000);

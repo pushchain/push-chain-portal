@@ -1,10 +1,7 @@
 import { FC, useState, useEffect, useRef } from 'react';
 import { css, keyframes } from 'styled-components';
 import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
-import { ActvityType } from '../../../queries';
-import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
-import { SKIP_VERIFICATION_ACTIVITIES } from '../utils/skipVerificationActivities';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
 import { useRewardStatus } from '../../../context/rewardStatusContext';

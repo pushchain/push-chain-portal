@@ -12,6 +12,7 @@ import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useLocation } from "react-router-dom";
 import { WalletChainType } from "../utils/wallet";
+import { trackEvent } from "../../../helpers/analytics";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -159,6 +160,7 @@ export const useUnverifiedStateLogic = () => {
 
   const verify = () => {
     setErrorMessage("");
+    trackEvent('sybil_verify_wallet_clicked', { event_category: 'verification', event_label: isPushWalletUser ? 'push_wallet' : 'evm_wallet' });
     if (isPushWalletUser) {
       if (!linkedAccount?.address) {
         handleConnectToLinkedWallet();

@@ -15,6 +15,7 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import { device } from '../../../config/globals';
 import { useAuthHeaders } from '../../../context/authHeadersContext';
+import { trackEvent } from '../../../helpers/analytics';
 
 // import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
 // import PointsAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
@@ -129,12 +130,14 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     setShowResult(false);
     setIsSpinning(true);
     spinboardRef.current?.startSpin();
+    trackEvent('spin_wheel_clicked', { event_category: 'rewards', event_label: isFirstSpin ? 'free_spin' : 'paid_spin', value: nextSpinCost });
 
     spin(headers, {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
         spinboardRef.current?.landOn(slotId);
         setWonPrize(getPrizeBySlotId(slotId) ?? null);
+        trackEvent('spin_wheel_completed', { event_category: 'rewards', event_label: getPrizeBySlotId(slotId)?.label ?? 'unknown', reward_type: getPrizeBySlotId(slotId)?.rewardType });
         refetch();
         refetchUserDetails();
       },

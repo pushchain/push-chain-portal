@@ -9,6 +9,7 @@ import { useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
 import { useClaimPCTokens } from "../../queries/hooks/rewards/useClaimPCTokens";
 import { useAuthHeaders } from "../../context/authHeadersContext";
+import { trackEvent } from "../../helpers/analytics";
 
 type ClaimPCTokenModalProps = {
   isOpen: boolean;
@@ -40,6 +41,7 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
     setIsSigning(false);
     if (!headers || !tokenBalance?.claimableTokens) return;
     setClaimError("");
+    trackEvent('pc_token_claim_clicked', { event_category: 'rewards', value: tokenBalance.claimableTokens });
 
     claimTokens(
       {
@@ -49,6 +51,7 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
       {
         onSuccess: () => {
           setClaimed(true);
+          trackEvent('pc_token_claimed', { event_category: 'rewards', value: tokenBalance.claimableTokens });
           refetchBalance();
         },
         onError: (error: any) => {

@@ -18,6 +18,7 @@ import { Alert, Back, Box, Button, Skeleton, Spinner, Text, Twitter } from "../.
 import { Image } from "../../css/SharedStyling";
 import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
+import { trackEvent } from "../../helpers/analytics";
 
 import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
 import RarePassAnimation from "../../../static/assets/website/pushpass/rare-glow.json";
@@ -100,11 +101,13 @@ export const PushPassItem = () => {
   const handleOpenPass = () => {
     if (!caip10WalletAddress) return;
     setGenerateError("");
+    trackEvent('rare_pass_open_clicked', { event_category: 'rarepass' });
     generate(
       { userWallet: caip10WalletAddress },
       {
         onSuccess: (data) => {
           const response = data?.characterId || data?.data?.characterId;
+          trackEvent('rare_pass_opened', { event_category: 'rarepass', event_label: response });
           setIsTransitioning(true);
           if (response) {
             setGeneratedCharacterId(response);
@@ -127,6 +130,7 @@ export const PushPassItem = () => {
     if (nextFeeType === 'tweet') {
       const tweetText = encodeURIComponent("I just rerolled my Rare Pass on @pushchain! 🎲✨");
       window.open(`https://x.com/intent/tweet?text=${tweetText}`, '_blank');
+      trackEvent('rare_pass_reshuffle_tweet', { event_category: 'rarepass', event_label: characterId });
 
       reshuffle(
         {
@@ -153,6 +157,7 @@ export const PushPassItem = () => {
 
     if (nextFeeType === 'PC') {
       if (!pushChainClient || nextFee == null) return;
+      trackEvent('rare_pass_reshuffle_pc', { event_category: 'rarepass', event_label: characterId, value: nextFee });
 
       try {
         setIsPaying(true);
@@ -201,6 +206,7 @@ export const PushPassItem = () => {
   const handleMint = () => {
     if (!caip10WalletAddress) return;
     setMintError("");
+    trackEvent('rare_pass_mint_clicked', { event_category: 'rarepass', event_label: characterId });
     mint(
       {
         userWallet: caip10WalletAddress,
@@ -208,6 +214,7 @@ export const PushPassItem = () => {
       },
       {
         onSuccess: () => {
+          trackEvent('rare_pass_minted', { event_category: 'rarepass', event_label: characterId });
           setIsTransitioning(true);
           refetch().finally(() => setIsTransitioning(false));
         },

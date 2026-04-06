@@ -13,6 +13,7 @@ import {
 
 // helpers
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
+import { trackEvent } from "../../../helpers/analytics";
 
 type UseDiscordActivityVerificationProps = {
   activityTypeId: string;
@@ -58,6 +59,7 @@ const useVerifyDiscord = ({
     setUpdatedId(userId);
     setErrorMessage("");
     setVerifyingDiscord(true);
+    trackEvent('sybil_verify_discord_clicked', { event_category: 'verification' });
 
     handleConnect(userId);
   };
@@ -126,6 +128,7 @@ const useVerifyDiscord = ({
               console.log(response)
               if (response.data.status === "COMPLETED") {
                 setDiscordActivityStatus("Claimed");
+                trackEvent('sybil_verify_discord_completed', { event_category: 'verification' });
                 refetchActivity();
                 refetchUserDetails();
                 setErrorMessage("");

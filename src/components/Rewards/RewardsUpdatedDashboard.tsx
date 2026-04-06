@@ -6,6 +6,7 @@ import {
 } from "@pushchain/ui-kit";
 
 import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
+import { trackEvent } from "../../helpers/analytics";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardStatus } from "../../context/rewardStatusContext";
@@ -136,7 +137,7 @@ export const RewardsUpdatedDashboard = () => {
           </Text>
         </Box>
 
-        <Box>
+        <Box onClick={() => trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'dashboard' })}>
           <PushUniversalAccountButton uid='wallet1' />
         </Box>
       </Box>

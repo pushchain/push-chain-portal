@@ -13,6 +13,7 @@ import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { SquadsDetailsResponse } from "../../../queries/types/squads"
 
 import { Box, Button, Link, SeasonThreeEllipse, Text } from "../../../blocks"
+import { trackEvent } from "../../../helpers/analytics"
 
 
 type SquadSectionProps = {
@@ -45,6 +46,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
     setIsSigning(false);
     if (!headers) return;
     setActiveInviteId(inviteId);
+    trackEvent('squad_invite_accepted', { event_category: 'squads', event_label: inviteId });
     acceptInvite(
       { params: { inviteId }, authHeaders: headers },
       {
@@ -64,6 +66,7 @@ export const SquadSection = ({ squadData, refetchSquadsDetails }: SquadSectionPr
     setIsSigning(false);
     if (!headers) return;
     setActiveInviteId(inviteId);
+    trackEvent('squad_invite_declined', { event_category: 'squads', event_label: inviteId });
     rejectInvite(
       { params: { inviteId }, authHeaders: headers },
       {

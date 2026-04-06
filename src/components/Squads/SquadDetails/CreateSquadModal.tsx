@@ -9,6 +9,7 @@ import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { trackEvent } from "../../../helpers/analytics";
 
 
 
@@ -44,6 +45,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
       { params: { name: squadName }, authHeaders: headers },
       {
         onSuccess: () => {
+          trackEvent('squad_created', { event_category: 'squads', event_label: squadName });
           setSquadName("");
           refetch();
           onClose();

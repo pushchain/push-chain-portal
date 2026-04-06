@@ -10,6 +10,7 @@ import { device } from "../../config/globals"
 import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
+import { trackEvent } from "../../helpers/analytics"
 
 
 export const Squads = () => {
@@ -34,6 +35,7 @@ export const Squads = () => {
     const headers = authHeaders ?? await getAuthHeaders();
     setIsSigning(false);
     if (!headers) return;
+    trackEvent('invite_code_generated', { event_category: 'invites' });
     requestForInviteCode(
       { payload: { count: 5 }, authHeaders: headers },
       {

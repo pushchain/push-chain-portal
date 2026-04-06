@@ -11,6 +11,7 @@ import { WalletChainType } from "./Rewards/utils/wallet";
 import { useSignPushMessage } from "./Rewards/hooks/useSignPushMessage";
 
 import { Image } from "../css/SharedStyling";
+import { trackEvent } from "../helpers/analytics";
 import { Box, Button, Link, Modal, Text, TextInput, Logout } from "../blocks";
 import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
 import BottomSectionBG from '../../static/assets/website/rewards/bottomsectionbg.webp';
@@ -60,6 +61,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const isSolana = chainId === WalletChainType.SOLANA;
 
   const handleSubmit = async () => {
+      trackEvent('season3_signup_submitted', { event_category: 'auth' });
       if (!inviteCode.trim()) {
         setError("Invite code is required");
         return;
@@ -121,6 +123,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         },
         {
           onSuccess: () => {
+            trackEvent('season3_signup_completed', { event_category: 'auth' });
             refetch();
             refetchCultStatus();
             onClose();

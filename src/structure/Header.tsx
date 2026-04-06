@@ -13,6 +13,7 @@ import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
 import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
 import { getLevelBadge } from "../helpers/getLevelBadge";
+import { trackEvent } from "../helpers/analytics";
 
 
 interface HeaderProps {
@@ -90,7 +91,15 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={30} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
         </Box>)}
 
-        {!isTablet && (<PushUniversalAccountButton uid='wallet1' />)}
+        {!isTablet && (
+          <Box onClick={() => {
+            if (connectionStatus !== 'connected') {
+              trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'header' });
+            }
+          }}>
+            <PushUniversalAccountButton uid='wallet1' />
+          </Box>
+        )}
 
         {isLaptop &&
           (<Box
