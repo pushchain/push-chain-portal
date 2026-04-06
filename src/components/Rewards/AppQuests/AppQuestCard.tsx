@@ -76,8 +76,6 @@ const QuestItem: FC<QuestItemProps> = ({
 
   const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
 
-  console.log(verifyingRewards, 'verifyingRewards');
-
   return (
     <Box
       display="flex"
