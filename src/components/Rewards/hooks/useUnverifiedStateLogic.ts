@@ -11,8 +11,8 @@ import { useRewardsContext } from "../../../context/rewardsContext";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
 import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useLocation } from "react-router-dom";
-import { WalletChainType } from "../utils/wallet";
 import { trackEvent } from "../../../helpers/analytics";
+import { FAILED_CHECK_MESSAGES } from "../utils/sybilCheckMessages";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -99,6 +99,15 @@ export const useUnverifiedStateLogic = () => {
     [universalAccount?.address, isPushWalletUser, refetchSybilStatus]
   );
 
+  const handleSybilError = (error: any) => {
+    const failedChecks: string[] = error?.response?.data?.error?.failedChecks || error?.response?.data?.data?.summary?.failedChecks || [];
+    if (failedChecks.length > 0) {
+      const messages = failedChecks?.map((check) => FAILED_CHECK_MESSAGES[check] || check);
+      setErrorMessage(messages.length === 1 ? messages[0] : messages.map((m) => `• ${m}`).join("\n"));
+    }
+    saveResult(false);
+  };
+
   // EVM user → advancedSybilCheck
   const runEvmCheck = async () => {
     setIsVerifying(true);
@@ -112,7 +121,7 @@ export const useUnverifiedStateLogic = () => {
       { address: caip10, authHeaders: headers},
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
-        onError: () => saveResult(false),
+        onError: handleSybilError,
       }
     );
   };
@@ -127,12 +136,11 @@ export const useUnverifiedStateLogic = () => {
       return;
     }
 
-
     pushCheck(
       { address: linkedWalletAddress, authHeaders: headers },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
-        onError: () => saveResult(false),
+        onError: handleSybilError,
       }
     );
   };

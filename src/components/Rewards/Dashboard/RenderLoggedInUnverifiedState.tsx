@@ -14,6 +14,7 @@ import {
   Button,
   CrossFilled,
   GlowStreaks,
+  Lock,
   SealCheckFilled,
   Text,
 } from "../../../blocks";
@@ -268,7 +269,7 @@ export const RenderLoggedInUnverifiedState = () => {
                   </Box>
                   <Box css={css`margin-left: auto;`}>
                     {isLocked ? (
-                      <Button variant="tertiary" size="medium" disabled>
+                      <Button variant="secondary" leadingIcon={<Lock />} size="small" disabled>
                         Verify
                       </Button>
                     ) : (

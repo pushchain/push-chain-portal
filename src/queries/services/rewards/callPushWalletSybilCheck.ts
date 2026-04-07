@@ -6,7 +6,6 @@ import { getSeasonThreeBaseURL } from "../../baseURL";
 
 export const callPushWalletSybilCheck = ({
   address,
-  chainId,
   authHeaders,
 }: AdvancedSybilCheckParams) =>
   axios({
