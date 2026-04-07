@@ -7,6 +7,7 @@ import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 import { trackEvent } from '../../../helpers/analytics';
+import { fadeInCss } from '../utils/FadeIn';
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +36,7 @@ const SpinToWinCard = () => {
           background: linear-gradient(241deg, rgba(253, 253, 218, 1) 28%, rgba(212, 255, 193, 1) 100%);
           box-sizing: border-box;
           position: relative;
+          ${fadeInCss(0)}
 
           &::before {
             content: '';

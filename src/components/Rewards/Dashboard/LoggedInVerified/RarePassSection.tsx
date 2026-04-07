@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import OpenPassImage from '../../../../../static/assets/website/pushpass/OpenPass.webp';
 import OpenPassLockedImage from '../../../../../static/assets/website/pushpass/OpenPassLocked.webp';
 import { device } from '../../../../config/globals';
+import { fadeInCss } from '../../utils/FadeIn';
 
 type RarePassSectionProps = {
   onBlockedOpen?: () => void;
@@ -78,6 +79,7 @@ export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => 
         background-blend-mode: plus-lighter;
         box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
         backdrop-filter: blur(3px);
+        ${fadeInCss(200)}
 
 
         &::before {

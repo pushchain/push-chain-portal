@@ -3,6 +3,7 @@ import { Box, Text } from '../../../blocks';
 
 import CollectRaresCardImage from '../../../../static/assets/website/rewards/CollectRareCard.webp'
 import { Image } from '../../../css/SharedStyling';
+import { fadeInCss } from '../utils/FadeIn';
 
 
 const CollectRaresCard = () => {
@@ -21,6 +22,7 @@ const CollectRaresCard = () => {
       css={css`
         background: linear-gradient(241deg, rgba(253, 253, 218, 1) 0%, rgba(254, 223, 170, 1) 100%);
         box-sizing: border-box;
+        ${fadeInCss(100)}
       `}
     >
       <Box

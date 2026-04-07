@@ -8,6 +8,7 @@ import { device } from '../../../../config/globals';
 
 import { Box, Skeleton, Text } from '../../../../blocks';
 import { getLevelBadge } from '../../../../helpers/getLevelBadge';
+import { fadeInCss } from '../../utils/FadeIn';
 
 
 export const LevelCard: FC = () => {
@@ -38,6 +39,7 @@ export const LevelCard: FC = () => {
         border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
         box-sizing: border-box;
+        ${fadeInCss(0)}
 
         @media ${device.mobileL}{
             height: 120px;

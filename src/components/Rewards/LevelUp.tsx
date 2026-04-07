@@ -15,6 +15,7 @@ import ClaimPCTokenModal from "./ClaimPCTokenModal";
 import { useRewardStatus } from "../../context/rewardStatusContext";
 import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
 import { FALLBACK_LEVEL_CONFIG } from "./utils/levelConfig";
+import { fadeInCss } from "./utils/FadeIn";
 
 export const LevelUp = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,6 +100,7 @@ export const LevelUp = () => {
             min-width: 296px;
             max-width: 296px;
             box-sizing: border-box;
+            ${fadeInCss(0)}
 
             @media (max-width: 768px) {
               min-width: 100%;

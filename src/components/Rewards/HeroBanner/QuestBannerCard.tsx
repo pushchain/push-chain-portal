@@ -3,6 +3,7 @@ import { Box, GlowStreaks, Text } from '../../../blocks';
 
 import QuestBannerImage from '../../../../static/assets/website/rewards/QuestsBannerCardImg.webp'
 import { Image } from '../../../css/SharedStyling';
+import { fadeInCss } from '../utils/FadeIn';
 
 const QuestBannerCard = () => {
   return (
@@ -23,6 +24,7 @@ const QuestBannerCard = () => {
         flex: 1;
         box-sizing: border-box;
         gap: 12px;
+        ${fadeInCss(300)}
       `}
     >
 

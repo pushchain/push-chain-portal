@@ -6,6 +6,7 @@ import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
+import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
 import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
@@ -91,7 +92,8 @@ const AppQuestSection = () => {
 
   return (
     <Box
-      width="100%">
+      width="100%"
+      css={css`${fadeInCss(100)}`}>
       {/*{errorMessage &&
         <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
           <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />

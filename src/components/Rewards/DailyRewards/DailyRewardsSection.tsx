@@ -17,6 +17,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { DAILY_REWARDS } from "../utils/dailyRewardsConfig";
 import { trackEvent } from "../../../helpers/analytics";
+import { fadeInCss } from "../utils/FadeIn";
 
 export type DailyRewardsSectionProps = Record<string, never>;
 
@@ -69,6 +70,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         backdrop-filter: blur(10px);
         box-sizing: border-box;
         min-width: 0;
+        ${fadeInCss(200)}
       `}
     >
       <Box

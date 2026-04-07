@@ -8,6 +8,7 @@ import { DashboardHeader } from './LoggedInVerified/DashboardHeader';
 import { DashboardFooter } from './LoggedInVerified/DashboardFooter';
 import { device } from '../../../config/globals';
 import QuestBannerCard from '../HeroBanner/QuestBannerCard';
+import { fadeInCss } from '../utils/FadeIn';
 
 export const RenderLoggedInVerifiedState: FC = () => {
   return (
@@ -30,6 +31,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
         isolation: isolate;
         border: 1px solid rgba(171, 70, 248, 0.40);
         box-sizing: border-box;
+        ${fadeInCss(0)}
       `}
     >
       <Box

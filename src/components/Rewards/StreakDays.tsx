@@ -8,6 +8,7 @@ import { walletToFullCAIP10 } from "../../helpers/web3helper";
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"
 import StreakFireAnimation from "../../../static/assets/website/rewards/streak-fire.json"
+import { fadeInCss } from "./utils/FadeIn"
 
 export const StreakDays = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -33,6 +34,7 @@ export const StreakDays = () => {
             backdrop-filter: blur(10px);
             box-sizing: border-box;
             z-index: 3;
+            ${fadeInCss(100)}
 
 
             &::before {

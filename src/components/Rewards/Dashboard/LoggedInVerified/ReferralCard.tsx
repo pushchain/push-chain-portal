@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { Box, Text } from '../../../../blocks';
 import ReferralImage from '../../../../../static/assets/website/rewards/ReferralCard.webp';
 import { Image } from '../../../../css/SharedStyling';
+import { fadeInCss } from '../../utils/FadeIn';
 
 
 
@@ -24,6 +25,7 @@ export const ReferralCard: FC = () => {
         border: 1px solid rgba(255, 255, 255, 0.10);
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 75.21%, #291D39 100%);
         box-sizing: border-box;
+        ${fadeInCss(240)}
       `}
     >
       <Box

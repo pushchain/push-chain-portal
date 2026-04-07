@@ -188,6 +188,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         `}
   `;
 
+
   const handleItemClick = (itemId: string, onClick?: () => void, route?: string) => {
     if (route) {
       // Check if it's an external URL

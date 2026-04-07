@@ -12,6 +12,7 @@ import contentBossQuestImg from '../../../../static/assets/website/rewards/Conte
 import rarePassBossQuestImg from '../../../../static/assets/website/rewards/RarePassBossQuest.webp';
 import fiveBossQuestsImg from '../../../../static/assets/website/rewards/FiveBossQuests.webp';
 import { useCountdown } from '../hooks/useCountdown';
+import { fadeInCss } from '../utils/FadeIn';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -76,7 +77,7 @@ const BossQuestsSection = () => {
   const { timeLeft } = useCountdown(targetDate);
 
   return (
-    <Box width={"100%"}>
+    <Box width={"100%"} css={css`${fadeInCss(200)}`}>
       {errorMessage &&
         <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
           <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
