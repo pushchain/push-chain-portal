@@ -420,6 +420,7 @@ export const PushPassItem = () => {
               css={css`
                 background: url(${RarePassBg}) center/cover;
                 width: 249px;
+                max-width: 100%;
                 height: 329px;
                 overflow: visible;
               `}

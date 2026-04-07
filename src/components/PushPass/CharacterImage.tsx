@@ -9,8 +9,8 @@ type CharacterTraits = {
 
 type CharacterImageProps = {
   characterId: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   reflectionBg?: string;
 };
 
@@ -58,6 +58,8 @@ const getImagePath = (
   return `${base}Otter-Pass/${type}/${paddedValue}-${type}.png`;
 };
 
+const toCss = (v: number | string) => typeof v === 'number' ? `${v}px` : v;
+
 export const CharacterImage = ({ characterId, width = 248, height = 318, reflectionBg }: CharacterImageProps) => {
   const [traits, setTraits] = useState<CharacterTraits | null>(null);
   const [imageError, setImageError] = useState(false);
@@ -74,8 +76,8 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
     return (
       <div
         style={{
-          width: `${width}px`,
-          height: `${height}px`,
+          width: toCss(width),
+          height: toCss(height),
           background: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '16px',
           display: 'flex',
@@ -97,7 +99,7 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
 
   const imgStyle: React.CSSProperties = {
     position: 'absolute',
-    bottom: 3,
+    bottom: 1,
     left: 0,
     width: '100%',
     height: '100%',
@@ -108,8 +110,8 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
     <div
       style={{
         position: 'relative',
-        width: `${width}px`,
-        height: `${height}px`,
+        width: toCss(width),
+        height: toCss(height),
       }}
     >
       {/* Base layer: Body */}

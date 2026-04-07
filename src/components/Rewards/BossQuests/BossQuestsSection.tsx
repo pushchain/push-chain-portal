@@ -83,13 +83,14 @@ const BossQuestsSection = () => {
         </Box>}
 
     <Box
-      display="inline-flex"
+      display="flex"
       flexDirection="column"
       alignItems="flex-start"
       gap="spacing-xs"
       padding="spacing-md"
       position="relative"
       borderRadius="radius-lg"
+      width="100%"
       css={css`
         box-shadow:
           inset 1.86px 1.73px 6px rgba(255, 255, 255, 0.15),
@@ -97,6 +98,7 @@ const BossQuestsSection = () => {
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         flex: 1;
+        box-sizing: border-box;
 
         &::before {
           content: "";
@@ -177,6 +179,9 @@ const BossQuestsSection = () => {
           gap="spacing-sm"
           css={css`
             height: auto;
+            & > * {
+              min-width: 0;
+            }
           `}
         >
           <BossQuestCard

@@ -14,12 +14,13 @@ const shimmer = keyframes`
 `;
 
 const SkeletonCard = styled.div`
-  height: 328px;
-  width: 248px;
+  aspect-ratio: 249 / 329;
+  width: 100%;
+  max-width: 249px;
   border-radius: var(--radius-xs);
   overflow: hidden;
   position: relative;
-  background: url(${RarePassBg}) center/contain;
+  background: url(${RarePassBg}) center/cover;
   filter: brightness(0.4) saturate(0.5);
 
   &::after {
@@ -231,8 +232,9 @@ const MyCollectionContent: FC<MyCollectionContentProps> = ({ characters, isLoadi
                     align-items: center;
                     justify-content: flex-end;
                     background: url(${RarePassBg}) center/cover;
-                    width: 249px;
-                    height: 329px;
+                    width: 100%;
+                    max-width: 248px;
+                    aspect-ratio: 248 / 328;
                     overflow: hidden;
                     position: relative;
                     ${isUnminted ? 'filter: grayscale(100%); opacity: 0.5;' : ''}
@@ -240,8 +242,8 @@ const MyCollectionContent: FC<MyCollectionContentProps> = ({ characters, isLoadi
                 >
                   <CharacterImage
                     characterId={character.characterId}
-                    width={249}
-                    height={326}
+                    width="100%"
+                    height="100%"
                   />
                 </Box>
 
