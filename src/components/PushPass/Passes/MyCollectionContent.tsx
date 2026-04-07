@@ -1,32 +1,65 @@
-import { css } from 'styled-components';
-import { usePushWalletContext } from '@pushchain/ui-kit';
+import { FC } from 'react';
+import styled, { css, keyframes } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
-import { useGetCharacterInfo } from '../../../queries';
-import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { device } from '../../../config/globals';
 
 import RarePassBg from '../../../../static/assets/website/pushpass/RarePassBG.webp';
-import { Box, RarePassIcon, Spinner, Text } from '../../../blocks';
+import { Box, Button, RarePassIcon, Text } from '../../../blocks';
 import { CharacterImage } from '../CharacterImage';
 
+const shimmer = keyframes`
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+`;
 
-const MyCollectionContent = () => {
-  const { universalAccount } = usePushWalletContext('wallet1');
+const SkeletonCard = styled.div`
+  height: 328px;
+  width: 248px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  position: relative;
+  background: url(${RarePassBg}) center/contain;
+  filter: brightness(0.4) saturate(0.5);
 
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain
-  );
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(171, 70, 248, 0.08) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(171, 70, 248, 0.08) 75%,
+      transparent 100%
+    );
+    animation: ${shimmer} 1.8s ease-in-out infinite;
+  }
+`;
 
-  const { data: characterInfo, isLoading } = useGetCharacterInfo({
-    walletAddress: caip10WalletAddress,
+type Character = {
+  characterId: string;
+  status: string;
+  [key: string]: any;
+};
+
+type MyCollectionContentProps = {
+  characters: Character[];
+  isLoading: boolean;
+};
+
+const MyCollectionContent: FC<MyCollectionContentProps> = ({ characters, isLoading }) => {
+  const navigate = useNavigate();
+
+  // Show unminted first, then minted
+  const sortedCharacters = [...characters].sort((a, b) => {
+    if (a.status === 'UNMINTED' && b.status !== 'UNMINTED') return -1;
+    if (a.status !== 'UNMINTED' && b.status === 'UNMINTED') return 1;
+    return 0;
   });
 
-
-
-  const characters = characterInfo?.characters || [];
-  const mintedCharacters = characters?.filter((c) => c.status === 'MINTED');
-  const hasCharacters = mintedCharacters?.length > 0;
+  const hasCharacters = sortedCharacters.length > 0;
 
   return (
     <Box
@@ -59,10 +92,10 @@ const MyCollectionContent = () => {
           `}
         >
           <Box
-            gap="spacing-xxxs"
+            gap="spacing-xxs"
             css={css`
               display: flex;
-              align-items: flex-start;
+              align-items: center;
               position: relative;
             `}
           >
@@ -83,6 +116,24 @@ const MyCollectionContent = () => {
             >
               My Collection
             </Text>
+            {sortedCharacters.length > 0 && (
+              <Box
+                css={css`
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  background: #D548EC;
+                  border-radius: 24px;
+                  width: 24px;
+                  height: 24px;
+                  min-width: 24px;
+                `}
+              >
+                <Text variant="bes-semibold" color="text-on-dark-bg">
+                  {sortedCharacters.length}
+                </Text>
+              </Box>
+            )}
           </Box>
 
           <Text variant="bm-regular" color="text-secondary">
@@ -94,15 +145,26 @@ const MyCollectionContent = () => {
 
       {isLoading && (
         <Box
+          gap="spacing-md"
           width="100%"
           css={css`
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 169px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-lg);
+            position: relative;
+
+            @media ${device.tablet} {
+              grid-template-columns: repeat(2, 1fr);
+            }
+
+            @media ${device.mobileL} {
+              grid-template-columns: repeat(1, 1fr);
+            }
           `}
         >
-          <Spinner size="medium" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </Box>
       )}
 
@@ -149,24 +211,31 @@ const MyCollectionContent = () => {
             }
           `}
         >
-          {mintedCharacters?.map((character) => (
-            <Box
-              key={character.characterId}
-            >
+          {sortedCharacters?.map((character) => {
+            const isUnminted = character.status === 'UNMINTED';
+            return (
               <Box
+                key={character.characterId}
                 css={css`
                   display: flex;
                   flex-direction: column;
                   align-items: center;
-                  gap: 8px;
+                  justify-content: center;
+                  position: relative;
                 `}
               >
                 <Box
                   css={css`
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-end;
                     background: url(${RarePassBg}) center/cover;
                     width: 249px;
                     height: 329px;
                     overflow: hidden;
+                    position: relative;
+                    ${isUnminted ? 'filter: grayscale(100%); opacity: 0.5;' : ''}
                   `}
                 >
                   <CharacterImage
@@ -175,9 +244,39 @@ const MyCollectionContent = () => {
                     height={326}
                   />
                 </Box>
+
+                {isUnminted && (
+                  <Box
+                    css={css`
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      z-index: 2;
+                    `}
+                  >
+                    <Button
+                      size="medium"
+                      variant="primary"
+                      onClick={() => navigate(`/rewards/pushpass/${character.characterId}`)}
+                      css={css`
+                        background: #d548ec;
+                        box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+                        min-width: 100px;
+                        height: 48px;
+                      `}
+                    >
+                      Confirm/Reroll Pass
+                    </Button>
+                  </Box>
+                )}
               </Box>
-            </Box>
-          ))}
+            );
+          })}
         </Box>
       )}
     </Box>

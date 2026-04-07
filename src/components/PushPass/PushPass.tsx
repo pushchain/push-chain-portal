@@ -1,21 +1,15 @@
-import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
-import PushPassTabs from './Tabs/PushPassTabs';
 import UnopenedPassesContent from './Passes/UnopenedPassesContent';
 import MyCollectionContent from './Passes/MyCollectionContent';
 import { Box, Link, Text } from '../../blocks';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 
-
-type TabType = 'unopened' | 'collection';
-
 const PushPass = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('unopened');
   const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -45,14 +39,6 @@ const PushPass = () => {
 
 
   const passes = [
-    // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
-    ...unmintedCharacters.map((char, index) => ({
-      id: rareActiveCount + index + 1,
-      isLocked: false,
-      lockMessage: 'Confirm/Reroll Pass',
-      character: char
-    })),
-
     // Active rare passes — all openable
     ...Array.from({ length: rareActiveCount }, (_, index) => ({
       id: index + 1,
@@ -60,9 +46,9 @@ const PushPass = () => {
       lockMessage: 'Open Pass',
     })),
 
-    // Dormant passes — locked until Level 25
+    // Dormant pass — locked until Level 25
     ...Array.from({ length: rareDormantCount }, (_, index) => ({
-      id: rareActiveCount + unmintedCharacters.length + index + 1,
+      id: rareActiveCount + index + 1,
       isLocked: true,
       lockMessage: 'Unlocks at Lv. 25',
     })),
@@ -155,9 +141,15 @@ const PushPass = () => {
               position: relative;
             `}
           >
-            <PushPassTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            {activeTab === 'unopened' && <UnopenedPassesContent passes={passes} isLoading={isLoading} />}
-            {activeTab === 'collection' && <MyCollectionContent />}
+            <MyCollectionContent
+              characters={characters}
+              isLoading={isLoading}
+            />
+            <UnopenedPassesContent
+              passes={passes}
+              isLoading={isLoading}
+              hasUnminted={unmintedCharacters.length > 0}
+            />
           </Box>
         </Box>
       </Box>

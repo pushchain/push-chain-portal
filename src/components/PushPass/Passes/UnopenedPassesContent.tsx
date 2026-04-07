@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { Box, RarePassIcon, Text } from '../../../blocks';
+import { Alert, Box, RarePassIcon, Text } from '../../../blocks';
 import RarePassCard from './RarePassCard';
 import { device } from '../../../config/globals';
 import OpenPassImage from '../../../../static/assets/website/pushpass/OpenPass.webp';
@@ -49,9 +49,12 @@ type Pass = {
 type UnopenedPassesContentProps = {
   passes: Pass[];
   isLoading?: boolean;
+  hasUnminted?: boolean;
 };
 
-const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoading }) => {
+const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoading, hasUnminted }) => {
+  const [showUnmintedAlert, setShowUnmintedAlert] = useState(false);
+
   return (
     <Box
       width="100%"
@@ -86,9 +89,9 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
         `}
       >
         <Box
-          gap="spacing-xxxs"
-          alignItems="center"
+          gap="spacing-xxs"
           display="flex"
+          alignItems="center"
           position='relative'
         >
           <Text
@@ -104,6 +107,24 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
           >
             Rare Pass
           </Text>
+          {passes?.length > 0 && (
+            <Box
+              css={css`
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #D548EC;
+                border-radius: 24px;
+                width: 24px;
+                height: 24px;
+                min-width: 24px;
+              `}
+            >
+              <Text variant="bes-semibold" color="text-on-dark-bg">
+                {passes.length}
+              </Text>
+            </Box>
+          )}
         </Box>
 
         <Text
@@ -114,6 +135,16 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
         </Text>
       </Box>
       </Box>
+
+      {showUnmintedAlert && (
+        <Box width="100%">
+          <Alert
+            variant="error"
+            description="You must confirm and claim your pass before opening another one."
+            onClose={() => setShowUnmintedAlert(false)}
+          />
+        </Box>
+      )}
 
       {isLoading && (
         <Box
@@ -187,7 +218,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
             isLocked={pass.isLocked}
             lockMessage={pass.lockMessage}
             id={pass.id}
-            characterId={pass.character?.characterId}
+            onBlockedOpen={hasUnminted ? () => setShowUnmintedAlert(true) : undefined}
           />
         ))}
       </Box>}

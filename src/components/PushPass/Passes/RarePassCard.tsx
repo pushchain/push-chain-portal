@@ -10,23 +10,23 @@ type RarePassCardProps = {
   lockMessage?: string;
   backgroundImage?: string;
   id?: number;
-  characterId?: string;
+  onBlockedOpen?: () => void;
 };
 
 const RarePassCard: FC<RarePassCardProps> = ({
   isLocked,
   lockMessage = 'Locked',
   id,
-  characterId,
+  onBlockedOpen,
 }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (characterId) {
-      navigate(`/rewards/pushpass/${characterId}`);
-    } else {
-      navigate(`/rewards/pushpass/open`);
+    if (onBlockedOpen) {
+      onBlockedOpen();
+      return;
     }
+    navigate(`/rewards/pushpass/open`);
   }
   return (
     <Box
@@ -40,12 +40,20 @@ const RarePassCard: FC<RarePassCardProps> = ({
         justify-content: flex-end;
         position: relative;
         flex: 1;
-        background: ${(isLocked || characterId)
-                    ? `url(${OpenPassLockedImage}) center/cover`
-                    : `url(${OpenPassImage}) center/cover`
-                };
       `}
     >
+      <Box
+        css={css`
+          position: absolute;
+          inset: 0;
+          background: ${isLocked
+                      ? `url(${OpenPassLockedImage}) center/cover`
+                      : `url(${OpenPassImage}) center/cover`
+                  };
+          pointer-events: none;
+          z-index: 0;
+        `}
+      />
 
       <Box
         height="379px"
@@ -57,6 +65,7 @@ const RarePassCard: FC<RarePassCardProps> = ({
           align-items: center;
           justify-content: center;
           position: relative;
+          z-index: 999;
         `}
       >
         {isLocked ? (
