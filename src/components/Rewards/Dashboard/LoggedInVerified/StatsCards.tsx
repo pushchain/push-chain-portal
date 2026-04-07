@@ -15,6 +15,13 @@ export const StatsCards: FC = () => {
       width="100%"
       flexDirection='row'
       css={css`
+        @media (max-width: 1200px) and (min-width: 769px) {
+          flex-wrap: wrap;
+          & > * {
+            flex: 1 1 calc(50% - var(--spacing-md));
+            min-width: 0;
+          }
+        }
         @media ${device.mobileL} {
           display: grid;
           grid-template-columns: 1fr 1fr;

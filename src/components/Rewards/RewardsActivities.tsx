@@ -67,6 +67,14 @@ const RewardsActivities = () => {
         & > * {
           min-width: 0;
         }
+        @media (max-width: 1200px) and (min-width: 769px) {
+          flex-wrap: wrap;
+          height: auto;
+          & > * {
+            flex: 1 1 calc(50% - var(--spacing-md));
+            min-width: 0;
+          }
+        }
         `}>
         <LevelUp />
         <StreakDays />

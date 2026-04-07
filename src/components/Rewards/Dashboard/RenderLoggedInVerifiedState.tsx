@@ -56,6 +56,12 @@ export const RenderLoggedInVerifiedState: FC = () => {
             overflow: hidden;
             flex: 1;
 
+            @media (max-width: 1200px) and (min-width: 769px) {
+              min-height: initial;
+              max-height: initial;
+              overflow: visible;
+            }
+
             @media ${device.tablet} {
               height: auto;
               min-height: initial;
@@ -86,6 +92,10 @@ export const RenderLoggedInVerifiedState: FC = () => {
             height="-webkit-fill-available"
             css={css`
               width: 41%;
+
+              @media (max-width: 1200px) and (min-width: 769px) {
+                width: 50%;
+              }
 
               @media ${device.tablet} {
                   width: 100%;

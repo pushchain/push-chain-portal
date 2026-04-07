@@ -19,7 +19,7 @@ export const StreakDays = () => {
     <Box
       borderRadius="radius-md"
       padding="spacing-md"
-      height={{ initial: '100%', tb: 'auto' }}
+      // height={{ initial: '100%', tb: 'auto' }}
       minHeight={{ tb: '200px' }}
       position="relative"
       overflow="hidden"
