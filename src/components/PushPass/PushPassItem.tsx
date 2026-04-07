@@ -71,17 +71,17 @@ export const PushPassItem = () => {
   });
 
   const {
-    mutate: generate,
+    mutateAsync: generate,
     isPending: isGenerating,
   } = useGenerateCharacter();
 
   const {
-    mutate: reshuffle,
+    mutateAsync: reshuffle,
     isPending: isReshuffling,
   } = useReshuffleCharacter();
 
   const {
-    mutate: mint,
+    mutateAsync: mint,
     isPending: isMinting,
   } = useMintCharacter();
 
@@ -98,28 +98,32 @@ export const PushPassItem = () => {
 
   const PC_TOKEN_RECIPIENT = "0x54cd69927A869DDCb6786bf5C2C82a93790D3";
 
-  const handleOpenPass = () => {
+  const handleOpenPass = async () => {
     if (!caip10WalletAddress) return;
     setGenerateError("");
     trackEvent('rare_pass_open_clicked', { event_category: 'rarepass' });
-    generate(
-      { userWallet: caip10WalletAddress },
-      {
-        onSuccess: (data) => {
-          const response = data?.characterId || data?.data?.characterId;
-          trackEvent('rare_pass_opened', { event_category: 'rarepass', event_label: response });
-          setIsTransitioning(true);
-          if (response) {
-            setGeneratedCharacterId(response);
-          }
-          refetch().finally(() => setIsTransitioning(false));
-        },
-        onError: (err) => {
-          const message = err?.response?.data?.error?.message|| "Failed to open pass. Please try again.";
-          setGenerateError(message);
-        },
+    try {
+      const data = await generate({ userWallet: caip10WalletAddress });
+      const response = data?.characterId || data?.data?.characterId;
+      trackEvent('rare_pass_opened', { event_category: 'rarepass', event_label: response });
+      setIsTransitioning(true);
+      if (response) {
+        setGeneratedCharacterId(response);
       }
-    );
+      await refetch().finally(() => setIsTransitioning(false));
+    } catch (err: any) {
+      const message = err?.response?.data?.error?.message || "Failed to open pass. Please try again.";
+      setGenerateError(message);
+    }
+  };
+
+  const handleReshuffleSuccess = async (data: any) => {
+    const response = data?.newCharacterId || data?.data?.newCharacterId;
+    setIsTransitioning(true);
+    if (response) {
+      setGeneratedCharacterId(response);
+    }
+    await Promise.all([refetch(), refetchFee()]).finally(() => setIsTransitioning(false));
   };
 
   const handleReshuffle = async () => {
@@ -132,27 +136,17 @@ export const PushPassItem = () => {
       window.open(`https://x.com/intent/tweet?text=${tweetText}`, '_blank');
       trackEvent('rare_pass_reshuffle_tweet', { event_category: 'rarepass', event_label: characterId });
 
-      reshuffle(
-        {
+      try {
+        const data = await reshuffle({
           userWallet: caip10WalletAddress,
           characterId,
           feeType: 'tweet',
-        },
-        {
-          onSuccess: (data) => {
-            const response = data?.newCharacterId || data?.data?.newCharacterId;
-            setIsTransitioning(true);
-            if (response) {
-              setGeneratedCharacterId(response);
-            }
-            Promise.all([refetch(), refetchFee()]).finally(() => setIsTransitioning(false));
-          },
-          onError: (err: any) => {
-            const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
-            setReshuffleError(message);
-          },
-        }
-      );
+        });
+        await handleReshuffleSuccess(data);
+      } catch (err: any) {
+        const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
+        setReshuffleError(message);
+      }
     }
 
     if (nextFeeType === 'PC') {
@@ -168,62 +162,42 @@ export const PushPassItem = () => {
           value: feeInWei,
         });
 
-        const txHash = txResponse.hash;
-
-        reshuffle(
-          {
-            userWallet: caip10WalletAddress,
-            characterId,
-            feeType: 'PC',
-            feeProof: txHash,
-          },
-          {
-            onSuccess: (data) => {
-              const response = data?.newCharacterId || data?.data?.newCharacterId;
-              setIsTransitioning(true);
-              if (response) {
-                setGeneratedCharacterId(response);
-              }
-              Promise.all([refetch(), refetchFee()]).finally(() => setIsTransitioning(false));
-            },
-            onError: (err: any) => {
-              const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
-              setReshuffleError(message);
-            },
-            onSettled: () => {
-              setIsPaying(false);
-            },
-          }
-        );
-      } catch (error) {
-        console.error("PC token transfer failed:", error);
-        setPayError("PC token transfer failed. Please try again.");
+        const data = await reshuffle({
+          userWallet: caip10WalletAddress,
+          characterId,
+          feeType: 'PC',
+          feeProof: txResponse.hash,
+        });
+        await handleReshuffleSuccess(data);
+      } catch (err: any) {
+        const message = err?.response?.data?.error?.message || "Failed to reshuffle. Please try again.";
+        if (message.includes("transfer") || !err?.response) {
+          setPayError(message);
+        } else {
+          setReshuffleError(message);
+        }
+      } finally {
         setIsPaying(false);
       }
     }
   };
 
-  const handleMint = () => {
+  const handleMint = async () => {
     if (!caip10WalletAddress) return;
     setMintError("");
     trackEvent('rare_pass_mint_clicked', { event_category: 'rarepass', event_label: characterId });
-    mint(
-      {
+    try {
+      await mint({
         userWallet: caip10WalletAddress,
-        characterId: characterId
-      },
-      {
-        onSuccess: () => {
-          trackEvent('rare_pass_minted', { event_category: 'rarepass', event_label: characterId });
-          setIsTransitioning(true);
-          refetch().finally(() => setIsTransitioning(false));
-        },
-        onError: (err: any) => {
-          const message = err?.response?.data?.error?.message || "Failed to mint. Please try again.";
-          setMintError(message);
-        },
-      }
-    );
+        characterId: characterId,
+      });
+      trackEvent('rare_pass_minted', { event_category: 'rarepass', event_label: characterId });
+      setIsTransitioning(true);
+      await refetch().finally(() => setIsTransitioning(false));
+    } catch (err: any) {
+      const message = err?.response?.data?.error?.message || "Failed to mint. Please try again.";
+      setMintError(message);
+    }
   };
 
   return (

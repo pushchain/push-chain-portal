@@ -156,6 +156,7 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
           background: reflectionBg || 'transparent',
           borderRadius: '24px',
           zIndex: 5,
+          pointerEvents: 'none',
         }}
       >
         <img src={bodyPath} alt="" style={imgStyle} />
