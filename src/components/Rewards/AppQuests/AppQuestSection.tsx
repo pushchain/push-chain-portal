@@ -33,12 +33,12 @@ const AppQuestSection = () => {
     appId: "ramen-swap"
   });
 
-  const { data: lastOneQuestsProgress } = useGetQuestsProgress({
+  const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
     appId: "lastone",
     userId: userDetails?.userId
   });
 
-  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
+  const { data: ramenSwapQuestsProgress, refetch: refetchRamenProgress } = useGetQuestsProgress({
     appId: "ramen-swap",
     userId: userDetails?.userId
   });
@@ -51,14 +51,19 @@ const AppQuestSection = () => {
     ...ramenSwapQuestIds,
   ];
 
-
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
       userId: userDetails?.userId as string,
       activityTypes: allActivityIds,
     },
-    { enabled: !!userDetails?.userId }
+    { enabled: !!userDetails?.userId && allActivityIds.length > 0 }
   );
+
+  const refetchAll = () => {
+    refetchActivities();
+    refetchLastOneProgress();
+    refetchRamenProgress();
+  };
 
   const targetDate = "2026-04-17T13:59:59";
   const { timeLeft } = useCountdown(targetDate);
@@ -68,7 +73,10 @@ const AppQuestSection = () => {
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
     const map: Record<string, boolean> = {};
     quests?.forEach((q) => {
-      if (q.frequency === 'REPEATABLE' && q.completed && q.completedAt) {
+      const activityCompleted = activityStatuses?.[q.questId]?.status === 'COMPLETED';
+      if (activityCompleted) {
+        map[q.questId] = true;
+      } else if (q.frequency === 'REPEATABLE' && q.completed && q.completedAt) {
         const timeSinceCompleted = Date.now() - new Date(q.completedAt).getTime();
         map[q.questId] = timeSinceCompleted < ONE_WEEK_MS;
       } else {
@@ -107,7 +115,7 @@ const AppQuestSection = () => {
               quests={lastOneQuests?.data.quests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
-              refetchActivities={refetchActivities}
+              refetchActivities={refetchAll}
               userId={userDetails?.userId}
               completedMap={lastOneCompletedMap}
               setErrorMessage={setErrorMessage}
@@ -125,7 +133,7 @@ const AppQuestSection = () => {
               quests={ramenSwapQuests?.data.quests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
-              refetchActivities={refetchActivities}
+              refetchActivities={refetchAll}
               userId={userDetails?.userId}
               completedMap={ramenSwapCompletedMap}
               setErrorMessage={setErrorMessage}
