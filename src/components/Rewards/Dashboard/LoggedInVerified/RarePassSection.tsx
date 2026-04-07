@@ -11,7 +11,11 @@ import OpenPassImage from '../../../../../static/assets/website/pushpass/OpenPas
 import OpenPassLockedImage from '../../../../../static/assets/website/pushpass/OpenPassLocked.webp';
 import { device } from '../../../../config/globals';
 
-export const RarePassSection: FC = () => {
+type RarePassSectionProps = {
+  onBlockedOpen?: () => void;
+};
+
+export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => {
   const navigate = useNavigate();
   const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
@@ -39,14 +43,6 @@ export const RarePassSection: FC = () => {
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
 
   const passes = [
-    // Cards for each UNMINTED character (already generated, waiting to mint/reshuffle)
-    ...unmintedCharacters.map((char, index) => ({
-      id: rareActiveCount + index + 1,
-      isLocked: false,
-      lockMessage: 'Confirm/Reroll Pass',
-      character: char
-    })),
-
     // Active rare passes — all openable
     ...Array.from({ length: rareActiveCount }, (_, index) => ({
       id: index + 1,
@@ -156,13 +152,12 @@ export const RarePassSection: FC = () => {
                 padding="spacing-sm"
                 cursor={!pass.isLocked ? 'pointer' : 'default'}
                 onClick={() => {
-
                   if (!pass.isLocked) {
-                    if ('character' in pass && pass.character) {
-                      navigate(`/rewards/pushpass/${(pass as any).character.characterId}`);
-                    } else {
-                      navigate('/rewards/pushpass/open');
+                    if (unmintedCharacters.length > 0 && onBlockedOpen) {
+                      onBlockedOpen();
+                      return;
                     }
+                    navigate('/rewards/pushpass/open');
                   }
                 }}
                 css={css`
