@@ -197,7 +197,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
                   Claim
                 </Button>
               ) : (
-                <Button variant="tertiary" size="small" disabled>
+                <Button variant="outline" size="small" disabled>
                   Claimed
                 </Button>
               )}

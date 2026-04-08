@@ -73,7 +73,7 @@ const ActivityButton: FC<ActivityButtonProps> = ({
 
 if (usersSingleActivity?.status === "COMPLETED") {
     return (
-      <Button variant={buttonVariant} size={buttonSize} css={buttonCss} disabled>
+      <Button variant={'outline'} size={buttonSize} css={buttonCss} disabled>
         Claimed
       </Button>
     );

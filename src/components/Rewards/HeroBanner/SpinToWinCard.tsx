@@ -1,23 +1,31 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Lock, Skeleton, Text } from '../../../blocks';
-import SpinToWinModal from './SpinToWinModal';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import { useSpinStatus } from '../hooks/useSpinStatus';
-import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
-import stopperImage from '/static/assets/website/rewards/stopper.webp';
+
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 import { trackEvent } from '../../../helpers/analytics';
+
 import { fadeInCss } from '../utils/FadeIn';
+import { Box, Button, Lock, Skeleton, Text } from '../../../blocks';
+import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
+import stopperImage from '/static/assets/website/rewards/stopper.webp';
+import SpinToWinModal from './SpinToWinModal';
+
+
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { universalAccount } = usePushWalletContext('wallet1')
+  const isWalletConnected = Boolean(universalAccount);
   const { spinStatus } = useSpinStatus();
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
 
-  const hasFreeSpin = remainingSpins === 5;
+  const canShowFreeSpin = remainingSpins === 5 || !isWalletConnected;
 
   return (
     <>
@@ -123,7 +131,7 @@ const SpinToWinCard = () => {
               Spin to Win
             </Text>
 
-            {hasFreeSpin && (<Box
+            {canShowFreeSpin && (<Box
               display="inline-flex"
               alignItems="center"
               justifyContent="center"
