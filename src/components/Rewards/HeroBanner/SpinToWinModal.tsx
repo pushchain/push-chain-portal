@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, ReactNode } from 'react';
 import { css } from 'styled-components';
 import Lottie from 'lottie-react';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 
 import Spinboard, { SpinboardHandle } from './Spinboard';
 import { useSpinStatus } from '../hooks/useSpinStatus';
@@ -10,7 +12,6 @@ import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
 import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } from '../../../blocks';
 import { Image } from '../../../css/SharedStyling';
-import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import { device } from '../../../config/globals';
