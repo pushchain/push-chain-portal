@@ -21,7 +21,8 @@ const SkeletonCard = styled.div`
   overflow: hidden;
   position: relative;
   background: url(${RarePassBg}) center/cover;
-  filter: brightness(0.4) saturate(0.5);
+  filter: grayscale(100%);
+  opacity: 0.5;
 
   &::after {
     content: '';

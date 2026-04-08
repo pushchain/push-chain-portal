@@ -310,7 +310,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         </a>
 
         <a
-          href="https://push.org"
+          href="https://x.com/PushChain/status/2039704813412425925"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: 'none', color: 'inherit' }}

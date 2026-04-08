@@ -37,7 +37,7 @@ export const Squads = () => {
     if (!headers) return;
     trackEvent('invite_code_generated', { event_category: 'invites' });
     requestForInviteCode(
-      { payload: { count: 5 }, authHeaders: headers },
+      { payload: { count: 3 }, authHeaders: headers },
       {
         onSuccess: () => { refetch(); },
         onError: (error: Error) => { console.log("Error in creating activity", error); },
