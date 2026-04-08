@@ -21,6 +21,7 @@ import {
 import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useGetRewardsActivity } from "../../../queries";
 import { useActivityContext } from "../../../context/activityContext";
+import { useLinkedWallet } from "../../../context/linkedWalletContext";
 
 const ACTIVITY_LIST = [
   {
@@ -62,6 +63,8 @@ const WalletVerificationAction = ({
   verify: () => void;
     sybilStatusData: GetSybilStatusResponse;
 }) => {
+const { handleLinkedWalletConnection } = useLinkedWallet();
+
 if (sybilStatusData?.data?.advanced?.completed) {
     return (
       <Box display="flex" alignItems="center" gap="spacing-xxs" padding="spacing-xs spacing-md" css={css`margin-left: auto;`}>
@@ -97,7 +100,10 @@ if (sybilStatusData?.data?.advanced?.completed) {
   if (isPushWalletUser && !hasLinkedAccount) {
     return (
       <Box css={css`margin-left: auto;`}>
-        <PushUniversalAccountButton
+        <Button onClick={handleLinkedWalletConnection}>
+          Link Account To Verify
+        </Button>
+        {/* <PushUniversalAccountButton
           uid="wallet2"
           connectButtonText="Link Account To Verify"
           themeOverrides={{
@@ -106,7 +112,7 @@ if (sybilStatusData?.data?.advanced?.completed) {
             "--pwauth-btn-connected-text-color": "#FFFFFF",
             "--pwauth-btn-connected-bg-color": "#000",
           }}
-        />
+        /> */}
       </Box>
     );
   }

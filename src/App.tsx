@@ -48,6 +48,7 @@ import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
 import { ActivityContextProvider } from "./context/activityContext";
 import { trackEvent } from "./helpers/analytics";
+import { LinkedWalletProvider } from "./context/linkedWalletContext";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -384,18 +385,20 @@ function App() {
               "--pwauth-btn-connected-bg-color": "#D548EC",
             }}
           >
-            <QueryClientProvider client={queryClient}>
-              <RewardsContextProvider>
-                <AuthHeadersProvider>
-                  <RewardStatusContextProvider>
-                    <ActivityContextProvider>
-                      <AppContent />
-                      <ReactQueryDevtools initialIsOpen={false} />
-                    </ActivityContextProvider>
-                  </RewardStatusContextProvider>
-                </AuthHeadersProvider>
-              </RewardsContextProvider>
-            </QueryClientProvider>
+            <LinkedWalletProvider>
+              <QueryClientProvider client={queryClient}>
+                <RewardsContextProvider>
+                  <AuthHeadersProvider>
+                    <RewardStatusContextProvider>
+                      <ActivityContextProvider>
+                        <AppContent />
+                        <ReactQueryDevtools initialIsOpen={false} />
+                      </ActivityContextProvider>
+                    </RewardStatusContextProvider>
+                  </AuthHeadersProvider>
+                </RewardsContextProvider>
+              </QueryClientProvider>
+            </LinkedWalletProvider>
           </PushUniversalWalletProvider>
         </PushUniversalWalletProvider>
       </Router>
