@@ -1,7 +1,7 @@
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { Alert, Box } from '../../../blocks';
-import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet, useGetQuestActivities } from '../../../queries';
 import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
@@ -60,10 +60,21 @@ const AppQuestSection = () => {
     { enabled: !!userDetails?.userId && allActivityIds.length > 0 }
   );
 
+  const { data: questActivitiesData, refetch: refetchQuestActivities } = useGetQuestActivities(userDetails?.userId);
+
+  // Build a flat map: activityTypeId -> { progress, status }
+  const questProgressMap: Record<string, { progress: number; status: string }> = {};
+  questActivitiesData?.activities?.forEach((app) => {
+    app.quests.forEach((q) => {
+      questProgressMap[q.activityTypeId] = { progress: q.progress, status: q.status };
+    });
+  });
+
   const refetchAll = () => {
     refetchActivities();
     refetchLastOneProgress();
     refetchRamenProgress();
+    refetchQuestActivities();
   };
 
   const targetDate = "2026-04-17T13:59:59";
@@ -120,10 +131,10 @@ const AppQuestSection = () => {
               refetchActivities={refetchAll}
               userId={userDetails?.userId}
               completedMap={lastOneCompletedMap}
+              questProgressMap={questProgressMap}
               setErrorMessage={setErrorMessage}
               linkColor="#653468"
               titleGradient='linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);'
-
             />
 
             <AppQuestCard
@@ -138,6 +149,7 @@ const AppQuestSection = () => {
               refetchActivities={refetchAll}
               userId={userDetails?.userId}
               completedMap={ramenSwapCompletedMap}
+              questProgressMap={questProgressMap}
               setErrorMessage={setErrorMessage}
               gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
               titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%)"

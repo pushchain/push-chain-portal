@@ -57,3 +57,4 @@ export const sybilStatus = "sybilStatus";
 export const verifySybilWallet = "verifySybilWallet";
 export const pcTokenBalance = "pcTokenBalance";
 export const userLevelConfig = "userLevelConfig";
+export const questActivities = "questActivities";

@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useRef } from 'react';
+import { FC, useState } from 'react';
 import { css, keyframes } from 'styled-components';
 import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
@@ -28,6 +28,7 @@ type QuestItemProps = {
   refetchActivities?: () => void;
   setErrorMessage: (errorMessage: string) => void;
   rewardsLocked: boolean;
+  questProgress?: { progress: number; status: string };
 };
 
 const QuestItem: FC<QuestItemProps> = ({
@@ -37,11 +38,12 @@ const QuestItem: FC<QuestItemProps> = ({
   userId,
   refetchActivities,
   setErrorMessage,
-  rewardsLocked
+  rewardsLocked,
+  questProgress,
 }) => {
   const [showLevelUp, setShowLevelUp] = useState(false);
 
-  const { handleRewardsVerification, verifyingRewards, progressPercent, claimResponse } = useVerifyRewards({
+  const { handleRewardsVerification, verifyingRewards, claimResponse } = useVerifyRewards({
     activityTypeId: quest.id,
     refetchActivity: () => {
       refetchActivities?.();
@@ -55,23 +57,9 @@ const QuestItem: FC<QuestItemProps> = ({
     handleRewardsVerification(userId);
   };
 
-  // Auto-check progress on mount for uncompleted quests
-  const hasAutoChecked = useRef(false);
-
-  useEffect(() => {
-    if (
-      !hasAutoChecked.current &&
-      userId &&
-      !isClaimCompleted &&
-      !rewardsLocked &&
-      !verifyingRewards
-    ) {
-      hasAutoChecked.current = true;
-      handleRewardsVerification(userId);
-    }
-  }, [userId, isClaimCompleted, rewardsLocked]);
-
-  const canShowClaimButton = !isClaimCompleted && !rewardsLocked;
+  const apiProgress = questProgress?.progress ?? 0;
+  // Show claim button when quest is fully progressed but not yet claimed
+  const canShowClaimButton = !isClaimCompleted && !rewardsLocked && apiProgress >= 100;
 
   return (
     <Box
@@ -150,7 +138,7 @@ const QuestItem: FC<QuestItemProps> = ({
                   ) : (
                     <Box width="112px" height="8px">
                       <ProgressBar
-                        progress={progressPercent ?? null}
+                        progress={apiProgress || null}
                         max={100}
                         size="large"
                         progressIcon={<RewardsStarGradient size={35} />}
@@ -257,6 +245,7 @@ type AppQuestCardProps = {
   refetchActivities?: any;
   userId?: string;
   completedMap?: Record<string, boolean>;
+  questProgressMap?: Record<string, { progress: number; status: string }>;
   setErrorMessage?: (errorMessage: string) => void;
 };
 
@@ -276,6 +265,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   refetchActivities,
   userId,
   completedMap = {},
+  questProgressMap = {},
   setErrorMessage,
 }) => {
 
@@ -506,6 +496,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                 refetchActivities={refetchActivities}
                 setErrorMessage={setErrorMessage!}
                 rewardsLocked={rewardsLocked}
+                questProgress={questProgressMap[quest?.id]}
               />
             ))}
           </Box>

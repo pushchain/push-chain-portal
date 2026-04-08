@@ -28,3 +28,4 @@ export * from './useVerifySybilWallet';
 export * from './useGetPCTokenBalance';
 export * from './useClaimPCTokens';
 export * from './useGetUserLevelConfig';
+export * from './useGetQuestActivities';
