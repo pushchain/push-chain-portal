@@ -64,6 +64,8 @@ const ProgressBar: FC<ProgressBarProps> = ({
   const isComplete = progressPercentage >= 100;
   const progressPosition = `${progressPercentage}%`;
 
+  // console.log('progress', progress)
+
   return (
     <StyledProgressBarContainer
       role="progressbar"
@@ -81,7 +83,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
       {progressIcon && (
         <ProgressMarker position={progressPosition}>
-          {progress !== 100 &&  <ProgressIcon>{progressIcon}</ProgressIcon>}
+          {!(progressPercentage >= 100) &&  <ProgressIcon>{progressIcon}</ProgressIcon>}
           {progressIconText && <ProgressText>{progressIconText}</ProgressText>}
         </ProgressMarker>
       )}

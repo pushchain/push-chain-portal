@@ -146,7 +146,6 @@ const QuestItem: FC<QuestItemProps> = ({
                       progress={100}
                       max={100}
                       size="large"
-                      progressIcon={<RewardsStarGradient size={35} />}
                     />
                   ) : (
                     <Box width="112px" height="8px">

@@ -60,8 +60,6 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
 
-
-
   return (
     <Box
       display="flex"

@@ -6,10 +6,23 @@ import { css } from "styled-components";
 import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 // type
-import { useClaimDailyRewardsSeasonThree, useGetDailyCheckInDetails, useGetSeasonThreeUserByWallet } from "../../../queries";
+import {
+  useClaimDailyRewardsSeasonThree,
+  useGetDailyCheckInDetails,
+  useGetSeasonThreeUserByWallet,
+} from "../../../queries";
 
 // components
-import { Alert, Box, Button, Lock, SeasonThreePoints, Skeleton, Text, XP } from "../../../blocks";
+import {
+  Alert,
+  Box,
+  Button,
+  Lock,
+  SeasonThreePoints,
+  Skeleton,
+  Text,
+  XP,
+} from "../../../blocks";
 import { DailyRewardsItem } from "./DailyRewardsItem";
 
 import { useAuthHeaders } from "../../../context/authHeadersContext";
@@ -25,30 +38,46 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const [isSigning, setIsSigning] = useState(false);
-  const { universalAccount } = usePushWalletContext('wallet1');
-  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { universalAccount } = usePushWalletContext("wallet1");
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
-  const { data: getDailyCheckInDetails, refetch, isLoading: isLoadingRewards, isRefetching } = useGetDailyCheckInDetails(userDetails?.userId);
-  const { mutate: claimDailyRewards, isPending: isClaimingRewards } = useClaimDailyRewardsSeasonThree();
+  const {
+    data: getDailyCheckInDetails,
+    refetch,
+    isLoading: isLoadingRewards,
+    isRefetching,
+  } = useGetDailyCheckInDetails(userDetails?.userId);
+  const { mutate: claimDailyRewards, isPending: isClaimingRewards } =
+    useClaimDailyRewardsSeasonThree();
 
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
   const handleClaimRewards = async () => {
     if (!authHeaders) setIsSigning(true);
-    const headers = authHeaders ?? await getAuthHeaders();
+    const headers = authHeaders ?? (await getAuthHeaders());
     setIsSigning(false);
     if (!headers) return;
     const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
       onSuccess: () => {
-        trackEvent(`daily_reward_day_${currentDay}_claimed`, { event_category: 'rewards', event_label: `day_${currentDay}` });
+        trackEvent(`daily_reward_day_${currentDay}_claimed`, {
+          event_category: "rewards",
+          event_label: `day_${currentDay}`,
+        });
         refetch();
       },
-      onError: (error) => { console.error(error); },
+      onError: (error) => {
+        console.error(error);
+      },
     });
   };
 
@@ -63,10 +92,12 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
       justifyContent="space-between"
       height="100%"
       css={css`
-        border: 1px solid rgba(171, 70, 248, 0.40);
-        background: rgba(0, 0, 0, 0.10);
+        border: 1px solid rgba(171, 70, 248, 0.4);
+        background: rgba(0, 0, 0, 0.1);
         background-blend-mode: plus-lighter;
-        box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        box-shadow:
+          2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
+          1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
         backdrop-filter: blur(10px);
         box-sizing: border-box;
         min-width: 0;
@@ -95,68 +126,83 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
           justifyContent="space-between"
           gap="spacing-md"
         >
-
-
-        <Box
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap="spacing-md"
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+            gap="spacing-md"
           >
-            {dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.points && <Box
-              display="flex"
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="space-between"
-              gap="spacing-xxs"
-            >
-              <SeasonThreePoints width={28} height={28} />
-              <Text variant="bm-bold">{ dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.points }</Text>
-            </Box>}
-
-            {dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.xp && <Box
-              display="flex"
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="space-between"
-              gap="spacing-xxs"
-            >
-              <XP width={36} height={14} />
-              <Text variant="bm-bold">{ dailyRewardsActivities[(getDailyCheckInDetails?.streak)]?.xp }</Text>
-            </Box>}
-        </Box>
-
-        {rewardsLocked && (
-          <Button
-            variant="outline"
-            size="small"
-            leadingIcon={< Lock />}
-            disabled
-          >
-            Locked
-          </Button>
-        )}
-
-        {!rewardsLocked && (
-          <Skeleton isLoading={isLockedStatusLoading || isLoadingRewards || isRefetching}>
-            {canClaimRewards ? (
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={handleClaimRewards}
-                disabled={isClaimingRewards || isSigning}
-                loading={isClaimingRewards || isSigning}
+            {dailyRewardsActivities[getDailyCheckInDetails?.streak]?.points && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="spacing-xxs"
               >
-                Claim
-              </Button>
-            ) : (
-              <Button variant="tertiary" size="small" disabled>
-                Claimed
-              </Button>
+                <SeasonThreePoints width={28} height={28} />
+                <Text variant="bm-bold">
+                  {
+                    dailyRewardsActivities[getDailyCheckInDetails?.streak]
+                      ?.points
+                  }
+                </Text>
+              </Box>
             )}
-          </Skeleton>
-        )}
+
+            {dailyRewardsActivities[getDailyCheckInDetails?.streak]?.xp && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="spacing-xxs"
+              >
+                <XP width={36} height={14} />
+                <Text variant="bm-bold">
+                  {dailyRewardsActivities[getDailyCheckInDetails?.streak]?.xp}
+                </Text>
+              </Box>
+            )}
+          </Box>
+
+          {rewardsLocked && (
+            <Button
+              variant="outline"
+              size="small"
+              leadingIcon={<Lock />}
+              disabled
+            >
+              Locked
+            </Button>
+          )}
+
+          {!rewardsLocked && (
+            <Skeleton
+              isLoading={
+                isLockedStatusLoading ||
+                isLoadingRewards ||
+                (isRefetching && !(isClaimingRewards || isSigning))
+              }
+            >
+              {canClaimRewards ? (
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  onClick={handleClaimRewards}
+                  disabled={isClaimingRewards || isSigning}
+                  loading={isClaimingRewards || isSigning}
+                >
+                  Claim
+                </Button>
+              ) : (
+                <Button variant="tertiary" size="small" disabled>
+                  Claimed
+                </Button>
+              )}
+            </Skeleton>
+          )}
         </Box>
       </Box>
 
