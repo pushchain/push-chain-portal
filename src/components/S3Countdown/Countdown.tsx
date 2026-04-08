@@ -12,7 +12,7 @@ export const Countdown = () => {
   const isMobile = useMediaQuery(device.mobileL);
   const navigate = useNavigate();
 
-	const targetDate = "2026-04-09T13:59:59";
+	const targetDate = "2026-04-09T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const handleGoToCult = () => {

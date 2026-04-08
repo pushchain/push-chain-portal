@@ -5,7 +5,7 @@ import { CultFooter } from "./CultFooter"
 import { CultHeader } from "./CultHeader"
 
 export const Cult = () => {
-	const targetDate = "2026-04-09T13:59:59";
+	const targetDate = "2026-04-09T14:00:00Z";
 	const { timeLeft } = useCountdown(targetDate);
 
   return (
