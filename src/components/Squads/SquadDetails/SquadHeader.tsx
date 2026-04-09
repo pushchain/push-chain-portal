@@ -8,6 +8,7 @@ import { useGetSeasonThreeUserByWallet } from "../../../queries"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { SquadsDetailsResponse } from "../../../queries/types/squads"
+import { useRewardStatus } from "../../../context/rewardStatusContext"
 
 type SquadHeaderProps = {
   squadData?: SquadsDetailsResponse;
@@ -18,7 +19,10 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const { universalAccount } = usePushWalletContext('wallet1');
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
+  const isWalletConnected = Boolean(universalAccount?.address);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -79,7 +83,7 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
             }
           `}
         >
-          {!squadData &&
+          {!squadData && !rewardsLocked && isWalletConnected &&
             <Button
             variant="outline"
             size="medium"
@@ -97,7 +101,7 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
           </Button>}
 
 
-          {squadData && isCurrentLeader &&
+          {squadData && !rewardsLocked && isWalletConnected && isCurrentLeader &&
             <Button
             variant="outline"
             size="medium"
