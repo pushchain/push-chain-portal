@@ -14,13 +14,12 @@ type SquadHeaderProps = {
   squadData?: SquadsDetailsResponse;
 }
 
-
 export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
-  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
   const isWalletConnected = Boolean(universalAccount?.address);
 
@@ -29,14 +28,33 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
     universalAccount?.chain,
   );
 
-  const {
-    data: seasonThreeUserDetails
-  } = useGetSeasonThreeUserByWallet({
+  const { data: seasonThreeUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress,
   });
 
-  const isCurrentLeader = seasonThreeUserDetails?.userId === squadData?.data.leaderId
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
 
+  // ✅ CENTRALIZED CONDITIONS
+  const isInitialLoading =
+    isLockedStatusLoading ||
+    !seasonThreeUserDetails;
+
+  const hasSquad = Boolean(squadData);
+  const isCurrentLeader =
+    seasonThreeUserDetails?.userId === squadData?.data?.leaderId;
+
+  const shouldShowCreateButton =
+    !isInitialLoading &&
+    !rewardsLocked &&
+    isWalletConnected &&
+    !hasSquad;
+
+  const shouldShowInviteButton =
+    !isInitialLoading &&
+    !rewardsLocked &&
+    isWalletConnected &&
+    hasSquad &&
+    isCurrentLeader;
 
   return (
     <>
@@ -49,11 +67,7 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
       >
         <RarePassIcon />
 
-        <Box
-          display="flex"
-          flexDirection="column"
-          css={css`flex: 1;`}
-        >
+        <Box display="flex" flexDirection="column" css={css`flex: 1;`}>
           <Text
             variant="h3-semibold"
             css={css`
@@ -66,6 +80,7 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
           >
             S3 Squad
           </Text>
+
           <Text
             variant="bm-regular"
             css={css`color: rgba(255, 255, 255, 0.75);`}
@@ -83,40 +98,41 @@ export const SquadHeader = ({ squadData }: SquadHeaderProps) => {
             }
           `}
         >
-          {!squadData && !rewardsLocked && isWalletConnected &&
+          {shouldShowCreateButton && (
             <Button
-            variant="outline"
-            size="medium"
-            onClick={() => setIsCreateModalOpen(true)}
-            css={css`
-              border-color: rgba(255, 255, 255, 0.75);
-              min-width: 100px;
+              variant="outline"
+              size="medium"
+              onClick={() => setIsCreateModalOpen(true)}
+              css={css`
+                border-color: rgba(255, 255, 255, 0.75);
+                min-width: 100px;
 
-              @media ${device.mobileL} {
-                width: 100%;
-              }
-            `}
-          >
-            Create Squad
-          </Button>}
+                @media ${device.mobileL} {
+                  width: 100%;
+                }
+              `}
+            >
+              Create Squad
+            </Button>
+          )}
 
-
-          {squadData && !rewardsLocked && isWalletConnected && isCurrentLeader &&
+          {shouldShowInviteButton && (
             <Button
-            variant="outline"
-            size="medium"
-            onClick={() => setIsInviteModalOpen(true)}
-            css={css`
-              border-color: rgba(255, 255, 255, 0.75);
-              min-width: 100px;
+              variant="outline"
+              size="medium"
+              onClick={() => setIsInviteModalOpen(true)}
+              css={css`
+                border-color: rgba(255, 255, 255, 0.75);
+                min-width: 100px;
 
-              @media ${device.mobileL} {
-                width: 100%;
-              }
-            `}
-          >
-            Invite Member
-          </Button>}
+                @media ${device.mobileL} {
+                  width: 100%;
+                }
+              `}
+            >
+              Invite Member
+            </Button>
+          )}
         </Box>
       </Box>
 
