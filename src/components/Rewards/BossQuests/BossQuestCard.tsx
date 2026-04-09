@@ -24,6 +24,7 @@ type BossQuestCardProps = {
   image?: string;
   imageFullWidth?: boolean;
   onClaim?: () => void;
+  ctaLink?: string;
   activityStatus?: any;
   isLoadingActivity?: boolean;
   refetchActivities?: () => void;
@@ -53,6 +54,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
   setErrorMessage,
   image,
   imageFullWidth = false,
+  ctaLink,
 }) => {
   const showProgress = maxProgress > 0;
   const isCompleted = completedMap[questId] ?? true;
@@ -328,31 +330,42 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
             )}
 
             {!questId && !isLocked && (
-              <Button
-                size="small"
-                variant="tertiary"
-                onClick={onClaim}
-                css={css`
-                  width: 100%;
-                  border: 1px solid #774d84;
-                  background: none;
-                `}
+              <a
+                href={ctaLink || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ width: '100%', textDecoration: 'none' }}
               >
-                <Text
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  padding="spacing-xxs spacing-sm"
+                  borderRadius="radius-xs"
                   css={css`
-                    font-family: "FK Grotesk Neue-Medium", Helvetica;
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 16px;
-                    white-space: nowrap;
+                    width: 100%;
+                    border: 1px solid #774d84;
+                    background: none;
+                    box-sizing: border-box;
+                    cursor: pointer;
                   `}
                 >
-                  <Text as="span" color="text-primary">{ctaText.split(' on ')[0]} on </Text>
-                  <Text as="span" css={css`
-                      color: #c742dd;
-                    `}>{ctaText.split(' on ')[1] || ''}</Text>
-                </Text>
-              </Button>
+                  <Text
+                    css={css`
+                      font-family: "FK Grotesk Neue-Medium", Helvetica;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 16px;
+                      white-space: nowrap;
+                    `}
+                  >
+                    <Text as="span" color="text-primary">{ctaText.split(' on ')[0]} on </Text>
+                    <Text as="span" css={css`
+                        color: #c742dd;
+                      `}>{ctaText.split(' on ')[1] || ''}</Text>
+                  </Text>
+                </Box>
+              </a>
             )}
             </Skeleton>
           </Box>

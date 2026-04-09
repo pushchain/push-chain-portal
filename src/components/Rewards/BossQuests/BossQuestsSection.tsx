@@ -195,6 +195,7 @@ const BossQuestsSection = () => {
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
+            ctaLink="https://x.com/PushChain"
             image={contentBossQuestImg}
             />
 

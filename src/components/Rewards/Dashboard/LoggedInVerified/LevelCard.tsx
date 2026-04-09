@@ -64,7 +64,7 @@ export const LevelCard: FC = () => {
         <BadgeIcon />
       </Box>
       <Skeleton isLoading={ isLoading }>
-        <Box display="flex" flexDirection="column" alignItems="center" width="100%">
+        <Box display="flex" flexDirection="column" alignItems="center" width="100%" padding="spacing-xxxs spacing-none spacing-none spacing-none">
           <Text
             variant="h5-semibold"
             color="text-tertiary"
