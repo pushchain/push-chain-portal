@@ -101,6 +101,15 @@ export function getCAIPAddress(env: ENV, address: string, msg?: string) {
   }
 }
 
+export const getChainIdFromFullCaip = (caip: string): number | string | null => {
+  if (!caip) return null;
+  const parts = caip.split(':');
+  if (parts.length < 2) return null;
+  const raw = parts[1];
+  const num = Number(raw);
+  return isNaN(num) ? raw : num;
+};
+
 export const parseCAIP = (chain: string): { prefix: string; chainId: string } => {
   if (chain?.includes(":")) {
     const [prefix, chainId] = chain.split(":");
