@@ -4,6 +4,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 
 import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../../../queries";
 import { device } from "../../../config/globals";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 
 import { Box, Text, Copy, Button, Skeleton } from "../../../blocks"
 import { trackEvent } from "../../../helpers/analytics"
@@ -133,6 +134,8 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSignin
 		wallet: caip10WalletAddress
 	});
 
+ const { isLocked, isLockedStatusLoading } = useRewardStatus();
+ const rewardsLocked = isLocked && !isLockedStatusLoading;
  const isWalletConnected = Boolean(universalAccount?.address);
   const isCultUser = userCultStatus?.data?.isCultMember;
 
@@ -252,62 +255,77 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSignin
           </Box>
         )}
 
-        {!isLoading && isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && !isCultUser && (
-          <Button
-            variant="outline"
-            size="extraSmall"
-            onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode || isSigning}
-            disabled={isFetchingInviteCode || isSigning}
-            css={css`
-              margin: auto auto;
-              cursor: pointer;
-            `}
+        {rewardsLocked ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            css={css`flex: 1;`}
           >
-            Get Invite Codes
-          </Button>
-        )}
+            <Text variant="bs-semibold" color="text-secondary" textAlign="center">
+              Complete Sybil check to unlock Invite codes
+            </Text>
+          </Box>
+        ) : (
+          <>
+            {!isLoading && isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && !isCultUser && (
+              <Button
+                variant="outline"
+                size="extraSmall"
+                onClick={() => requestInvitesCode()}
+                loading={isFetchingInviteCode || isSigning}
+                disabled={isFetchingInviteCode || isSigning}
+                css={css`
+                  margin: auto auto;
+                  cursor: pointer;
+                `}
+              >
+                Get Invite Codes
+              </Button>
+            )}
 
-        {!isLoading && isWalletConnected && isCultUser && (
-          <Button
-            variant="primary"
-            size="small"
-            onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode || isSigning}
-            disabled={isFetchingInviteCode || isSigning}
-            css={css`
-              margin: 0 auto auto auto;
-              cursor: pointer;
-              width: 100%;
-            `}
-          >
-            Generate Invite Code
-          </Button>
-        )}
+            {!isLoading && isWalletConnected && isCultUser && (
+              <Button
+                variant="primary"
+                size="small"
+                onClick={() => requestInvitesCode()}
+                loading={isFetchingInviteCode || isSigning}
+                disabled={isFetchingInviteCode || isSigning}
+                css={css`
+                  margin: 0 auto auto auto;
+                  cursor: pointer;
+                  width: 100%;
+                `}
+              >
+                Generate Invite Code
+              </Button>
+            )}
 
-        <Box
-          display="flex"
-          flexDirection="column"
-          gap="spacing-xs"
-          customScrollbar
-          css={css`
-            overflow-y: auto;
-            max-height: ${isCultUser ? '200px' : '260px'};
-          `}
-        >
-          {isSuccess && (isCultUser
-            ? inviteCodeDetails?.data?.invites
-            : inviteCodeDetails?.data?.invites?.slice(0, userDetails?.level >= 10 ? 5 : 3)
-          )?.map((invite, index) => (
-            <InviteCodeRow
-              key={index}
-              code={invite.code}
-              isUsed={invite.isUsed}
-              copiedCode={copiedCode}
-              onCopy={handleCopy}
-            />
-          ))}
-        </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap="spacing-xs"
+              customScrollbar
+              css={css`
+                overflow-y: auto;
+                max-height: ${isCultUser ? '200px' : '260px'};
+              `}
+            >
+              {isSuccess && (isCultUser
+                ? inviteCodeDetails?.data?.invites
+                : inviteCodeDetails?.data?.invites?.slice(0, userDetails?.level >= 10 ? 5 : 3)
+              )?.map((invite, index) => (
+                <InviteCodeRow
+                  key={index}
+                  code={invite.code}
+                  isUsed={invite.isUsed}
+                  copiedCode={copiedCode}
+                  onCopy={handleCopy}
+                />
+              ))}
+            </Box>
+          </>
+        )}
       </Box>
     </Box>
   );
