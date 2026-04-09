@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
+import { useGetCharacterInfo, useGetRarePassHistory, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
 import UnopenedPassesContent from './Passes/UnopenedPassesContent';
@@ -29,11 +29,17 @@ const PushPass = () => {
     userId: userDetails?.userId ?? '',
   });
 
-  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
+  const { data: bossQuestActivity } = useGetRewardsActivity(
+    { userId: userDetails?.userId as string, activityTypes: ['boss_hold_5_rare_passes'] },
+    { enabled: !!userDetails?.userId },
+  );
 
+  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
 
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const rarePassesProgress = rareActiveCount + rareDormantCount;
+  const isBossQuestClaimed = (bossQuestActivity as any)?.boss_hold_5_rare_passes?.status === 'COMPLETED';
   const userLevel = userDetails?.level ?? 0;
   const characters = userCharacterInfo?.characters || [];
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
@@ -69,6 +75,15 @@ const PushPass = () => {
       isLocked: true,
       lockMessage: 'Spin to Win',
     },
+
+    // Placeholder: "Complete Boss Quest" — hidden once rarePassesProgress >= 5 and quest claimed
+    ...(rarePassesProgress < 5 || !isBossQuestClaimed
+      ? [{
+          id: rareActiveCount + rareDormantCount + 4,
+          isLocked: true,
+          lockMessage: 'Complete Boss Quest',
+        }]
+      : []),
 
     // Placeholder: "Unlock at Level 50" — hidden once user reaches Level 50
     ...(userLevel < 50
