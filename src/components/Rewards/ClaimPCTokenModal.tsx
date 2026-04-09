@@ -10,6 +10,8 @@ import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenB
 import { useClaimPCTokens } from "../../queries/hooks/rewards/useClaimPCTokens";
 import { useAuthHeaders } from "../../context/authHeadersContext";
 import { trackEvent } from "../../helpers/analytics";
+import useMediaQuery from "../../hooks/useMediaQuery";
+import { device } from "../../config/globals";
 
 type ClaimPCTokenModalProps = {
   isOpen: boolean;
@@ -17,6 +19,7 @@ type ClaimPCTokenModalProps = {
 };
 
 const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
+  const isTablet = useMediaQuery(device.tablet)
   const [claimError, setClaimError] = useState("");
   const [claimed, setClaimed] = useState(false);
 
@@ -72,7 +75,7 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="large"
+      size={isTablet ? "small" : "large"}
       css={css`
         border-radius: var(--radius-lg, 37px);
         outline: none;
