@@ -297,7 +297,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSignin
         >
           {isSuccess && (isCultUser
             ? inviteCodeDetails?.data?.invites
-            : inviteCodeDetails?.data?.invites?.slice(0, 3)
+            : inviteCodeDetails?.data?.invites?.slice(0, userDetails?.level >= 10 ? 5 : 3)
           )?.map((invite, index) => (
             <InviteCodeRow
               key={index}
