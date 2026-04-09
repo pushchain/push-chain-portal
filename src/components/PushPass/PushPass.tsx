@@ -34,9 +34,9 @@ const PushPass = () => {
 
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const userLevel = userDetails?.level ?? 0;
   const characters = userCharacterInfo?.characters || [];
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
-
 
   const passes = [
     // Active rare passes — all openable
@@ -46,12 +46,38 @@ const PushPass = () => {
       lockMessage: 'Open Pass',
     })),
 
-    // Dormant pass — locked until Level 25
+    // Dormant passes — revealable at Level 25
     ...Array.from({ length: rareDormantCount }, (_, index) => ({
       id: rareActiveCount + index + 1,
       isLocked: true,
-      lockMessage: 'Unlocks at Lv. 25',
+      isDormant: true,
+      lockMessage: 'Reveal at Lv. 25',
     })),
+
+    // Placeholder: "Unlock at Level 10" — hidden once user has dormant passes
+    ...(rareDormantCount === 0
+      ? [{
+          id: rareActiveCount + 1,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 10',
+        }]
+      : []),
+
+    // Placeholder: "Spin to Win"
+    {
+      id: rareActiveCount + rareDormantCount + 2,
+      isLocked: true,
+      lockMessage: 'Spin to Win',
+    },
+
+    // Placeholder: "Unlock at Level 50" — hidden once user reaches Level 50
+    ...(userLevel < 50
+      ? [{
+          id: rareActiveCount + rareDormantCount + 3,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 50',
+        }]
+      : []),
   ];
 
 

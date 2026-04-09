@@ -295,7 +295,10 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSignin
             max-height: ${isCultUser ? '200px' : '260px'};
           `}
         >
-          {isSuccess && inviteCodeDetails?.data?.invites?.map((invite, index) => (
+          {isSuccess && (isCultUser
+            ? inviteCodeDetails?.data?.invites
+            : inviteCodeDetails?.data?.invites?.slice(0, 3)
+          )?.map((invite, index) => (
             <InviteCodeRow
               key={index}
               code={invite.code}

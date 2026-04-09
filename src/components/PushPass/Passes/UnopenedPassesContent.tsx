@@ -39,6 +39,7 @@ const SkeletonCard = styled.div`
 type Pass = {
   id: number;
   isLocked: boolean;
+  isDormant?: boolean;
   lockMessage?: string;
   character?: {
     characterId: string;
@@ -217,6 +218,7 @@ const UnopenedPassesContent: FC<UnopenedPassesContentProps> = ({ passes, isLoadi
           <RarePassCard
             key={pass.id}
             isLocked={pass.isLocked}
+            isDormant={pass.isDormant}
             lockMessage={pass.lockMessage}
             id={pass.id}
             onBlockedOpen={hasUnminted ? () => setShowUnmintedAlert(true) : undefined}

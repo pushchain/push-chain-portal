@@ -7,6 +7,7 @@ import OpenPassLockedImage from '../../../../static/assets/website/pushpass/Open
 
 type RarePassCardProps = {
   isLocked: boolean;
+  isDormant?: boolean;
   lockMessage?: string;
   backgroundImage?: string;
   id?: number;
@@ -15,6 +16,7 @@ type RarePassCardProps = {
 
 const RarePassCard: FC<RarePassCardProps> = ({
   isLocked,
+  isDormant,
   lockMessage = 'Locked',
   id,
   onBlockedOpen,
@@ -46,7 +48,7 @@ const RarePassCard: FC<RarePassCardProps> = ({
         css={css`
           position: absolute;
           inset: 0;
-          background: ${isLocked
+          background: ${isLocked && !isDormant
                       ? `url(${OpenPassLockedImage}) center/cover`
                       : `url(${OpenPassImage}) center/cover`
                   };
@@ -68,7 +70,7 @@ const RarePassCard: FC<RarePassCardProps> = ({
           z-index: 999;
         `}
       >
-        {isLocked ? (
+        {isLocked && !isDormant ? (
           <>
             <Box width="32px" height="32px">
               <Lock size={32} color="icon-primary" />
@@ -85,6 +87,26 @@ const RarePassCard: FC<RarePassCardProps> = ({
               {lockMessage}
             </Text>
           </>
+        ) : isDormant ? (
+          <Box
+            css={css`
+              display: inline-flex;
+              align-items: flex-start;
+            `}
+          >
+            <Button
+              size="medium"
+              variant="primary"
+              disabled
+              css={css`
+                min-width: 100px;
+                height: 48px;
+                box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+              `}
+            >
+              {lockMessage || 'Reveal at Lv. 25'}
+            </Button>
+          </Box>
         ) : (
           <Box
             height="48px"

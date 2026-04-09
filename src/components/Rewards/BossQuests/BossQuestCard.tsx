@@ -112,7 +112,7 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
               text-align: center;
             `}
           >
-            Resets in {resetTime?.days}D {resetTime?.days}H
+            Resets in {resetTime?.days}D {resetTime?.hours}H
           </Text>
         </Box>}
 
