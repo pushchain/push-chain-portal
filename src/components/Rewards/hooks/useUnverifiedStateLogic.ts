@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 import {
   useGetRewardActivityStatus,
   useGetSeasonThreeUserByWallet,
-  useAdvancedSybilCheck,
   usePushWalletSybilCheck,
 } from "../../../queries";
 import { walletToFullCAIP10, parseCAIP } from "../../../helpers/web3helper";
@@ -13,6 +12,7 @@ import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useLocation } from "react-router-dom";
 import { trackEvent } from "../../../helpers/analytics";
 import { FAILED_CHECK_MESSAGES } from "../utils/sybilCheckMessages";
+import { useLinkedWallet } from "../../../context/linkedWalletContext";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -38,15 +38,13 @@ const clearEvmSybil = (addr: string) => sessionStorage.removeItem(evmKey(addr));
 
 export const useUnverifiedStateLogic = () => {
   const { universalAccount } = usePushWalletContext("wallet1");
-  const {
-    universalAccount: linkedAccount,
-    handleConnectToPushWallet: handleConnectToLinkedWallet,
-    handleUserLogOutEvent: disconnectLinkedWallet,
-  } = usePushWalletContext("wallet2");
 
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const { refetchActivityStatus } = useRewardsContext();
   const { refetchSybilStatus } = useRewardStatus();
+  const { data: linkedWalletData, handleLinkedWalletConnection, setData, handleLogOut } = useLinkedWallet();
+  const { chainId: linkedChainId } = parseCAIP(linkedWalletData?.account?.chain);
+
   const location = useLocation();
 
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -54,10 +52,6 @@ export const useUnverifiedStateLogic = () => {
 
   const caip10 = universalAccount?.address
     ? walletToFullCAIP10(universalAccount.address, universalAccount.chain)
-    : "";
-
-  const linkedWalletAddress = linkedAccount?.address
-    ? walletToFullCAIP10(linkedAccount.address, linkedAccount.chain)
     : "";
 
   const { data: user } = useGetSeasonThreeUserByWallet({ walletAddress: caip10 });
@@ -113,12 +107,18 @@ export const useUnverifiedStateLogic = () => {
     setIsVerifying(true);
     const headers = authHeaders ?? (await getAuthHeaders());
     if (!universalAccount?.address || !headers) {
-      setIsVerifying(false)
+      setIsVerifying(false);
       return;
     }
 
     pushCheck(
-      { address: caip10, authHeaders: headers},
+      {
+        address: caip10,
+        authHeaders: headers,
+        ...(headers.signature && { verificationProof: headers.signature }),
+        ...(headers.message && { message: headers.message as string }),
+        ...(chainId && { chainId }),
+      },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: handleSybilError,
@@ -126,18 +126,24 @@ export const useUnverifiedStateLogic = () => {
     );
   };
 
-  // Push wallet user → pushWalletSybilCheck (uses linked wallet2)
+  // Push wallet user → pushWalletSybilCheck (uses linked wallet)
   const runPushCheck = async () => {
     setIsVerifying(true);
     const headers = authHeaders ?? (await getAuthHeaders());
-    if (!linkedAccount?.address || !headers) {
-      disconnectLinkedWallet();
-      setIsVerifying(false)
+    if (!linkedWalletData?.account?.address || !headers) {
+      clearSybil();
+      setIsVerifying(false);
       return;
     }
 
     pushCheck(
-      { address: linkedWalletAddress, authHeaders: headers },
+      {
+        address: linkedWalletData.account.address,
+        authHeaders: headers,
+        ...(linkedWalletData.signature && { verificationProof: linkedWalletData.signature }),
+        ...(linkedWalletData.messageToSend && { message: linkedWalletData.messageToSend }),
+        ...(linkedChainId && { chainId: linkedChainId }),
+      },
       {
         onSuccess: (res) => saveResult(!!res?.eligible),
         onError: handleSybilError,
@@ -145,22 +151,26 @@ export const useUnverifiedStateLogic = () => {
     );
   };
 
-  // Auto-trigger push check when wallet2 connects
-  useEffect(() => {
-    if (!isPushWalletUser || !linkedAccount?.address) return;
-    if (sybilEligible !== null) return;
-    runPushCheck();
-  }, [linkedAccount?.address, isPushWalletUser]);
+  console.log(linkedWalletData)
 
-  // Clear on disconnect
+  // Auto-trigger push check when linkedWalletData arrives from iframe
+  useEffect(() => {
+    if (!linkedWalletData?.signature) return;
+    if (sybilEligible !== null) return;
+    console.log(linkedWalletData, 'data data', sybilEligible)
+    runPushCheck();
+  }, [linkedWalletData]);
+
+  // Clear on disconnect / route change
   useEffect(() => {
     if (!universalAccount?.address || sybilEligible !== true) {
       clearSybil();
-      disconnectLinkedWallet();
     }
   }, [universalAccount?.address, location.pathname]);
 
   const clearSybil = useCallback(() => {
+    setData(null);
+    handleLogOut();
     clearEvmSybil(universalAccount?.address);
     clearPushSybil(universalAccount?.address);
     setSybilEligible(null);
@@ -170,8 +180,8 @@ export const useUnverifiedStateLogic = () => {
     setErrorMessage("");
     trackEvent('sybil_verify_wallet_clicked', { event_category: 'verification', event_label: isPushWalletUser ? 'push_wallet' : 'evm_wallet' });
     if (isPushWalletUser) {
-      if (!linkedAccount?.address) {
-        handleConnectToLinkedWallet();
+      if (!linkedWalletData?.account?.address) {
+        handleLinkedWalletConnection();
         return;
       }
       runPushCheck();
@@ -182,7 +192,6 @@ export const useUnverifiedStateLogic = () => {
 
   return {
     universalAccount,
-    linkedAccount,
     isPushWalletUser,
     sybilEligible,
     isVerifying,

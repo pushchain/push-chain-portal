@@ -331,6 +331,9 @@ export type SeasonThreeUserByWalletResponse = {
 export type AdvancedSybilCheckParams = {
   address: string;
   authHeaders?: AuthHeaders;
+  chainId?: number | string;
+  verificationProof?: string;
+  message?: string;
 };
 
 export type WalletAgeCheck = {

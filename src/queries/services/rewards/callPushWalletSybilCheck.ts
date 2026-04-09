@@ -7,11 +7,19 @@ import { getSeasonThreeBaseURL } from "../../baseURL";
 export const callPushWalletSybilCheck = ({
   address,
   authHeaders,
+  chainId,
+  verificationProof,
+  message,
 }: AdvancedSybilCheckParams) =>
   axios({
     method: "POST",
     url: `${getSeasonThreeBaseURL()}/api/v3/advanced-sybil/check`,
-    data: { address },
+    data: {
+      address,
+      ...(chainId != null && { chainId }),
+      ...(verificationProof && { verificationProof }),
+      ...(message && { message }),
+    },
     headers: {
       "Content-Type": "application/json",
       "x-message": JSON.stringify(authHeaders.message),

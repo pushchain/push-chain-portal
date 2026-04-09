@@ -31,7 +31,6 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
       ]
     : rewards;
 
-  console.log(basePoints, baseXP)
   return (
     <Modal
       isOpen={isOpen}

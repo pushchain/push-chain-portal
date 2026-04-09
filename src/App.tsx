@@ -334,36 +334,6 @@ function App() {
     },
   };
 
-  const linkedWalletConfig: ProviderConfigProps = {
-    uid: "wallet2",
-    network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
-    login: {
-      email: false,
-      google: false,
-      phone: false,
-      wallet: {
-        enabled: true,
-        excludedChains: [PushUI.CONSTANTS.CHAIN.PUSH],
-      },
-      socials: {
-        discord: false,
-        github: false,
-        x: false,
-        bluesky: false,
-      },
-      appPreview: true,
-    },
-    modal: {
-      loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
-      connectedLayout: PushUI.CONSTANTS.CONNECTED.LAYOUT.HOVER,
-      appPreview: true,
-      connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
-    },
-    chainConfig: {
-      rpcUrls: {},
-    },
-  };
-
   return (
     <ThemeProviderWrapper>
       {/* Global style */}
@@ -377,14 +347,6 @@ function App() {
             "--pwauth-btn-connected-bg-color": "#D548EC",
           }}
         >
-          <PushUniversalWalletProvider
-            config={linkedWalletConfig}
-            themeMode={PushUI.CONSTANTS.THEME.DARK}
-            themeOverrides={{
-              "--pw-core-font-family": "'DM Sans', sans-serif",
-              "--pwauth-btn-connected-bg-color": "#D548EC",
-            }}
-          >
             <LinkedWalletProvider>
               <QueryClientProvider client={queryClient}>
                 <RewardsContextProvider>
@@ -399,7 +361,6 @@ function App() {
                 </RewardsContextProvider>
               </QueryClientProvider>
             </LinkedWalletProvider>
-          </PushUniversalWalletProvider>
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

@@ -1,5 +1,4 @@
 import { css } from "styled-components";
-import { PushUniversalAccountButton } from "@pushchain/ui-kit";
 
 import { RewardsActivityIcon } from "../RewardsActivity/RewardsActivityIcon";
 import { RewardsActivityTitle } from "../RewardsActivity/RewardsActivityTitle";
@@ -100,19 +99,9 @@ if (sybilStatusData?.data?.advanced?.completed) {
   if (isPushWalletUser && !hasLinkedAccount) {
     return (
       <Box css={css`margin-left: auto;`}>
-        <Button onClick={handleLinkedWalletConnection}>
+        <Button onClick={handleLinkedWalletConnection} variant="tertiary" size="small">
           Link Account To Verify
         </Button>
-        {/* <PushUniversalAccountButton
-          uid="wallet2"
-          connectButtonText="Link Account To Verify"
-          themeOverrides={{
-            "--pwauth-btn-connect-text-color": "#FFFFFF",
-            "--pwauth-btn-connect-bg-color": "#000",
-            "--pwauth-btn-connected-text-color": "#FFFFFF",
-            "--pwauth-btn-connected-bg-color": "#000",
-          }}
-        /> */}
       </Box>
     );
   }
@@ -130,7 +119,6 @@ export const RenderLoggedInUnverifiedState = () => {
   const { refetch, isLoading, userDetails } = useActivityContext();
 
   const {
-    linkedAccount,
     isPushWalletUser,
     sybilEligible,
     isVerifying,
@@ -140,6 +128,7 @@ export const RenderLoggedInUnverifiedState = () => {
   } = useUnverifiedStateLogic();
 
   const { sybilStatusData, refetchSybilStatus } = useRewardStatus();
+  const { data: linkedWalletData } = useLinkedWallet();
 
   const {
 		data: userActivity,
@@ -229,7 +218,7 @@ export const RenderLoggedInUnverifiedState = () => {
               sybilEligible={sybilEligible}
               isVerifying={isVerifying}
               isPushWalletUser={isPushWalletUser}
-              hasLinkedAccount={!!linkedAccount?.address}
+              hasLinkedAccount={!!linkedWalletData?.account?.address}
               verify={verify}
               sybilStatusData={sybilStatusData}
             />
