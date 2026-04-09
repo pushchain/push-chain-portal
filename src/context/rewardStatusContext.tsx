@@ -9,6 +9,7 @@ import {
   GetSybilStatusResponse,
   useGetSeasonThreeUserByWallet,
   useGetSybilStatus,
+  useGetUserCultStatus,
 } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
 
@@ -24,13 +25,19 @@ const RewardStatusContext = createContext<RewardStatusContextType | undefined>(u
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
 
   const { universalAccount } = usePushWalletContext("wallet1");
-  const account = universalAccount?.address as string;
   const isWalletConnected = Boolean(universalAccount?.address);
 
   const caip10WalletAddress = walletToFullCAIP10(
-    account,
+    universalAccount?.address as string,
     universalAccount?.chain,
   );
+
+  const { data: userCultStatus, isLoading } = useGetUserCultStatus({
+		wallet: caip10WalletAddress
+	});
+
+   const isCultUser = userCultStatus?.data?.isCultMember && !isLoading;
+
 
   const { data: userSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
@@ -44,12 +51,12 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
 
   const sybilData = sybilStatusData?.data;
 
-  const isLocked = !isWalletConnected || (!(
+  const isLocked = !isWalletConnected || (isCultUser ? false : (!(
     (sybilData?.summary?.completedCriteria ?? 0) >= 3 &&
     sybilData?.advanced?.completed === true &&
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
-  ) && isFetched);
+  ) && isFetched));
 
   return (
     <RewardStatusContext.Provider
