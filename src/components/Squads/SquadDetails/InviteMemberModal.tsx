@@ -6,6 +6,7 @@ import { useResolveWallet, useSendSquadInvite } from "../../../queries/hooks";
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { trackEvent } from "../../../helpers/analytics";
 
 const CHAIN_OPTIONS = [
   { label: "Push Chain", value: "42101" },
@@ -29,14 +30,15 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
   const [walletAddress, setWalletAddress] = useState("");
   const [chainId, setChainId] = useState(CHAIN_OPTIONS[0].value);
   const [error, setError] = useState("");
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
 
   const { mutate: resolveWallet, isPending: isResolving } = useResolveWallet();
   const { mutate: sendInvite, isPending: isSending } = useSendSquadInvite();
+  const [isSigning, setIsSigning] = useState(false);
 
-  const isLoading = isResolving || isSending;
+  const isLoading = isResolving || isSending || isSigning;
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (!walletAddress.trim()) {
       setError("User address is required");
       return;
@@ -49,33 +51,25 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
 
     setError("");
 
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
+
     resolveWallet(
-      {
-        params: {
-          chainId,
-          walletAddress: walletAddress.trim(),
-        },
-        authHeaders,
-      },
+      { params: { chainId, walletAddress: walletAddress.trim() }, authHeaders: headers },
       {
         onSuccess: (response) => {
-          console.log(response, 'res res');
           const userId = response?.data?.userId;
           if (!userId) {
             setError("Could not resolve wallet address");
             return;
           }
-
           sendInvite(
-            {
-              params: {
-                squadId,
-                userId,
-              },
-              authHeaders,
-            },
+            { params: { squadId, userId }, authHeaders: headers },
             {
               onSuccess: () => {
+                trackEvent('squad_invite_sent', { event_category: 'squads' });
                 setWalletAddress("");
                 setChainId(CHAIN_OPTIONS[0].value);
                 onClose();

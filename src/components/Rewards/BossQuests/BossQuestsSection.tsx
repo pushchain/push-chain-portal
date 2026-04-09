@@ -3,18 +3,24 @@ import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import BossQuestCard from './BossQuestCard';
-import { useGetQuests, useGetQuestsProgress, useGetRewardActivityStatus, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRarePassHistory, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 
 import { Alert, Box, Quests, Text } from '../../../blocks';
+import contentBossQuestImg from '../../../../static/assets/website/rewards/ContentBossQuest.webp';
+import rarePassBossQuestImg from '../../../../static/assets/website/rewards/RarePassBossQuest.webp';
+import fiveBossQuestsImg from '../../../../static/assets/website/rewards/FiveBossQuests.webp';
+import { useCountdown } from '../hooks/useCountdown';
+import { fadeInCss } from '../utils/FadeIn';
 
 const BossQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
-  const rewardsLocked = isLocked && !isLockedStatusLoading;
+
+  const rewardsLocked = (isLocked && !isLockedStatusLoading);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -31,12 +37,12 @@ const BossQuestsSection = () => {
 
   const bossQuestIds = bossQuests?.data?.quests?.map((q) => q.id) || [];
 
-  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardActivityStatus(
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
       userId: userDetails?.userId as string,
-      activities: bossQuestIds,
+      activityTypes: bossQuestIds,
     },
-    !!userDetails?.userId && bossQuestIds.length > 0
+    { enabled: !!userDetails?.userId && bossQuestIds.length > 0 }
   );
 
   const { data: bossQuestsProgress } = useGetQuestsProgress({
@@ -44,26 +50,51 @@ const BossQuestsSection = () => {
     userId: userDetails?.userId,
   });
 
+  const { data: lastOneQuestsProgress } = useGetQuestsProgress({
+    appId: "lastone",
+    userId: userDetails?.userId
+  });
+
+  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
+    appId: "ramen-swap",
+    userId: userDetails?.userId
+  });
+
+  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
+    userId: userDetails?.userId ?? '',
+  });
+
+  const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
+
+  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0, ramenSwapQuestsProgress?.data?.progressPercentage ?? 0);
+
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
     bossCompletedMap[q.questId] = q.completed;
   });
 
+  const targetDate = "2026-04-17T14:00:00Z";
+  const { timeLeft } = useCountdown(targetDate);
+
+  const finishFiveQuestDescription = "Earn a Rare Pass by completing 5 quests on a single app in a week";
+  const holdFiveDescription = "Earn a Rare Pass by collecting 5 Rare Passes during Season 3";
+
   return (
-    <Box width={"100%"}>
+    <Box width={"100%"} css={css`${fadeInCss(200)}`}>
       {errorMessage &&
         <Box position='relative' margin="spacing-none spacing-none spacing-md spacing-none">
           <Alert variant='error' description={ errorMessage?.message || 'Please, try again!' } />
         </Box>}
 
     <Box
-      display="inline-flex"
+      display="flex"
       flexDirection="column"
       alignItems="flex-start"
       gap="spacing-xs"
       padding="spacing-md"
       position="relative"
       borderRadius="radius-lg"
+      width="100%"
       css={css`
         box-shadow:
           inset 1.86px 1.73px 6px rgba(255, 255, 255, 0.15),
@@ -71,6 +102,7 @@ const BossQuestsSection = () => {
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         flex: 1;
+        box-sizing: border-box;
 
         &::before {
           content: "";
@@ -151,38 +183,49 @@ const BossQuestsSection = () => {
           gap="spacing-sm"
           css={css`
             height: auto;
+            & > * {
+              min-width: 0;
+            }
           `}
         >
           <BossQuestCard
             title="Create content and tag @PushChain on X"
             description="Post a meme, thread or video about Push Chain"
-            resetTime="Resets in 6D 23H"
+            resetTime={timeLeft}
             unlocks={{ rarePass: true }}
             isLocked={false}
             ctaText="10x Weekly winners on @PushChain"
+            ctaLink="https://x.com/PushChain"
+            image={contentBossQuestImg}
             />
 
-          {bossQuests?.data.quests.map((item) => (
-            <BossQuestCard
-              key={item.id}
-              questId={item.id}
-              title={item?.title}
-              description={item.description}
-              resetTime="Resets in 29D 23H"
-              progress={0}
-              maxProgress={25}
-              unlocks={{ rarePass: (item.baseXP == 0 && item.basePoints == 0), xp: (item.baseXP > 0 && item?.baseXP) }}
-              isLocked={rewardsLocked}
-              ctaText="Locked"
-              activityStatus={activityStatuses}
-              isLoadingActivity={isLoadingActivities}
-              refetchActivities={refetchActivities}
-              userId={userDetails?.userId}
-              completedMap={bossCompletedMap}
-              icon={true}
-              setErrorMessage={setErrorMessage}
-            />
-          ))}
+          {bossQuests?.data.quests.map((item) => {
+            const isRarePass = item.baseXP == 0 && item.basePoints == 0;
+            return (
+              <BossQuestCard
+                key={item.id}
+                questId={item.id}
+                title={item?.title}
+                description={isRarePass ? holdFiveDescription :  finishFiveQuestDescription}
+                resetTime={!isRarePass && timeLeft}
+                progress={isRarePass ? rarePassesProgress : questsProgress}
+                maxProgress={isRarePass ? 5 : 100}
+                unlocks={{ rarePass: isRarePass, xp: (item.baseXP > 0 && item?.baseXP) }}
+                isLocked={rewardsLocked}
+                isLockedStatusLoading={isLockedStatusLoading}
+                ctaText="Locked"
+                activityStatus={activityStatuses}
+                isLoadingActivity={isLoadingActivities}
+                refetchActivities={refetchActivities}
+                userId={userDetails?.userId}
+                completedMap={bossCompletedMap}
+                icon={true}
+                image={isRarePass ? rarePassBossQuestImg : fiveBossQuestsImg}
+                setErrorMessage={setErrorMessage}
+                imageFullWidth
+              />
+            );
+          })}
         </Box>
       </Box>
      </Box>

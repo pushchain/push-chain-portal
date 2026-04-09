@@ -1,30 +1,42 @@
 import { useState } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Lock, Text } from '../../../blocks';
-import SpinToWinModal from './SpinToWinModal';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 import { useSpinStatus } from '../hooks/useSpinStatus';
+
+import { useRewardStatus } from '../../../context/rewardStatusContext';
+import { trackEvent } from '../../../helpers/analytics';
+
+import { fadeInCss } from '../utils/FadeIn';
+import { Box, Button, Lock, Skeleton, Text } from '../../../blocks';
 import spinboardImage from '/static/assets/website/rewards/spinboard.webp';
 import stopperImage from '/static/assets/website/rewards/stopper.webp';
-import { useRewardStatus } from '../../../context/rewardStatusContext';
+import SpinToWinModal from './SpinToWinModal';
+
+
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { universalAccount } = usePushWalletContext('wallet1')
+  const isWalletConnected = Boolean(universalAccount);
   const { spinStatus } = useSpinStatus();
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const remainingSpins = spinStatus?.remainingSpins ?? 0;
 
+  const canShowFreeSpin = remainingSpins === 5 || !isWalletConnected;
+
   return (
     <>
       <Box
         display="flex"
         flexDirection="column"
-        width={{ initial: '280px', tb: '100%' }}
+        width={{ initial: '320px', tb: '100%' }}
         height={{ initial: '374px', tb: 'auto' }}
         minHeight={{ tb: '300px' }}
         padding="spacing-md"
-        borderRadius="radius-xl"
+        borderRadius="radius-lg"
         position="relative"
         overflow="hidden"
         css={css`
@@ -32,6 +44,7 @@ const SpinToWinCard = () => {
           background: linear-gradient(241deg, rgba(253, 253, 218, 1) 28%, rgba(212, 255, 193, 1) 100%);
           box-sizing: border-box;
           position: relative;
+          ${fadeInCss(0)}
 
           &::before {
             content: '';
@@ -118,7 +131,7 @@ const SpinToWinCard = () => {
               Spin to Win
             </Text>
 
-            <Box
+            {canShowFreeSpin && (<Box
               display="inline-flex"
               alignItems="center"
               justifyContent="center"
@@ -129,40 +142,45 @@ const SpinToWinCard = () => {
               <Text variant="bs-bold" color="text-on-dark-bg">
                 1 FREE Spin/Day
               </Text>
-            </Box>
+            </Box>)}
 
 
           </Box>
 
-          {rewardsLocked && (
-            <Button
-              variant="outline"
-              size="small"
-              leadingIcon={<Lock />}
-              disabled
-              css={css`
-                width: 100%;
-                position: relative;
-                background: #000 !important;
-              `}
-            >
-              Locked
-            </Button>
-          )}
+          <Skeleton isLoading={isLockedStatusLoading} width="100%" height="32px" borderRadius="radius-xs">
+            {rewardsLocked && (
+              <Button
+                variant="outline"
+                size="small"
+                leadingIcon={<Lock />}
+                disabled
+                css={css`
+                  width: 100%;
+                  position: relative;
+                  background: #000 !important;
+                `}
+              >
+                Locked
+              </Button>
+            )}
 
-          {!rewardsLocked && (<Button
-            size="medium"
-            variant="primary"
-            onClick={() => {
-              setIsModalOpen(true)
-            }}
-            css={css`
-              width: 100%;
-              position: relative;
-            `}
-          >
-            Spin Now
-          </Button>)}
+            {!rewardsLocked && (
+              <Button
+                size="medium"
+                variant="primary"
+                onClick={() => {
+                  trackEvent('spin_modal_opened', { event_category: 'rewards' });
+                  setIsModalOpen(true);
+                }}
+                css={css`
+                  width: 100%;
+                  position: relative;
+                `}
+              >
+                Spin Now
+              </Button>
+            )}
+          </Skeleton>
         </Box>
       </Box>
 

@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { SiweMessage, generateNonce } from "siwe";
 import { usePushWalletContext } from "@pushchain/ui-kit";
+
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
 
@@ -72,7 +73,6 @@ export const useSignMessageWithEthereum = () => {
         const signedMessageBytes = await handleSignMessage(messageBytes);
         const signature = ethers.utils.hexlify(signedMessageBytes);
 
-        console.log(messageToSend, 'messageToSend');
 
         setSignature(signature);
 

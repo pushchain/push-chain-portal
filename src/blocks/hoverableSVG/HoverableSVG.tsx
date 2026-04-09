@@ -12,11 +12,11 @@ export type HoverableSVGProps = {
   /* Icon component */
   icon: React.ReactNode;
   /* Sets the initial color for SVG */
-  defaultColor?: IconColors;
+  defaultColor?: IconColors | string;
   /* Sets button as disabled */
   disabled?: boolean;
   /* Sets the hover color for SVG */
-  hoverColor?: IconColors;
+  hoverColor?: IconColors | string;
   /* Sets the initial background color for SVG */
   defaultBackground?: SurfaceColors | string;
   /* Sets the initial background color for SVG */
@@ -29,6 +29,12 @@ export type HoverableSVGProps = {
   borderRadius?: ThemeBorderRadius;
 } & TransformedHTMLAttributes<HTMLButtonElement>;
 
+const isRawColor = (value?: string) =>
+  value != null && (value.startsWith('#') || value.startsWith('rgb'));
+
+const resolveColor = (value?: string, fallback?: string) =>
+  isRawColor(value) ? value : `var(--${value || fallback})`;
+
 const StyledButton = styled.button<Omit<HoverableSVGProps, 'icon'>>`
   display: inline-flex;
   align-items: center;
@@ -36,10 +42,10 @@ const StyledButton = styled.button<Omit<HoverableSVGProps, 'icon'>>`
   padding: var(--${(props) => props.padding || 'spacing-none'});
   margin: var(--${(props) => props.margin || 'spacing-none'});
   border-radius: ${(props) => getBlocksBorderRadius(props.borderRadius)};
-  background-color: var(
-    --${({ defaultBackground }) => defaultBackground || 'surface-transparent'}
-  );
-  color: ${({ defaultColor }) => `var(--${defaultColor})` || 'inherit'};
+  background-color: ${({ defaultBackground }) =>
+    resolveColor(defaultBackground, 'surface-transparent')};
+  color: ${({ defaultColor }) =>
+    defaultColor ? resolveColor(defaultColor) : 'inherit'};
   border: none;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   transition:
@@ -47,10 +53,10 @@ const StyledButton = styled.button<Omit<HoverableSVGProps, 'icon'>>`
     color 0.3s;
   height: fit-content;
   &:hover {
-    background-color: var(
-      --${({ hoverBackground }) => hoverBackground || 'surface-transparent'}
-    );
-    color: ${({ hoverColor }) => `var(--${hoverColor})` || 'inherit'};
+    background-color: ${({ hoverBackground }) =>
+      resolveColor(hoverBackground, 'surface-transparent')};
+    color: ${({ hoverColor }) =>
+      hoverColor ? resolveColor(hoverColor) : 'inherit'};
   }
   &:disabled {
     color: var(--icon-state-disabled);

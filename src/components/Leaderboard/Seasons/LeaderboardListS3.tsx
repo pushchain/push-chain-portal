@@ -67,6 +67,7 @@ const LeaderboardListS3: FC = () => {
                   address={fullCAIP10ToWallet(item.userWallet)}
                   points={item.totalPoints}
                   isLoading={isLoading}
+                  userWallet={item.userWallet}
                 />
               ),
             )}

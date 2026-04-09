@@ -83,6 +83,8 @@ export { default as EditProfile } from "./components/EditProfile";
 
 export { default as EtheriumMonotone } from "./components/EtheriumMonotone";
 
+export { default as EthereumLogo} from "./components/EthereumLogo";
+
 export { default as Ellipse } from "./components/Ellipse";
 
 export { default as Envelope } from "./components/Envelope";
@@ -167,6 +169,8 @@ export { default as PolygonMonotone } from "./components/PolygonMonotone";
 
 export { default as PushMonotone } from "./components/PushMonotone";
 
+export { default as PushChainLogo } from "./components/PushChainLogo";
+
 export { default as PublicChat } from "./components/PublicChat";
 export { default as PrivateChat } from "./components/PrivateChat";
 
@@ -200,6 +204,8 @@ export { default as SendFilled } from "./components/SendFilled";
 export { default as SendNotification } from "./components/SendNotification";
 
 export { default as SendNotificationFilled } from "./components/SendNotificationFilled";
+
+export { default as SolanaLogo } from "./components/SolanaLogo";
 
 export { default as Smiley } from "./components/Smiley";
 

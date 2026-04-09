@@ -19,10 +19,11 @@ export type ActvityType =
   | "lastone_win_3_rounds_claim"
   | "lastone_bid_10_single_round"
   | "lastone_participate_25_rounds"
-  | "ramen_swap_one_swap"
+  | "ramen_swap_five_swap"
   | "ramen_swap_stablecoin_to_push"
-  | "ramen_swap_five_swaps"
+  | "ramen_swap_fifteen_swaps"
   | "ramen_swap_hold_three_chain_tokens"
+  | "ramen_swap_eth_sol_to_push"
   | "boss_complete_all_5_app_quests"
   | "boss_hold_5_rare_passes"
 
@@ -329,7 +330,10 @@ export type SeasonThreeUserByWalletResponse = {
 
 export type AdvancedSybilCheckParams = {
   address: string;
-  chainId: number;
+  authHeaders?: AuthHeaders;
+  chainId?: number | string;
+  verificationProof?: string;
+  message?: string;
 };
 
 export type WalletAgeCheck = {
@@ -513,6 +517,22 @@ export type LevelProgressResponse = {
   currentLevelConfig: LevelConfigItem;
   nextLevelConfig: LevelConfigItem;
   paragonModeEnabled: boolean;
+};
+
+export type VerifySybilWalletParams = {
+  userId: string;
+  verificationProof: string;
+};
+
+export type VerifySybilWalletResponse = {
+  // success: boolean;
+  // data?: {
+  //   activityId?: string;
+  //   status?: string;
+  //   points?: number;
+  //   multiplier?: number;
+  //   createdAt?: string;
+  // };
 };
 
 export type SybilStatusResponse = {

@@ -51,18 +51,10 @@ export const useSignMessageWithSolana = () => {
   const { universalAccount } = usePushWalletContext("wallet1");
   const { pushChainClient } = usePushChainClient("wallet1");
 
-  // pushChainClient may be the same object reference even when .universal is populated,
-  const clientRef = useRef(pushChainClient);
-  useEffect(() => {
-    clientRef.current = pushChainClient;
-  }, [pushChainClient]);
-
-
-
   const { setSignature } = useRewardsContext();
   const [isLoading, setIsLoading] = useState(false);
 
-  const signMessage = useCallback(
+  const signMessage =
     async (extraData?: Record<string, string>): Promise<SignMessageResult> => {
       setIsLoading(true);
       try {
@@ -70,7 +62,7 @@ export const useSignMessageWithSolana = () => {
           throw new Error("Push Wallet is not connected");
         }
 
-        if (!clientRef.current?.universal) {
+        if (!pushChainClient?.universal) {
           throw new Error("Wallet is still initializing. Please try again.");
         }
 
@@ -100,7 +92,7 @@ export const useSignMessageWithSolana = () => {
 
         const messageToSign = buildSolanaSignInMessage(messageToSend);
         const messageBytes = new TextEncoder().encode(messageToSign);
-        const signatureRaw = await clientRef.current.universal.signMessage(messageBytes);
+        const signatureRaw = await pushChainClient.universal.signMessage(messageBytes);
 
         const signature: string =
           typeof signatureRaw === "string"
@@ -118,9 +110,7 @@ export const useSignMessageWithSolana = () => {
       } finally {
         setIsLoading(false);
       }
-    },
-    [universalAccount, setSignature]
-  );
+    }
 
   return { signMessage, isLoading };
 };

@@ -36,13 +36,14 @@ const DiscordVerification = () => {
 
   return (
     <Box
-      width="100vw"
+      width="100%"
       display="flex"
       alignItems="center"
-      height="100vh"
+      height="100%"
       justifyContent="center"
       css={css`
         z-index: 99;
+        flex: 1;
         `}
     >
       <Box
@@ -58,10 +59,10 @@ const DiscordVerification = () => {
       >
         <Discord width={48} height={48} />
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Text variant="h4-semibold" color="text-primary">
+          <Text variant="h4-semibold" color="text-primary" textAlign="center">
             Complete Verification
           </Text>
-          <Text variant="bs-regular" color="text-tertiary">
+          <Text variant="bs-regular" color="text-tertiary" textAlign="center">
             Continue to complete the verification process.
           </Text>
         </Box>

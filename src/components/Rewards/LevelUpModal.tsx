@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import Lottie from "lottie-react";
 
-import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../blocks";
+import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RewardsCoin, SeasonThreePoints, Text, XP } from "../../blocks";
 
 import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
 import BoxAnimation from "../../../static/assets/website/rewards/box.json";
@@ -17,10 +17,20 @@ type LevelUpModalProps = {
   isOpen: boolean;
   onClose: () => void;
   level: number;
-  rewards: LevelUpReward[];
+  rewards?: LevelUpReward[];
+  quest?: boolean;
+  basePoints?: number;
+  baseXP?: number;
 };
 
-const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) => {
+const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, baseXP }: LevelUpModalProps) => {
+  const allRewards = quest
+    ? [
+        ...(basePoints ? [{ id: 100, value: String(basePoints), label: 'Points', type: 'points' }] : []),
+        ...(baseXP ? [{ id: 101, value: `${baseXP}`, label: 'XP', type: 'xp' }] : []),
+      ]
+    : rewards;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -69,20 +79,20 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
               -webkit-text-fill-color: transparent;
             `}
           >
-            Your Rewards!
+            {quest ? "Quest Rewards!" : "Your Rewards!"}
           </Text>
 
-          <Box display="flex" alignItems="center" gap="spacing-xxs">
+          {!quest &&
+            <Box display="flex" alignItems="center" gap="spacing-xxs">
             <LevelUpIcon />
             <Text variant="h3-bold">Lv.{level}</Text>
-          </Box>
+          </Box>}
         </Box>
 
-        <Box margin="spacing-sm spacing-none spacing-none spacing-none">
+        <Box width="250px" margin="spacing-sm spacing-none spacing-none spacing-none">
             <Lottie
               animationData={BoxAnimation}
               loop
-              style={{ width: '220px', height: '220px' }}
             />
         </Box>
 
@@ -92,7 +102,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
           gap="spacing-sm"
           width="100%"
         >
-          {rewards?.map((reward) => (
+          {allRewards?.map((reward) => (
             <Box
               key={reward.id}
               position="relative"
@@ -121,6 +131,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards }: LevelUpModalProps) =>
                         {reward.type === 'pc_tokens' && <RewardsCoin width={60} height={60} />}
                         {reward.type === 'points' && <SeasonThreePoints width={50} height={50} />}
                         {reward.type === 'xp_boost' && <Multiplier width={50} height={50} />}
+                        {reward.type === 'xp' && <XP width={75} height={45} />}
               </Box>
 
               <Box

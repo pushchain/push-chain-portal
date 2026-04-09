@@ -1,5 +1,9 @@
 import { css } from 'styled-components';
-import { Box, Text } from '../../../blocks';
+import { Box, GlowStreaks, Text } from '../../../blocks';
+
+import QuestBannerImage from '../../../../static/assets/website/rewards/QuestsBannerCardImg.webp'
+import { Image } from '../../../css/SharedStyling';
+import { fadeInCss } from '../utils/FadeIn';
 
 const QuestBannerCard = () => {
   return (
@@ -8,31 +12,77 @@ const QuestBannerCard = () => {
       flexDirection="column"
       width={{ initial: 'auto', tb: '100%' }}
       minWidth={{ initial: '280px', tb: 'auto' }}
-      height={{ initial: '374px', tb: 'auto' }}
+      height={{ initial: '100%', tb: 'auto' }}
       minHeight={{ tb: '300px' }}
       padding="spacing-md"
-      borderRadius="radius-xl"
+      borderRadius="radius-lg"
       border="border-xs solid stroke-tertiary"
       position="relative"
       overflow="hidden"
       css={css`
-        background: linear-gradient(241deg, rgba(221, 222, 255, 1) 0%, rgba(181, 184, 255, 1) 100%);
+        background: #F1D5FF;
         flex: 1;
         box-sizing: border-box;
+        gap: 12px;
+        ${fadeInCss(300)}
       `}
     >
+
+      <Box css={css`
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        pointer-events: none;
+        z-index: 0;
+      `}>
+        <Box css={css`position: absolute; bottom: 0; left: -250px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: -200px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: -150px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: -100px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: 150px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+      </Box>
+
       <Box
-        position="absolute"
-        width="344px"
-        height="344px"
-        borderRadius="radius-round"
+        width="100%"
+        height="100%"
         css={css`
-          background: #8385e5;
-          filter: blur(50px);
-          top: 110px;
-          left: -103px;
+          flex: 1;
+          min-height: 0;
+          z-index: 1;
+          overflow: hidden;
         `}
-      />
+      >
+        <Image
+          src={QuestBannerImage}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      </Box>
+
 
       <Box
         display="flex"
@@ -41,12 +91,19 @@ const QuestBannerCard = () => {
         gap="spacing-xs"
         position="relative"
         css={css`
-          flex: 1;
           z-index: 1;
         `}
       >
-        <Box display="flex" flexDirection="column" gap="spacing-xs">
-          <Box display="flex" flexDirection="column" gap="spacing-xxs" maxWidth="390px">
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="spacing-xs">
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="spacing-xxs"
+            maxWidth="390px"
+          >
             <Text
               variant="h3-semibold"
               css={css`

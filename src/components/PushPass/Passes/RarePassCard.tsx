@@ -7,26 +7,28 @@ import OpenPassLockedImage from '../../../../static/assets/website/pushpass/Open
 
 type RarePassCardProps = {
   isLocked: boolean;
+  isDormant?: boolean;
   lockMessage?: string;
   backgroundImage?: string;
   id?: number;
-  characterId?: string;
+  onBlockedOpen?: () => void;
 };
 
 const RarePassCard: FC<RarePassCardProps> = ({
   isLocked,
+  isDormant,
   lockMessage = 'Locked',
   id,
-  characterId,
+  onBlockedOpen,
 }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (characterId) {
-      navigate(`/rewards/pushpass/${characterId}`);
-    } else {
-      navigate(`/rewards/pushpass/open`);
+    if (onBlockedOpen) {
+      onBlockedOpen();
+      return;
     }
+    navigate(`/rewards/pushpass/open`);
   }
   return (
     <Box
@@ -40,12 +42,21 @@ const RarePassCard: FC<RarePassCardProps> = ({
         justify-content: flex-end;
         position: relative;
         flex: 1;
-        background: ${isLocked
-                  ? `url(${OpenPassLockedImage}) center/cover`
-                  : `url(${OpenPassImage}) center/cover`
-                };
       `}
     >
+      <Box
+        css={css`
+          position: absolute;
+          inset: 0;
+          background: ${isLocked && !isDormant
+                      ? `url(${OpenPassLockedImage}) center/cover`
+                      : `url(${OpenPassImage}) center/cover`
+                  };
+          pointer-events: none;
+          z-index: 0;
+        `}
+      />
+
       <Box
         height="379px"
         gap="spacing-xxs"
@@ -56,9 +67,10 @@ const RarePassCard: FC<RarePassCardProps> = ({
           align-items: center;
           justify-content: center;
           position: relative;
+          z-index: 999;
         `}
       >
-        {isLocked ? (
+        {isLocked && !isDormant ? (
           <>
             <Box width="32px" height="32px">
               <Lock size={32} color="icon-primary" />
@@ -75,6 +87,26 @@ const RarePassCard: FC<RarePassCardProps> = ({
               {lockMessage}
             </Text>
           </>
+        ) : isDormant ? (
+          <Box
+            css={css`
+              display: inline-flex;
+              align-items: flex-start;
+            `}
+          >
+            <Button
+              size="medium"
+              variant="primary"
+              disabled
+              css={css`
+                min-width: 100px;
+                height: 48px;
+                box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+              `}
+            >
+              {lockMessage || 'Reveal at Lv. 25'}
+            </Button>
+          </Box>
         ) : (
           <Box
             height="48px"

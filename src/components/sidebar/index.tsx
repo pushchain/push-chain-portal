@@ -16,6 +16,10 @@ import {
   Cross,
   SquadsIcon,
   Cult,
+  Twitter,
+  Discord,
+  DiscordWhite,
+  Link,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
@@ -184,9 +188,9 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         `}
   `;
 
+
   const handleItemClick = (itemId: string, onClick?: () => void, route?: string) => {
     if (route) {
-      // Check if it's an external URL
       if (route.startsWith('http')) {
         window.open(route, '_blank');
       } else {
@@ -325,39 +329,29 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
             </Box>
           ))}
 
-          {/*<Box
+
+          <Box
             display="flex"
             alignItems="center"
-            justifyContent="space-between"
-            gap="spacing-xxs"
-            padding="spacing-xxs spacing-sm"
-            borderRadius="radius-xs"
-            css={getItemStyles(activeItemId === 'more')}
-            onClick={() => handleItemClick('more')}
+            gap="spacing-md"
           >
-            <Box display="flex" alignItems="center" gap="spacing-xxs">
-              <DotsThree size={24} color="icon-brand-medium" />
-              <Text
-                variant={activeItemId === 'more' ? 'h5-semibold' : 'h5-regular'}
-                color="text-primary"
-              >
-                More
-              </Text>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              width="21px"
-              height="21px"
-              borderRadius="radius-xxxs"
-              css={css`
-                background-color: #4f4072;
-              `}
-            >
-              <CaretLeftCircle size={21} color="text-primary" />
-            </Box>
-          </Box>*/}
+            <a href="https://x.com/PushChain" target="_blank" rel="noopener noreferrer">
+              <Twitter width={30} height={30} />
+            </a>
+            <a href="https://discord.com/invite/pushchain" target="_blank" rel="noopener noreferrer">
+              <DiscordWhite width={38} />
+            </a>
+          </Box>
+
+          <Box display='flex' flexDirection='row' gap='spacing-sm'>
+            <Link to='https://push.org/tos' title='Terms of Service' target='_blank'>
+              Terms of Service
+            </Link>
+
+            <Link to='https://push.org/privacy' title='Privacy Policy' target='_blank'>
+              Privacy Policy
+            </Link>
+          </Box>
         </Box>
       </Box>
     </>

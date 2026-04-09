@@ -61,9 +61,7 @@ const ContentChildren = styled.div<{ size: ModalSize }>`
   align-items: flex-start;
   flex: 1 0 0;
   width: 100%;
-  padding-top: var(
-    --spacing-${({ size }) => (size === 'small' ? 'xxs' : 'xs')}
-  );
+
 `;
 
 const HeaderContainer = styled.div`

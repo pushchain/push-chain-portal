@@ -37,29 +37,14 @@ const LeaderBoardSection: FC<LeaderBoardSectionProps> = () => {
 
     setSeason(newSeason);
 
-    // Clear all other season caches
-    if (newSeason === "S1") {
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS2] });
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS3] });
-      queryClient.prefetchInfiniteQuery({
-        queryKey: [rewardsLeaderboardS1],
-        queryFn: getRewardsLeaderboardS1,
-      });
-    } else if (newSeason === "S2") {
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS1] });
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS3] });
-      queryClient.prefetchInfiniteQuery({
-        queryKey: [rewardsLeaderboardS2],
-        queryFn: getRewardsLeaderboardS2,
-      });
-    } else {
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS1] });
-      queryClient.removeQueries({ queryKey: [rewardsLeaderboardS2] });
-      queryClient.prefetchInfiniteQuery({
-        queryKey: [rewardsLeaderboardS3],
-        queryFn: getRewardsLeaderboardS3,
-      });
-    }
+    const prefetchMap = {
+      S1: { queryKey: [rewardsLeaderboardS1], queryFn: getRewardsLeaderboardS1 },
+      S2: { queryKey: [rewardsLeaderboardS2], queryFn: getRewardsLeaderboardS2 },
+      S3: { queryKey: [rewardsLeaderboardS3], queryFn: getRewardsLeaderboardS3 },
+    };
+
+    const { queryKey, queryFn } = prefetchMap[newSeason];
+    queryClient.prefetchInfiniteQuery({ queryKey, queryFn, initialPageParam: 1 });
   }, [location.pathname, queryClient]);
 
   const renderLeaderboard = () => {

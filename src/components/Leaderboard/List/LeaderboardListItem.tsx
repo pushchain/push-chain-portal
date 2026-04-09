@@ -6,17 +6,19 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 
 import { useResolveWeb3Name } from "../../../hooks/useResolveWeb3Name";
-import { shortenText } from "../../../helpers/web3helper";
+import { getChainIdFromFullCaip, shortenText } from "../../../helpers/web3helper";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { device } from "../../../config/globals";
 
-import { Box, Skeleton, Text } from "../../../blocks";
+import { Box, EthereumLogo, PushChainLogo, Skeleton, SolanaLogo, Text } from "../../../blocks";
+import { WalletChainType } from "../../Rewards/utils/wallet";
 
 export type LeaderboardListItemProps = {
   rank: number;
   address: string;
   points: number;
   isLoading: boolean;
+  userWallet: string;
 };
 
 const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
@@ -24,14 +26,36 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   address,
   points,
   isLoading,
+  userWallet
 }) => {
   const web3NameList = useResolveWeb3Name(address);
   const isMobile = useMediaQuery(device.mobileL);
+  const chainId = getChainIdFromFullCaip(userWallet);
 
   const web3Name = web3NameList?.[address];
   const displayName = web3Name
     ? web3Name
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
+
+
+
+  const getChainLogo = () => {
+    switch (chainId) {
+      case 1:
+        return <EthereumLogo size={18} />;
+      case 11155111:
+        return <EthereumLogo size={16} />;
+      case 42101:
+        return <PushChainLogo size={16} />;
+      case 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1':
+        return <SolanaLogo size={16} />;
+      default:
+        return null;
+    }
+  };
+
+  console.log(address, 'address', chainId, userWallet)
+
 
   return (
     <Box
@@ -51,14 +75,27 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
             </Text>
           </Box>
           <Box display="flex" gap="spacing-xs" alignItems="center">
+            {getChainLogo() ? <Box
+              width="24px"
+              height="24px"
+              overflow="hidden"
+              css={css`
+                background: #EAEBF2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 4px;
+            `}
+            >
+              {getChainLogo()}
+            </Box> :
             <Box
               width="32px"
               height="32px"
               borderRadius="radius-xl"
-              overflow="hidden"
-            >
-              <BlockiesSvg address={address} size={8} scale={4} />
-            </Box>
+              overflow="hidden">
+                <BlockiesSvg address={address} size={8} scale={4} />
+            </Box>}
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 
-import { useGetAllInvites } from "../../../queries";
-import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../../../queries";
 import { device } from "../../../config/globals";
 
-import { Box, Text, Copy, Button, Spinner } from "../../../blocks"
+import { Box, Text, Copy, Button, Skeleton } from "../../../blocks"
+import { trackEvent } from "../../../helpers/analytics"
+import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 
 type InviteCodeRowProps = {
@@ -19,6 +20,9 @@ type InviteCodeRowProps = {
 const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps) => {
   const isAvailable = !isUsed;
   const isCopied = copiedCode === code;
+
+
+
 
   return (
     <Box
@@ -111,14 +115,26 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
 type InviteCodesProps = {
   requestInvitesCode: () => void;
   isFetchingInviteCode: boolean;
+  isSigning?: boolean;
 }
 
-export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: InviteCodesProps) => {
+export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSigning }: InviteCodesProps) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const { authHeaders } = useAuthHeaders();
-  const { connectionStatus } = usePushWalletContext('wallet1');
-  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(authHeaders);
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(userDetails?.userId);
+
+ const { data: userCultStatus } = useGetUserCultStatus({
+		wallet: caip10WalletAddress
+	});
+
+ const isWalletConnected = Boolean(universalAccount?.address);
+  const isCultUser = userCultStatus?.data?.isCultMember;
 
   const handleCopy = async (code: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -126,6 +142,7 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
 
     await navigator.clipboard.writeText(code);
     setCopiedCode(code);
+    trackEvent('invite_code_copied', { event_category: 'invites', event_label: code });
     setTimeout(() => {
       setCopiedCode(null);
     }, 2000);
@@ -193,36 +210,55 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
         </Box>
       </Box>
 
+
       <Box
         display="flex"
         flexDirection="column"
-        gap="spacing-xs"
         css={css`
             flex: 1;
             width: 100%;
           `}
       >
-        {(isLoading || !isSuccess) &&
-            <Box
-              width="100%"
-              height="100%"
-              alignItems="center"
-              justifyContent="center"
-              css={css`
-                  margin: auto auto;
-                  flex: 1;
-              `}>
-                <Spinner variant="primary" size="extraLarge" css={css`margin: auto auto;`} />
+        {isWalletConnected ? (
+          <>
+            {(isLoading || !isSuccess) && (
+              <Box
+                display="flex"
+                flexDirection="column"
+                gap="spacing-xs"
+                width="100%"
+              >
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} isLoading>
+                    <Box css={css`
+                      width: 100%;
+                      height: 40px;
+                    `} />
+                  </Skeleton>
+                ))}
+              </Box>
+            )}
+          </>
+        ) : (
+          <Box
+            display="flex"
+            justifyContent="center"
+            css={css`
+              width: 100%;
+              height: 100%;
+            `}
+          >
+            <Text variant="h1-bold" color="text-primary">-</Text>
           </Box>
-          }
+        )}
 
-        {isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && (
+        {!isLoading && isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && !isCultUser && (
           <Button
             variant="outline"
             size="extraSmall"
             onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode}
-            disabled={isFetchingInviteCode}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
             css={css`
               margin: auto auto;
               cursor: pointer;
@@ -232,15 +268,46 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
           </Button>
         )}
 
-        {isSuccess && inviteCodeDetails?.data?.invites?.map((invite, index) => (
-          <InviteCodeRow
-            key={index}
-            code={invite.code}
-            isUsed={invite.isUsed}
-            copiedCode={copiedCode}
-            onCopy={handleCopy}
-          />
-        ))}
+        {!isLoading && isWalletConnected && isCultUser && (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={() => requestInvitesCode()}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
+            css={css`
+              margin: 0 auto auto auto;
+              cursor: pointer;
+              width: 100%;
+            `}
+          >
+            Generate Invite Code
+          </Button>
+        )}
+
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="spacing-xs"
+          customScrollbar
+          css={css`
+            overflow-y: auto;
+            max-height: ${isCultUser ? '200px' : '260px'};
+          `}
+        >
+          {isSuccess && (isCultUser
+            ? inviteCodeDetails?.data?.invites
+            : inviteCodeDetails?.data?.invites?.slice(0, userDetails?.level >= 10 ? 5 : 3)
+          )?.map((invite, index) => (
+            <InviteCodeRow
+              key={index}
+              code={invite.code}
+              isUsed={invite.isUsed}
+              copiedCode={copiedCode}
+              onCopy={handleCopy}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
   );

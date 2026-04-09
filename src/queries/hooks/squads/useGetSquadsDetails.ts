@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { squadsDetails } from "../../queryKeys";
 import { getSquadsDetails } from "../../services";
-import { AuthHeaders } from "../../types";
 
-export const useGetSquadsDetails = (authHeaders: AuthHeaders) => {
+export const useGetSquadsDetails = (userId?: string) => {
   return useQuery({
-    queryKey: [squadsDetails],
-    queryFn: () => getSquadsDetails(authHeaders),
+    queryKey: [squadsDetails, userId],
+    queryFn: () => getSquadsDetails(userId!),
     retry: false,
-    enabled: !!authHeaders?.walletAddress,
+    enabled: !!userId,
   });
 };

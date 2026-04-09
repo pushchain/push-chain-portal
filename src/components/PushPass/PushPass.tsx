@@ -1,21 +1,15 @@
-import { useState } from 'react';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { useGetCharacterEligible, useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../queries';
+import { useGetCharacterInfo, useGetRarePassHistory, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../queries';
 
 import PushPassHeroBanner from './HeroBanner/PushPassHeroBanner';
-import PushPassTabs from './Tabs/PushPassTabs';
 import UnopenedPassesContent from './Passes/UnopenedPassesContent';
 import MyCollectionContent from './Passes/MyCollectionContent';
 import { Box, Link, Text } from '../../blocks';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 
-
-type TabType = 'unopened' | 'collection';
-
 const PushPass = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('unopened');
   const { universalAccount } = usePushWalletContext('wallet1');
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -23,57 +17,82 @@ const PushPass = () => {
     universalAccount?.chain,
   );
 
-  const { data: userCharacterInfo, isLoading } = useGetCharacterInfo({
+  const { data: userCharacterInfo, isFetching: isLoadingCharacters } = useGetCharacterInfo({
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
+  const { data: userDetails, isLoading: isLoadingUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress,
   });
 
-  const { data: isUserEligible } = useGetCharacterEligible({
-    userWallet: caip10WalletAddress
-  });
-
-  const { data: rarePassHistory } = useGetRarePassHistory({
+  const { data: rarePassHistory, isFetching: isLoadingHistory } = useGetRarePassHistory({
     userId: userDetails?.userId ?? '',
   });
 
+  const { data: bossQuestActivity } = useGetRewardsActivity(
+    { userId: userDetails?.userId as string, activityTypes: ['boss_hold_5_rare_passes'] },
+    { enabled: !!userDetails?.userId },
+  );
+
+  const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
+
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const rarePassesProgress = rareActiveCount + rareDormantCount;
+  const isBossQuestClaimed = (bossQuestActivity as any)?.boss_hold_5_rare_passes?.status === 'COMPLETED';
+  const userLevel = userDetails?.level ?? 0;
   const characters = userCharacterInfo?.characters || [];
-  const unmintedCharacters = characters.filter((c) => c.status === 'UNMINTED');
-
-  // Use history to get lock messages (level info) for dormant passes
-  const dormantHistory = (rarePassHistory?.history ?? [])
-    .filter((item) => item.activityTypeId === 'rare_pass_dormant_grant')
-    .slice(0, rareDormantCount);
+  const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
 
   const passes = [
-    // Cards for unminted characters (already generated, waiting to be minted)
-    ...unmintedCharacters.map((char, index) => ({
+    // Active rare passes — all openable
+    ...Array.from({ length: rareActiveCount }, (_, index) => ({
       id: index + 1,
       isLocked: false,
-      lockMessage: 'View Pass',
-      character: char,
+      lockMessage: 'Open Pass',
     })),
 
-    // Cards for active passes the user can claim (not yet generated)
-    ...Array.from({ length: rareActiveCount }, (_, index) => ({
-      id: unmintedCharacters.length + index + 1,
-      isLocked: false,
-      lockMessage: 'Open Now',
+    // Dormant passes — revealable at Level 25
+    ...Array.from({ length: rareDormantCount }, (_, index) => ({
+      id: rareActiveCount + index + 1,
+      isLocked: true,
+      isDormant: true,
+      lockMessage: 'Reveal at Lv. 25',
     })),
 
-    // Cards for dormant (locked) passes
-    ...dormantHistory.map((item, index) => {
-      const level = (item.details as { level?: number })?.level;
-      return {
-        id: unmintedCharacters.length + rareActiveCount + index + 1,
-        isLocked: true,
-        lockMessage: `Unlocks at Lv. ${level}`,
-      };
-    }),
+    // Placeholder: "Unlock at Level 10" — hidden once user has dormant passes
+    ...(rareDormantCount === 0
+      ? [{
+          id: rareActiveCount + 1,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 10',
+        }]
+      : []),
+
+    // Placeholder: "Spin to Win"
+    {
+      id: rareActiveCount + rareDormantCount + 2,
+      isLocked: true,
+      lockMessage: 'Spin to Win',
+    },
+
+    // Placeholder: "Complete Boss Quest" — hidden once rarePassesProgress >= 5 and quest claimed
+    ...(rarePassesProgress < 5 || !isBossQuestClaimed
+      ? [{
+          id: rareActiveCount + rareDormantCount + 4,
+          isLocked: true,
+          lockMessage: 'Complete Boss Quest',
+        }]
+      : []),
+
+    // Placeholder: "Unlock at Level 50" — hidden once user reaches Level 50
+    ...(userLevel < 50
+      ? [{
+          id: rareActiveCount + rareDormantCount + 3,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 50',
+        }]
+      : []),
   ];
 
 
@@ -163,10 +182,15 @@ const PushPass = () => {
               position: relative;
             `}
           >
-            <PushPassTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-            {activeTab === 'unopened' && <UnopenedPassesContent passes={passes} />}
-            {activeTab === 'collection' && <MyCollectionContent />}
+            <MyCollectionContent
+              characters={characters}
+              isLoading={isLoading}
+            />
+            <UnopenedPassesContent
+              passes={passes}
+              isLoading={isLoading}
+              hasUnminted={unmintedCharacters.length > 0}
+            />
           </Box>
         </Box>
       </Box>

@@ -1,5 +1,5 @@
 // React + Web3 Essentials
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // External Packages
 import {
@@ -13,11 +13,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createGlobalStyle, css } from "styled-components";
 import {
-   PushUI,
-   PushUniversalWalletProvider,
-   ProviderConfigProps,
-   usePushWalletContext,
-} from '@pushchain/ui-kit';
+  PushUI,
+  PushUniversalWalletProvider,
+  ProviderConfigProps,
+  usePushWalletContext,
+} from "@pushchain/ui-kit";
 
 import { getPreviewBasePath } from "../basePath";
 import { FLAGS } from "./config/flags";
@@ -47,7 +47,8 @@ import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
 import { ActivityContextProvider } from "./context/activityContext";
-
+import { trackEvent } from "./helpers/analytics";
+import { LinkedWalletProvider } from "./context/linkedWalletContext";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -122,21 +123,40 @@ const queryClient = new QueryClient({});
 
 const AppContent = () => {
   const location = useLocation();
-  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
+  const { connectionStatus, universalAccount } =
+    usePushWalletContext("wallet1");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isInviteCodeModalOpen, setIsInviteCodeModalOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
   );
 
-  const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet({
-    walletAddress: caip10WalletAddress,
-  });
+  const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet(
+    {
+      walletAddress: caip10WalletAddress,
+    },
+  );
+
+  const prevConnectionStatus = React.useRef(connectionStatus);
 
   useEffect(() => {
-    if (connectionStatus !== 'connected') return;
+    if (
+      prevConnectionStatus.current !== "connected" &&
+      connectionStatus === "connected"
+    ) {
+      trackEvent("wallet_connected", {
+        event_category: "auth",
+        event_label: "login_success",
+      });
+    }
+    prevConnectionStatus.current = connectionStatus;
+  }, [connectionStatus]);
+
+  useEffect(() => {
+    if (connectionStatus !== "connected") return;
 
     if (isLoading) return;
 
@@ -147,36 +167,40 @@ const AppContent = () => {
     }
   }, [connectionStatus, seasonThreeDetails, isLoading]);
 
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const hideSideBar = location.pathname === "/discord/verification" || location.pathname === "/admin/controls";
+  const hideSideBar =
+    location.pathname === "/discord/verification" ||
+    location.pathname === "/admin/controls";
   const isAdminPage = location.pathname === "/admin/controls";
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100vh"
-      css={css``}
-    >
-      {!isAdminPage &&
-        (<Box
-        css={css`
-          position: fixed;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          background: url(${SeasonBg}) no-repeat center center fixed;
-          background-size: cover;
-          pointer-events: none;
-          z-index: 0;
-        `}
-      />)}
+    <Box display="flex" flexDirection="column" height="100vh" css={css``}>
+      {!isAdminPage && (
+        <Box
+          css={css`
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url(${SeasonBg}) no-repeat center center fixed;
+            background-size: cover;
+            pointer-events: none;
+            z-index: -1;
+          `}
+        />
+      )}
 
       <Header toggleSidebar={toggleSidebar} />
       <Box
@@ -194,7 +218,9 @@ const AppContent = () => {
         )}
         <Box
           width="100%"
-          maxWidth={hideSideBar ? "100%" : "1200px"}
+          // maxWidth={hideSideBar ? "100%" : "100%"}
+          customScrollbar
+          ref={scrollContainerRef}
           padding={{
             initial: "spacing-none spacing-md",
             tb: "spacing-none spacing-xs",
@@ -205,33 +231,68 @@ const AppContent = () => {
             margin: ${hideSideBar ? "0" : "0 auto"};
           `}
         >
-          <Routes>
-            {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
-            {FLAGS.SEASON_THREE && <>
-              <Route path="/" element={<Navigate to="/rewards" replace />} />
+          <Box
+            css={css`
+              max-width: 1200px;
+              margin: 0 auto;
+              min-height: 100%;
+              display: flex;
+              flex-direction: column;
+            `}
+          >
+            <Routes>
+              {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
               <Route path="/admin/controls" element={<AdminPage />} />
-              <Route path="/rewards" element={<RewardsPage />} />
-              <Route path="/rewards/pushpass" element={<PushPassPage />} />
-              <Route path="/rewards/squads" element={<SquadsPage />} />
-              <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
-              <Route path="/rewards/pushpass/:id" element={<PushPassItemPage />} />
-              <Route path="/rewards/leaderboard" element={<LeaderBoardPage />} />
-              <Route path="/rewards/leaderboard-s2" element={<LeaderBoardPage />} />
-              <Route path="/rewards/leaderboard-s1" element={<LeaderBoardPage />} />
-            </>}
-            {FLAGS.CULT && <>
-              <Route path="/admin/controls" element={<AdminPage />} />
-              <Route path="/" element={<S3CountdownPage />} />
-              <Route path="/cult" element={<CultPage />} />
-              {/*TODO: comment out for now */}
-              {/*<Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />*/}
-            </>}
-            <Route
-              path="/discord/verification"
-              element={<DiscordVerificationPage />}
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route
+                path="/discord/verification"
+                element={<DiscordVerificationPage />}
+              />
+
+              {FLAGS.SEASON_THREE && (
+                <>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/rewards" replace />}
+                  />
+                  <Route path="/rewards" element={<RewardsPage />} />
+                  <Route path="/rewards/pushpass" element={<PushPassPage />} />
+                  <Route path="/rewards/squads" element={<SquadsPage />} />
+                  <Route
+                    path="/rewards/pre-launch"
+                    element={<PreLaunchPage />}
+                  />
+                  <Route
+                    path="/rewards/pushpass/:id"
+                    element={<PushPassItemPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard"
+                    element={<LeaderBoardPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard-s2"
+                    element={<LeaderBoardPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard-s1"
+                    element={<LeaderBoardPage />}
+                  />
+                </>
+              )}
+              {FLAGS.CULT && (
+                <>
+                  <Route path="/" element={<S3CountdownPage />} />
+                  <Route path="/cult" element={<CultPage />} />
+                  {/*TODO: comment out for now */}
+                  <Route
+                    path="/cult/leaderboard"
+                    element={<CultLeaderboardPage />}
+                  />
+                </>
+              )}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Box>
         </Box>
       </Box>
 
@@ -244,46 +305,21 @@ const AppContent = () => {
 };
 
 function App() {
-
   const walletConfig: ProviderConfigProps = {
-    uid: 'wallet1',
+    uid: "wallet1",
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
-    // NOTE: comment socials till S3 launch
     login: {
-      email: false,
-      google: false,
-      phone: false,
+      email: true,
+      google: true,
+      phone: true,
       wallet: {
         enabled: true,
       },
       socials: {
-        discord: false,
-        github: false,
-        x: false,
-        bluesky: false,
-    },
-      appPreview: true,
-    },
-    modal: {
-      loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
-      connectedLayout: PushUI.CONSTANTS.CONNECTED.LAYOUT.HOVER,
-      appPreview: true,
-      connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
-    },
-    chainConfig: {
-      rpcUrls: {
-      },
-    },
-  };
-
-  const linkedWalletConfig: ProviderConfigProps = {
-    uid: 'wallet2',
-    network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
-    login: {
-      email: false,
-      google: false,
-      wallet: {
-        enabled: true,
+        discord: true,
+        github: true,
+        x: true,
+        bluesky: true,
       },
       appPreview: true,
     },
@@ -294,8 +330,7 @@ function App() {
       connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
     },
     chainConfig: {
-      rpcUrls: {
-      },
+      rpcUrls: {},
     },
   };
 
@@ -304,35 +339,28 @@ function App() {
       {/* Global style */}
       <GlobalStyle />
       <Router basename={basename}>
-      <PushUniversalWalletProvider
-             config={walletConfig}
-             themeMode={PushUI.CONSTANTS.THEME.DARK}
-             themeOverrides={{
-               '--pw-core-font-family': "'DM Sans', sans-serif",
-               '--pwauth-btn-connected-bg-color': '#D548EC'
-             }}
-        >
-        {/*<PushUniversalWalletProvider
-          config={linkedWalletConfig}
+        <PushUniversalWalletProvider
+          config={walletConfig}
           themeMode={PushUI.CONSTANTS.THEME.DARK}
           themeOverrides={{
-            '--pw-core-font-family': "'DM Sans', sans-serif",
-            '--pwauth-btn-connected-bg-color': '#D548EC'
+            "--pw-core-font-family": "'DM Sans', sans-serif",
+            "--pwauth-btn-connected-bg-color": "#D548EC",
           }}
-        >*/}
-          <QueryClientProvider client={queryClient}>
-            <RewardsContextProvider>
-              <AuthHeadersProvider>
-                <RewardStatusContextProvider>
-                  <ActivityContextProvider>
-                    <AppContent />
-                    <ReactQueryDevtools initialIsOpen={false} />
-                  </ActivityContextProvider>
-                </RewardStatusContextProvider>
-              </AuthHeadersProvider>
-            </RewardsContextProvider>
-          </QueryClientProvider>
-        {/*</PushUniversalWalletProvider>*/}
+        >
+            <LinkedWalletProvider>
+              <QueryClientProvider client={queryClient}>
+                <RewardsContextProvider>
+                  <AuthHeadersProvider>
+                    <RewardStatusContextProvider>
+                      <ActivityContextProvider>
+                        <AppContent />
+                        <ReactQueryDevtools initialIsOpen={false} />
+                      </ActivityContextProvider>
+                    </RewardStatusContextProvider>
+                  </AuthHeadersProvider>
+                </RewardsContextProvider>
+              </QueryClientProvider>
+            </LinkedWalletProvider>
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

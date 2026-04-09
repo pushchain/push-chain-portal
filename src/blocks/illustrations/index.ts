@@ -2,6 +2,8 @@ export * from "./IllustrationWrapper";
 export * from "./IllustrationWrapper";
 export * from "./Illustrations.types";
 
+export { default as Ace } from "./components/Ace";
+
 export { default as ActivePushPoints } from "./components/ActivePushPoints";
 
 export { default as AlphaAccessNFT } from "./components/AlphaAccessNFT";
@@ -34,6 +36,8 @@ export { default as Discord } from "./components/Discord";
 
 export { default as DiscordProfile } from "./components/DiscordProfile";
 
+export { default as DiscordWhite } from "./components/DiscordWhite";
+
 export { default as EarnOnPush } from "./components/EarnOnPush";
 
 export { default as EmailProfile } from "./components/EmailProfile";
@@ -50,16 +54,17 @@ export { default as GatedGroupPoints } from "./components/GatedGroupPoints";
 
 export { default as GradientBonusActivitySubscribers } from "./components/GradientBonusActivitySubscribers";
 
+export { default as Hotshot } from "./components/Hotshot";
+
 export { default as GreyBonusActivitySubscribers } from "./components/GreyBonusActivitySubscribers";
 
 export { default as GlowStreaks } from "./components/GlowStreaks";
 
-export { default as LevelBadge } from "./components/LevelBadge";
+export { default as Immortal } from "./components/Immortal";
 
 export { default as LevelUpCart } from "./components/LevelUpCart";
 
 export { default as LevelUpIcon } from "./components/LevelUpIcon";
-
 
 export { default as Linea } from "./components/Linea";
 
@@ -77,11 +82,17 @@ export { default as PCTokens } from './components/PCTokens';
 
 export { default as Quests } from "./components/Quests";
 
+export { default as QuestBox } from './components/QuestBox';
+
 export { default as Metamask } from "./components/Metamask";
 
 export { default as Multiplier } from "./components/Multiplier";
 
 export { default as MultipleRewardsCoin } from "./components/MultipleRewardsCoin";
+
+export { default as Ninja } from "./components/Ninja";
+
+export { default as Noobie } from "./components/Noobie";
 
 export { default as NotificationImg } from "./components/NotificationImg";
 
@@ -95,6 +106,8 @@ export { default as RewardsBell } from "./components/RewardsBell";
 
 export { default as RewardPoints } from "./components/RewardPoints";
 
+export { default as Rockstar } from "./components/Rockstar";
+
 export { default as RockstarNFT } from "./components/RockstarNFT";
 
 export { default as Referral } from "./components/Referral";
@@ -102,6 +115,10 @@ export { default as Referral } from "./components/Referral";
 export { default as SeasonThreePoints } from "./components/SeasonThreePoints";
 
 export { default as SetupProfilePoints } from "./components/SetupProfilePoints";
+
+export { default as Sidekick } from "./components/Sidekick";
+
+export { default as Superhero } from "./components/Superhero";
 
 export { default as StakePushBlueCoin } from "./components/StakePushBlueCoin";
 
@@ -129,6 +146,8 @@ export { default as StakePushYellowMultiplier } from "./components/StakePushYell
 
 export { default as SubscribePoints } from "./components/SubscribePoints";
 
+export { default as Underdog } from "./components/Underdog";
+
 export { default as Telegram } from "./components/Telegram";
 
 export { default as TelegramProfile } from "./components/TelegramProfile";
@@ -152,6 +171,8 @@ export { default as PushLogoWithNameDark } from "./components/PushLogoWithNameDa
 export { default as Polygon } from "./components/Polygon";
 
 export { default as PolygonZK } from "./components/PolygonZK";
+
+export { default as Wizard } from "./components/Wizard";
 
 export { default as XP } from "./components/XP";
 

@@ -2,14 +2,24 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
 
-import { Box, Modal, Text, TextInput, Logout } from "../blocks";
-import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
+
 import { useCreateSeasonThreeUser, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { useSignMessageWithEthereum } from "./Rewards/hooks/useSignMessage";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { useSignMessageWithSolana } from "./Rewards/hooks/useSignMessageWithSolana";
 import { WalletChainType } from "./Rewards/utils/wallet";
 import { useSignPushMessage } from "./Rewards/hooks/useSignPushMessage";
+
+import { Image } from "../css/SharedStyling";
+import { trackEvent } from "../helpers/analytics";
+import { Box, Button, Link, Modal, Text, TextInput, Logout } from "../blocks";
+import ModalBg from "../../static/assets/website/shared/modal-bg.webp";
+import BottomSectionBG from '../../static/assets/website/rewards/bottomsectionbg.webp';
+import PepperedCodesImg from '../../static/assets/website/rewards/codes-peppered.webp'
+import FollowPushImg from '../../static/assets/website/rewards/invitecode-follow.webp'
+import PepperCodeText from '../../static/assets/website/rewards/peppered-codetext.webp';
+import FollowText from '../../static/assets/website/rewards/followtext.webp';
+
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -23,6 +33,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const { pushChainClient } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { mutate: createUser, isPending } = useCreateSeasonThreeUser();
 
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -50,6 +61,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
   const isSolana = chainId === WalletChainType.SOLANA;
 
   const handleSubmit = async () => {
+      trackEvent('season3_signup_submitted', { event_category: 'auth' });
       if (!inviteCode.trim()) {
         setError("Invite code is required");
         return;
@@ -58,6 +70,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
     let signature: string;
     let dataPayload: string;
 
+    setIsLoading(true);
 
     try {
         if (isPushSocialWalletUser) {
@@ -65,6 +78,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
 
           if (error || !newSignature) {
             setError(error || "Failed to sign message");
+            setIsLoading(false);
             return;
           }
 
@@ -76,6 +90,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
             : await signMessage();
 
           if (error || !newSignature) {
+            setIsLoading(false);
             setError(error || "Failed to sign message");
             return;
           }
@@ -85,12 +100,14 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         }
       } catch (err) {
         console.error("Signing failed. Please try again", err)
+        setIsLoading(false);
         setError("Signing failed. Please try again.");
         return;
       }
 
 
-      if (!signature || !dataPayload) {
+    if (!signature || !dataPayload) {
+        setIsLoading(false);
         setError("Failed to sign message");
         return;
       }
@@ -106,13 +123,16 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         },
         {
           onSuccess: () => {
+            trackEvent('season3_signup_completed', { event_category: 'auth' });
             refetch();
             refetchCultStatus();
             onClose();
+            setIsLoading(false);
           },
           onError: (error: any) => {
             console.log("Error in creating activity", error);
             setError(error?.response?.data?.error);
+            setIsLoading(false);
           },
         }
       );
@@ -136,44 +156,55 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
       size="small"
       showCloseButton={false}
       css={css`
-        border-radius: var(--radius-lg, 32px);
+        border-radius: var(--radius-lg, 0px);
         outline: none;
-        background: url(${ModalBg}) no-repeat center center;
-        background-size: cover;
+        background: transparent;
+        border: none;
+        padding: 0px;
+        gap: 0px;
+        width: 402px;
+        box-sizing: border-box;
 
         & > div:last-child {
-          width: 100%;
-          margin-bottom: 16px;
+            display: none;
         }
       `}
-      acceptButtonProps={{
-        children: "Get Started",
-        onClick: handleSubmit,
-        block: true,
-        disabled: isPending,
-        loading: isPending
-        }}
+      acceptButtonProps={null}
       cancelButtonProps={null}
     >
-      <Box
-        onClick={handleLogout}
-        css={css`
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          cursor: pointer;
-          color: white;
-        `}
-      >
-        <Logout size={18} />
-      </Box>
+
 
       <Box
         display="flex"
         flexDirection="column"
+        alignItems="center"
         gap="spacing-md"
+        padding="spacing-lg spacing-md spacing-md spacing-md"
+        borderRadius="radius-md"
+        position="relative"
         width="100%"
+        css={css`
+            background: url(${ModalBg}) no-repeat center center;
+            background-size: cover;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            box-sizing: border-box;
+            z-index: 9;
+        `}
       >
+        <Box
+          onClick={handleLogout}
+          css={css`
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            z-index: 2;
+          `}
+        >
+          <Logout size={18} />
+        </Box>
+
         <Text
           variant="h2-semibold"
           textAlign="center"
@@ -186,54 +217,127 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         >
          Invite Code
         </Text>
-        <TextInput
-          placeholder="Enter your code"
-          value={inviteCode}
-          onChange={(e) => {
-            setInviteCode(e.target.value);
-            setError("");
-          }}
-          error={!!error}
-          errorMessage={error}
-          backgroundColor={"rgba(0, 0, 0, 0.25)"}
-        />
+
+        <Box display="flex" flexDirection="column" gap="spacing-sm" width="100%">
+          <TextInput
+            placeholder="Enter your code"
+            value={inviteCode}
+            onChange={(e) => {
+              setInviteCode(e.target.value);
+              setError("");
+            }}
+            error={!!error}
+            errorMessage={error}
+            backgroundColor={"rgba(0, 0, 0, 0.25)"}
+          />
+
+          <Button
+            variant="primary"
+            size="medium"
+            block
+            onClick={handleSubmit}
+            disabled={isLoading}
+            loading={isLoading}
+            css={css`
+              margin-top: 8px;
+            `}
+          >
+            Get Started
+          </Button>
+
+          <Text variant="bs-semibold" textAlign="center" css={css`color: rgba(255, 255, 255, 0.75);`}>
+            Season 3 is invite only. Exclusive Access!
+          </Text>
+        </Box>
       </Box>
 
       <Box
-        maxWidth="250px"
-        textAlign="center"
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        height="100%"
+        margin="spacing-md spacing-none spacing-none spacing-none"
+        padding="spacing-sm"
+        borderRadius="radius-md"
         css={css`
-            margin: 24px auto 0 auto;
-          `}
+          background: url(${BottomSectionBG}) no-repeat center center;
+          background-size: cover;
+          border: 1px solid rgba(255, 255, 255, 0.20);
+          box-sizing: border-box;
+        `}
       >
-        <Text textAlign="center" variant="bes-semibold">
-          Chosen Disciples have received a secret invite code in their email.
+        <Text variant="bs-semibold" textAlign="center">
+          Don't have an invite code? Do this now!
         </Text>
-      </Box>
 
-      {/*TODO: for regular season three holders only*/}
-      {/*<Box
-        margin="spacing-sm spacing-none spacing-none spacing-none"
-        width="100%">
-        <Text textAlign="center" variant="bes-semibold">
-          Season 3: Exclusive Access.
-        </Text>
-        <Text textAlign="center" variant="bes-semibold">
-          Check
-          <Link
-            to="https://x.com/pushchain"
-            textProps={{ variant: "bes-semibold", color: "#C742DD" }}
+        <a
+          // TODO: update correct link
+          href="https://x.com/pushchain"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Box
+            display="flex"
+            flexDirection="column"
+            padding="spacing-md"
+            margin="spacing-sm spacing-none spacing-none spacing-none"
+            css={css`
+              border-radius: 14.863px;
+              border: 1px solid rgba(255, 255, 255, 0.20);
+              background: rgba(0, 0, 0, 0.50);
+              backdrop-filter: blur(8.050000190734863px);
+              box-sizing: border-box;
+              cursor: pointer;
+            `}
           >
-            {' '}X{' '}
-          </Link> and
-          <Link
-            to="https://discord.com/invite/pushchain"
-            textProps={{ variant: "bes-semibold", color: "#C742DD" }}
+            <Box display="flex">
+              <Image src={FollowPushImg} width="100%"  />
+            </Box>
+
+            <Box css={css`
+                  margin: 8px 0 4px 0;
+              `}>
+              <Image src={FollowText} width="70%"  />
+            </Box>
+
+            <Box width="80%">
+              <Text variant="bes-regular" css={css`color: rgba(255, 255, 255, 0.6);`}>
+                Drop a comment to get invite codes. Limited codes per week.
+              </Text>
+            </Box>
+          </Box>
+        </a>
+
+        <a
+          href="https://x.com/PushChain/status/2039704813412425925"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="spacing-sm"
+            margin="spacing-sm spacing-none spacing-none spacing-none"
+            alignItems="center"
+            css={css`
+              border-radius: 14.863px;
+              border: 1px solid rgba(255, 255, 255, 0.20);
+              background: rgba(0, 0, 0, 0.50);
+              backdrop-filter: blur(8.050000190734863px);
+              box-sizing: border-box;
+              cursor: pointer;
+            `}
           >
-            {' '}Discord{' '}
-          </Link> for invites.
-        </Text>
-      </Box>*/}
+            <Image src={PepperedCodesImg} width={83} />
+
+            <Box>
+              <Image src={PepperCodeText} width="80%"  />
+            </Box>
+          </Box>
+        </a>
+      </Box>
     </Modal>
   );
 };

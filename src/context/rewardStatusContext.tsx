@@ -6,48 +6,58 @@ import React, {
 } from "react";
 
 import {
+  GetSybilStatusResponse,
+  useGetSeasonThreeUserByWallet,
   useGetSybilStatus,
 } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
-import { useAuthHeaders } from "./authHeadersContext";
 
 interface RewardStatusContextType {
   isLocked: boolean;
   isLockedStatusLoading: boolean;
+  sybilStatusData: GetSybilStatusResponse;
+  refetchSybilStatus: () => void;
 }
 
 const RewardStatusContext = createContext<RewardStatusContextType | undefined>(undefined);
 
 export const RewardStatusContextProvider = ({ children }: { children: ReactNode }) => {
-  const { authHeaders } = useAuthHeaders();
+
   const { universalAccount } = usePushWalletContext("wallet1");
   const account = universalAccount?.address as string;
+  const isWalletConnected = Boolean(universalAccount?.address);
 
   const caip10WalletAddress = walletToFullCAIP10(
     account,
     universalAccount?.chain,
   );
 
-  const { data: sybilStatusData, isLoading: isLockedStatusLoading } = useGetSybilStatus({
-    walletAddress: caip10WalletAddress,
-    authHeaders,
+  const { data: userSeasonThreeDetails } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress
+  })
+
+  const { data: sybilStatusData, isFetched, refetch: refetchSybilStatus } = useGetSybilStatus({
+    userId: userSeasonThreeDetails?.userId
   });
 
+  const isLockedStatusLoading = isWalletConnected && !isFetched;
 
   const sybilData = sybilStatusData?.data;
 
-  const isLocked = !(
+  const isLocked = !isWalletConnected || (!(
     (sybilData?.summary?.completedCriteria ?? 0) >= 3 &&
     sybilData?.advanced?.completed === true &&
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
-  );
+  ) && isFetched);
 
   return (
     <RewardStatusContext.Provider
       value={{
         isLocked,
-        isLockedStatusLoading
+        isLockedStatusLoading,
+        sybilStatusData,
+        refetchSybilStatus,
       }}
     >
       {children}

@@ -4,10 +4,11 @@ import { css } from 'styled-components';
 import { Box } from '../../../blocks';
 import { StatsCards } from './LoggedInVerified/StatsCards';
 import { ReferralCard } from './LoggedInVerified/ReferralCard';
-import { RarePassSection } from './LoggedInVerified/RarePassSection';
 import { DashboardHeader } from './LoggedInVerified/DashboardHeader';
 import { DashboardFooter } from './LoggedInVerified/DashboardFooter';
 import { device } from '../../../config/globals';
+import QuestBannerCard from '../HeroBanner/QuestBannerCard';
+import { fadeInCss } from '../utils/FadeIn';
 
 export const RenderLoggedInVerifiedState: FC = () => {
   return (
@@ -18,8 +19,8 @@ export const RenderLoggedInVerifiedState: FC = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      padding="spacing-md"
-      gap="spacing-md"
+      padding={{ initial: "spacing-md", ml: "spacing-sm"}}
+      gap={{ initial: "spacing-md", ml: "spacing-sm" }}
       position="relative"
       css={css`
         background: rgba(0, 0, 0, 0.1);
@@ -30,19 +31,20 @@ export const RenderLoggedInVerifiedState: FC = () => {
         isolation: isolate;
         border: 1px solid rgba(171, 70, 248, 0.40);
         box-sizing: border-box;
+        ${fadeInCss(0)}
       `}
     >
       <Box
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
-        gap="spacing-lg"
+        gap={{ initial: "spacing-lg", ml: "spacing-sm"}}
         width="100%"
         css={css`
           z-index: 1;
         `}
       >
-        <DashboardHeader />
+        {/*<DashboardHeader />*/}
 
         <Box
           display="flex"
@@ -53,12 +55,20 @@ export const RenderLoggedInVerifiedState: FC = () => {
           css={css`
             min-height: 420px;
             max-height: 420px;
+            overflow: hidden;
             flex: 1;
+
+            @media (max-width: 1200px) and (min-width: 769px) {
+              min-height: initial;
+              max-height: initial;
+              overflow: visible;
+            }
 
             @media ${device.tablet} {
               height: auto;
               min-height: initial;
               max-height: initial;
+              overflow: visible;
             }
           `}
         >
@@ -66,12 +76,14 @@ export const RenderLoggedInVerifiedState: FC = () => {
             display="flex"
             flexDirection="column"
             alignItems="flex-start"
-            gap="spacing-md"
+            gap={{ initial: "spacing-md", ml: "spacing-sm"}}
             position="relative"
             height="-webkit-fill-available"
             width="100%"
             css={css`
               flex: 1;
+              min-height: 0;
+              overflow: hidden;
             `}
           >
             <StatsCards />
@@ -81,14 +93,18 @@ export const RenderLoggedInVerifiedState: FC = () => {
           <Box
             height="-webkit-fill-available"
             css={css`
-              width: 416px;
+              width: 41%;
+
+              @media (max-width: 1200px) and (min-width: 769px) {
+                width: 50%;
+              }
 
               @media ${device.tablet} {
                   width: 100%;
               }
             `}
           >
-            <RarePassSection />
+            <QuestBannerCard />
           </Box>
         </Box>
       </Box>

@@ -56,7 +56,7 @@ const PushPassHeroBanner = () => {
           <Text
             variant="h1-bold"
             css={css`
-              width: 756px;
+              width: 656px;
               background: linear-gradient(180deg, rgba(0, 0, 0, 1) 30%, rgba(133, 83, 44, 1) 100%);
               -webkit-background-clip: text;
               background-clip: text;

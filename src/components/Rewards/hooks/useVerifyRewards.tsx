@@ -12,7 +12,10 @@ import {
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
+import { useSignPushMessage } from "./useSignPushMessage";
 import { WalletChainType } from "../utils/wallet";
+import { SKIP_VERIFICATION_ACTIVITIES } from "../utils/skipVerificationActivities";
+import { trackEvent } from "../../../helpers/analytics";
 
 export type UseVerifyRewardsParams = {
   activityTypeId: string;
@@ -31,16 +34,21 @@ const useVerifyRewards = ({
   onStartClaim,
 }: UseVerifyRewardsParams) => {
   const [verifyingRewards, setVerifyingRewards] = useState(false);
+  const [progressPercent, setProgressPercent] = useState<number | null>(null);
   const [rewardsActivityStatus, setRewardsActivityStatus] = useState<
     "Claimed" | "Pending" | null
   >(null);
+  const [claimResponse, setClaimResponse] = useState<any>(null);
 
   const [updatedId, setUpdatedId] = useState<string | null>(null);
 
-  const { universalAccount } = usePushWalletContext('wallet1');
+  const { universalAccount, connectionType } = usePushWalletContext('wallet1');
   const { chainId } = parseCAIP(universalAccount?.chain);
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessageWithPush } = useSignPushMessage();
+
+  const isPushSocialWallet = connectionType === 'social';
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -54,6 +62,7 @@ const useVerifyRewards = ({
   const handleRewardsVerification = (userId: string) => {
     setUpdatedId(userId);
     setVerifyingRewards(true);
+    trackEvent(`${activityTypeId}_claim_clicked`, { event_category: 'rewards', event_label: activityTypeId });
 
     // Signal that we're starting the claim process
     if (onStartClaim) {
@@ -67,22 +76,35 @@ const useVerifyRewards = ({
     walletAddress: caip10WalletAddress,
   });
 
-  const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
+  const { mutateAsync: claimRewardsActivity } = useClaimRewardsActivity();
+
 
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    let verificationProof;
+    const skipVerification = SKIP_VERIFICATION_ACTIVITIES?.some(
+      (item) => activityTypeId === item
+    );
+
+    let verificationProof: string | undefined;
     let messageToSend: Record<string, string | undefined> = {};
 
-    const isSolana = chainId == WalletChainType.SOLANA;
+    if (!skipVerification) {
+      const isSolana = chainId == WalletChainType.SOLANA;
 
-    if (isSolana) {
+      const signFn = isPushSocialWallet
+        ? signMessageWithPush
+        : isSolana
+          ? signMessageWithSolana
+          : signMessage;
+
       const {
         signature,
         messageToSend: signedMessage,
+        messageString,
         error,
-      } = await signMessageWithSolana();
+      } = await signFn();
+
       if (error || !signature) {
         console.log(error);
         setErrorMessage(error);
@@ -91,69 +113,57 @@ const useVerifyRewards = ({
       }
 
       verificationProof = signature;
-      messageToSend = signedMessage;
-    } else {
-      const {
-        signature,
-        messageToSend: signedMessage,
-        error,
-      } = await signMessage();
-      if (error || !signature) {
-        console.log(error);
-        setErrorMessage(error);
+      messageToSend = (isPushSocialWallet
+        ? signedMessage
+        : isSolana
+          ? signedMessage
+          : signedMessage) as Record<string, string | undefined>;
+
+      if (!verificationProof) {
+        setErrorMessage('Invalid Verification Proof');
         setVerifyingRewards(false);
         return;
       }
-
-      verificationProof = signature;
-      messageToSend = signedMessage as Record<string, string | undefined>;
     }
 
-    if (!verificationProof) {
-      setErrorMessage('Invalid Verification Proof');
-      setVerifyingRewards(false);
-    }
-
-    claimRewardsActivity(
-      {
+    try {
+      const response = await claimRewardsActivity({
         userId: updatedId || (userId as string),
         activityTypeId,
-        data: messageToSend,
-        verificationProof,
-      },
-      {
-        onSuccess: (response) => {
-          // TODO: fix this later
-          if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
-            setRewardsActivityStatus("Claimed");
-            // if (setCurrentLevel) {
-            //   setCurrentLevel(activityTypeId);
-            // }
-            refetchActivity();
-            refetchUserDetails();
-            setVerifyingRewards(false);
-          }
-          if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
-            setRewardsActivityStatus("Pending");
-            refetchActivity();
-            setVerifyingRewards(false);
-          }
-        },
-        onError: (error: any) => {
-          console.log("Error in creating activity", error);
-          setVerifyingRewards(false);
-          if (error?.name) {
-            setErrorMessage(error?.response?.data?.error);
-          }
-        },
-      },
-    );
+        ...(skipVerification ? { data: {}} : { data: messageToSend, verificationProof }),
+      });
+
+      if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
+        setRewardsActivityStatus("Claimed");
+        setClaimResponse(response.data || response);
+        trackEvent(`${activityTypeId}_claimed`, { event_category: 'quests', event_label: activityTypeId });
+        refetchActivity();
+        refetchUserDetails();
+      }
+      if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
+        setRewardsActivityStatus("Pending");
+        refetchActivity();
+      }
+    } catch (error: any) {
+      console.log("Error in creating activity", error);
+      const errorData = error?.response?.data?.error;
+      if (errorData) {
+        setErrorMessage(typeof errorData === 'string' ? errorData : errorData?.message);
+        if (errorData?.progress_percent != null) {
+          setProgressPercent(errorData.progress_percent);
+        }
+      }
+    } finally {
+      setVerifyingRewards(false);
+    }
   };
 
   return {
     verifyingRewards,
     rewardsActivityStatus,
     handleRewardsVerification,
+    progressPercent,
+    claimResponse,
   };
 };
 

@@ -9,8 +9,9 @@ type CharacterTraits = {
 
 type CharacterImageProps = {
   characterId: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
+  reflectionBg?: string;
 };
 
 /**
@@ -51,32 +52,38 @@ const getImagePath = (
   type: 'Accessory' | 'Body' | 'Headgear' | 'Head',
   value: number
 ): string => {
+  const rawBase = import.meta.env.BASE_URL || '/';
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
   const paddedValue = value.toString().padStart(2, '0');
-  return `/Otter Pass/${type}/${paddedValue}-${type}.png`;
+  return `${base}Otter-Pass/${type}/${paddedValue}-${type}.png`;
 };
 
-export const CharacterImage = ({ characterId, width = 248, height = 318 }: CharacterImageProps) => {
+const toCss = (v: number | string) => typeof v === 'number' ? `${v}px` : v;
+
+export const CharacterImage = ({ characterId, width = 248, height = 318, reflectionBg }: CharacterImageProps) => {
   const [traits, setTraits] = useState<CharacterTraits | null>(null);
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const parsed = parseCharacterId(characterId);
+    console.log('[CharacterImage] characterId:', characterId, 'parsed:', parsed, 'BASE_URL:', import.meta.env.BASE_URL);
     setTraits(parsed);
     setImageError(false);
   }, [characterId]);
 
   if (imageError || !traits) {
+    console.log('[CharacterImage] Showing fallback — imageError:', imageError, 'traits:', traits, 'characterId:', characterId);
     return (
       <div
         style={{
-          width: `${width}px`,
-          height: `${height}px`,
+          width: toCss(width),
+          height: toCss(height),
           background: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'rgba(255, 255, 255, 0.5)',
+          color: '#000',
           fontSize: '14px',
         }}
       >
@@ -92,7 +99,7 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
 
   const imgStyle: React.CSSProperties = {
     position: 'absolute',
-    top: 0,
+    bottom: 1,
     left: 0,
     width: '100%',
     height: '100%',
@@ -103,8 +110,8 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
     <div
       style={{
         position: 'relative',
-        width: `${width}px`,
-        height: `${height}px`,
+        width: toCss(width),
+        height: toCss(height),
       }}
     >
       {/* Base layer: Body */}
@@ -112,28 +119,28 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
         src={bodyPath}
         alt={`Body ${traits.body}`}
         style={{ ...imgStyle, zIndex: 1 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Head */}
       <img
         src={headPath}
         alt={`Head ${traits.head}`}
         style={{ ...imgStyle, zIndex: 2 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Accessory */}
       <img
         src={accessoryPath}
         alt={`Accessory ${traits.accessory}`}
         style={{ ...imgStyle, zIndex: 3 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Headgear */}
       <img
         src={headgearPath}
         alt={`Headgear ${traits.headgear}`}
         style={{ ...imgStyle, zIndex: 4 }}
-        onError={() => setImageError(true)}
+        onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
 
       {/* Reflection effect */}
@@ -148,9 +155,10 @@ export const CharacterImage = ({ characterId, width = 248, height = 318 }: Chara
           opacity: 0.15,
           filter: 'blur(4px)',
           overflow: 'hidden',
-          background: '#ececb4',
+          background: reflectionBg || 'transparent',
           borderRadius: '24px',
-          zIndex: -2,
+          zIndex: 5,
+          pointerEvents: 'none',
         }}
       >
         <img src={bodyPath} alt="" style={imgStyle} />

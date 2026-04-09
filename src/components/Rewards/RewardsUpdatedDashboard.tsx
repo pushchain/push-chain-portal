@@ -6,31 +6,17 @@ import {
 } from "@pushchain/ui-kit";
 
 import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
+import { trackEvent } from "../../helpers/analytics";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardStatus } from "../../context/rewardStatusContext";
-import { useGetUserCultStatus } from "../../queries";
-import { walletToFullCAIP10 } from "../../helpers/web3helper";
-import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
-
-  const { data: userCultStatus } = useGetUserCultStatus({
-    wallet: caip10WalletAddress
-  });
-
-
   const rewardsLocked = isLocked && !isLockedStatusLoading;
-
-  const isCultUser = userCultStatus?.data?.isCultMember;
 
   const renderLoggedOutState = () => (
     <Box
@@ -134,7 +120,7 @@ export const RewardsUpdatedDashboard = () => {
         css={css`
           position: relative;
           z-index: 1;
-          max-width: 900px;
+          max-width: 680px;
         `}
       >
         <Box
@@ -144,14 +130,14 @@ export const RewardsUpdatedDashboard = () => {
           textAlign="center"
         >
           <Text variant="h1-bold" color="#000000">
-            Build, Test, & Earn Rare Rewards
+              Crush quests. Claim XP, Points & Rare Passes.
           </Text>
           <Text variant="h5-regular" color="#000000">
-            Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
+              Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
           </Text>
         </Box>
 
-        <Box>
+        <Box onClick={() => trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'dashboard' })}>
           <PushUniversalAccountButton uid='wallet1' />
         </Box>
       </Box>
@@ -181,10 +167,6 @@ export const RewardsUpdatedDashboard = () => {
 
   const renderLoggedInVerifiedState = () => (
     <RenderLoggedInVerifiedState />
-  );
-
-  const renderLoggedInCultUser = () => (
-    <RenderLoggedInCultUser />
   );
 
   if (isWalletConnected && isLockedStatusLoading) {
@@ -300,7 +282,7 @@ export const RewardsUpdatedDashboard = () => {
             textAlign="center"
           >
             <Text variant="h1-bold" color="#000000">
-              Build, Test, & Earn Rare Rewards
+               Crush quests. Claim XP, Points & Rare Passes.
             </Text>
             <Text variant="h5-regular" color="#000000">
               Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
@@ -332,9 +314,6 @@ export const RewardsUpdatedDashboard = () => {
 
     );
   }
-
-  // if (isWalletConnected && isCultUser)
-  //   return renderLoggedInCultUser();
 
   if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 

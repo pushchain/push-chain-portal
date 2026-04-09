@@ -8,10 +8,12 @@ import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-
 import useMediaQuery from "../hooks/useMediaQuery";
 import { device } from "../config/globals";
 
-import { Box, LevelBadge, Multiplier, RewardsCoin, SeasonThreePoints, Text } from "../../src/blocks";
+import { Box, Multiplier, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
 import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
+import { getLevelBadge } from "../helpers/getLevelBadge";
+import { trackEvent } from "../helpers/analytics";
 
 
 interface HeaderProps {
@@ -37,15 +39,13 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
 
   const { data: userSeasonThreeDetails, isLoading: isLoadingSeasonThree } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
-  })
+  });
 
-  const { data: userCultStatus, isLoading: isLoadingCultStatus } = useGetUserCultStatus({
-		wallet: caip10WalletAddress
-	});
+  const isLoadingUserData = isLoadingSeasonThree;
+  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails;
 
-  const isLoadingUserData = isLoadingSeasonThree || isLoadingCultStatus;
-	const isCultUser = userCultStatus?.data?.isCultMember;
-  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails && !isCultUser;
+  const { Icon: BadgeIcon } = getLevelBadge(userSeasonThreeDetails?.level);
+
 
   return (
     <Box
@@ -76,8 +76,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
         flexDirection="row"
         alignItems="center"
       >
-        {showStats &&
-          (<Box
+          {showStats && (<Box
               display="flex"
               flexDirection="row"
               alignItems="center"
@@ -87,12 +86,20 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
                     height: 40px;
                   `}
             >
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><LevelBadge width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><BadgeIcon width={32} /> <Text variant="h5-bold">Lv. { userSeasonThreeDetails?.level }</Text></Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><Multiplier width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.permaMultiplier }x</Text></Box>
-          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={32} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs"><SeasonThreePoints width={30} /> <Text variant="h5-bold">{ userSeasonThreeDetails?.totalPoints }</Text></Box>
         </Box>)}
 
-        {!isTablet && (<PushUniversalAccountButton uid='wallet1' />)}
+        {!isTablet && (
+          <Box onClick={() => {
+            if (connectionStatus !== 'connected') {
+              trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'header' });
+            }
+          }}>
+            <PushUniversalAccountButton uid='wallet1' />
+          </Box>
+        )}
 
         {isLaptop &&
           (<Box

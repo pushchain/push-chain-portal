@@ -23,9 +23,9 @@ import appConfig from "../../../config";
 
 const firebaseApp = getApps().length === 0 ? initializeApp(appConfig.firebaseConfig) : getApps()[0];
 import { parseCAIP, walletToFullCAIP10 } from "../../../helpers/web3helper";
+import { trackEvent } from "../../../helpers/analytics";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
-import { WalletChainType } from "../utils/wallet";
 
 export type UseTwitterVerifyParams = {
   activityTypeId: string;
@@ -69,6 +69,7 @@ const useVerifyTwitter = ({
   const handleTwitterVerification = (userId: string) => {
     setUpdatedId(userId);
     setVerifyingTwitter(true);
+    trackEvent('sybil_verify_twitter_clicked', { event_category: 'verification' });
 
     handleVerify(userId);
   };
@@ -140,67 +141,21 @@ const useVerifyTwitter = ({
         const twitterHandle = (userTwitterDetails as any)?.reloadUserInfo
           ?.screenName;
 
-        // let verificationProof;
         const messageToSend: Record<string, string | undefined> = {
           twitter: twitterHandle,
         };
-
-        // const isSolana = chainId == WalletChainType.SOLANA;
-
-        // if (isSolana) {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessageWithSolana({
-        //     twitter: twitterHandle,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingTwitter(false);
-        //     return;
-        //   }
-
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // } else {
-        //   const {
-        //     signature,
-        //     messageToSend: signedMessage,
-        //     error,
-        //   } = await signMessage({
-        //     twitter: twitterHandle,
-        //   });
-
-        //   if (error || !signature) {
-        //     console.log(error);
-        //     setErrorMessage(error);
-        //     setVerifyingTwitter(false);
-        //     return;
-        //   }
-
-        //   verificationProof = signature;
-        //   messageToSend = signedMessage;
-        // }
-
-        // if (!verificationProof) {
-        //   setErrorMessage('Invalid Verification Proof');
-        //   setVerifyingTwitter(false);
-        // }
 
         claimRewardsActivity(
           {
             userId: updatedId || (userId as string),
             activityTypeId,
             data: messageToSend,
-            // verificationProof,
           },
           {
             onSuccess: (response) => {
               if (response.data.status === "COMPLETED") {
                 setTwitterActivityStatus("Claimed");
+                trackEvent('sybil_verify_twitter_completed', { event_category: 'verification' });
                 refetchActivity();
                 refetchUserDetails();
                 setVerifyingTwitter(false);

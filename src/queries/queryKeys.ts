@@ -54,3 +54,7 @@ export const nextReshuffleFee = "nextReshuffleFee";
 export const userCultStatus = "userCultStatus";
 export const cultLeaderboard = "cultLeaderboard";
 export const sybilStatus = "sybilStatus";
+export const verifySybilWallet = "verifySybilWallet";
+export const pcTokenBalance = "pcTokenBalance";
+export const userLevelConfig = "userLevelConfig";
+export const questActivities = "questActivities";

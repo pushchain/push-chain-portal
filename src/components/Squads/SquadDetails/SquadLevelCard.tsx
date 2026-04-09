@@ -1,66 +1,17 @@
 import { css } from "styled-components"
 import { Box, ProgressBar, RewardsStarGradient, Text } from "../../../blocks"
-
-const squadLevels = [
-  { level: 1, totalXPRequired: 0 },
-  { level: 2, totalXPRequired: 2000 },
-  { level: 3, totalXPRequired: 10000 },
-  { level: 4, totalXPRequired: 35000 },
-  { level: 5, totalXPRequired: 75000 },
-  { level: 6, totalXPRequired: 115000 },
-  { level: 7, totalXPRequired: 160000 },
-  { level: 8, totalXPRequired: 215000 },
-  { level: 9, totalXPRequired: 280000 },
-  { level: 10, totalXPRequired: 350000 },
-];
-
-const MAX_LEVEL = squadLevels[squadLevels.length - 1].level;
-
-const getLevelProgress = (level: number, totalXp: number) => {
-  const isMaxLevel = level >= MAX_LEVEL;
-
-  const currentLevelData = squadLevels.find((l) => l.level === level);
-  const currentLevelXP = currentLevelData?.totalXPRequired ?? 0;
-
-  if (isMaxLevel) {
-    return {
-      xpInLevel: totalXp - currentLevelXP,
-      xpNeededForLevel: 0,
-      progressPercent: 100,
-      nextLevel: null,
-      isMaxLevel: true,
-    };
-  }
-
-  const nextLevelData = squadLevels.find((l) => l.level === level + 1);
-  const nextLevelXP = nextLevelData?.totalXPRequired ?? 0;
-
-  const xpNeededForLevel = nextLevelXP - currentLevelXP;
-  const xpInLevel = totalXp - currentLevelXP;
-  const progressPercent = xpNeededForLevel > 0
-    ? Math.min((totalXp / xpNeededForLevel) * 100, 100)
-    : 0;
-
-  return {
-    xpInLevel,
-    xpNeededForLevel,
-    progressPercent,
-    nextLevel: level + 1,
-    isMaxLevel: false,
-  };
-};
+import { getSquadLevelProgress } from "../utils/squadLevelConfig";
 
 type SquadLevelCardProps = {
   squadName: string;
-  level: number;
   totalXp: number;
 }
 
 
-export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProps) => {
-  const { xpNeededForLevel, progressPercent, isMaxLevel } = getLevelProgress(level, totalXp);
+export const SquadLevelCard = ({ squadName, totalXp }: SquadLevelCardProps) => {
+  const { level, xpInLevel, xpNeededForLevel, progressPercent, isMaxLevel } = getSquadLevelProgress(totalXp);
 
-  const remainingXP = xpNeededForLevel - totalXp;
+  const remainingXP = xpNeededForLevel - xpInLevel;
 
 
   return (
@@ -95,10 +46,17 @@ export const SquadLevelCard = ({ squadName, level, totalXp }: SquadLevelCardProp
           alignItems="center"
           justifyContent="center"
           gap="spacing-xxs"
+          css={css`min-width: 0;`}
         >
           <Text
             variant="h4-semibold"
-            css={css`color: rgba(255, 255, 255, 0.75);`}
+            css={css`
+              color: rgba(255, 255, 255, 0.75);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              max-width: 20ch;
+            `}
           >
             {squadName}
           </Text>

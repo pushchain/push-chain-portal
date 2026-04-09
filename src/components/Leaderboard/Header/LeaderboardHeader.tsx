@@ -3,7 +3,7 @@
 import React, { FC } from "react";
 import { css } from "styled-components";
 
-import { Box, Text } from "../../../blocks";
+import { Box, GlowStreaks, Text } from "../../../blocks";
 import { device } from "../../../config/globals";
 
 const LeaderboardHeader: FC = ({ title }) => {
@@ -13,6 +13,7 @@ const LeaderboardHeader: FC = ({ title }) => {
       display="flex"
       justifyContent="space-between"
       alignItems="center"
+      position="relative"
       width="100%"
       flexDirection={{ initial: "column", tb: "column" }}
       css={css`
@@ -21,8 +22,31 @@ const LeaderboardHeader: FC = ({ title }) => {
             background: #F1D5FF;
             padding: 50px 0px;
             box-sizing: border-box;
+            overflow: hidden;
         `}
     >
+      <Box css={css`
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        pointer-events: none;
+        z-index: 0;
+      `}>
+        <Box css={css`position: absolute; bottom: 0; left: -150px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: -100px; left: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+
+        <Box css={css`position: absolute; bottom: 0; left: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: flex-end;`}>
+          <GlowStreaks />
+        </Box>
+      </Box>
+
       <Text css={css`
         background: linear-gradient(180deg, #000 29.25%, #7D238C 75%);
         background-clip: text;
@@ -34,6 +58,8 @@ const LeaderboardHeader: FC = ({ title }) => {
         font-style: normal;
         font-weight: 700;
         line-height: 48px;
+        position: relative;
+        z-index: 1;
         `}>
           {title || `Top the Leaderboards`}
       </Text>
@@ -41,6 +67,8 @@ const LeaderboardHeader: FC = ({ title }) => {
       <Text variant="h4-regular" textAlign="center" css={css`
             width: 660px;
             color: #000;
+            position: relative;
+            z-index: 1;
 
             @media ${device.tablet} {
                 width: 100%;

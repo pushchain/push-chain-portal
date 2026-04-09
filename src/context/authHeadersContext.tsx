@@ -1,12 +1,21 @@
-// AuthHeadersContext.tsx
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
-import { usePushWalletContext } from "@pushchain/ui-kit";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+  useEffect,
+} from "react";
+import { usePushChainClient, usePushWalletContext } from "@pushchain/ui-kit";
+
 import { useSignMessageWithEthereum } from "../components/Rewards/hooks/useSignMessage";
 import { useSignMessageWithSolana } from "../components/Rewards/hooks/useSignMessageWithSolana";
-import { AuthHeaders, useGetSeasonThreeUserByWallet } from "../queries";
+import { useSignPushMessage } from "../components/Rewards/hooks/useSignPushMessage";
+import { AuthHeaders } from "../queries";
 import { parseCAIP, walletToFullCAIP10 } from "../helpers/web3helper";
 import { WalletChainType } from "../components/Rewards/utils/wallet";
 import { FLAGS } from "../config/flags";
+import { useLocation } from "react-router-dom";
 
 const AUTH_HEADERS_KEY = "push_auth_headers";
 
@@ -15,18 +24,16 @@ const getStoredAuthHeaders = (walletAddress: string): AuthHeaders | null => {
     const stored = sessionStorage.getItem(AUTH_HEADERS_KEY);
     if (!stored) return null;
     const parsed = JSON.parse(stored);
-    if (parsed.walletAddress?.includes(walletAddress)) {
-      return parsed;
-    }
+    if (parsed.walletAddress?.includes(walletAddress)) return parsed;
     return null;
   } catch {
     return null;
   }
 };
 
-const storeAuthHeaders = (authHeaders: AuthHeaders) => {
+const storeAuthHeaders = (headers: AuthHeaders) => {
   try {
-    sessionStorage.setItem(AUTH_HEADERS_KEY, JSON.stringify(authHeaders));
+    sessionStorage.setItem(AUTH_HEADERS_KEY, JSON.stringify(headers));
   } catch (err) {
     console.error("Failed to store auth headers:", err);
   }
@@ -42,8 +49,10 @@ const clearStoredAuthHeaders = () => {
 
 type AuthHeadersContextType = {
   authHeaders: AuthHeaders | undefined;
+  getAuthHeaders: () => Promise<AuthHeaders | null>;
+  /** True while the signing prompt is active. */
   isSigningMessage: boolean;
-  hasSigned: boolean;
+  /** Clear auth (e.g. on disconnect). */
   clearAuthHeaders: () => void;
 };
 
@@ -52,38 +61,34 @@ const AuthHeadersContext = createContext<AuthHeadersContextType | null>(null);
 export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
   const [authHeaders, setAuthHeaders] = useState<AuthHeaders | undefined>();
   const [isSigningMessage, setIsSigningMessage] = useState(false);
-  const hasAttemptedSign = useRef(false);
+  const location = useLocation();
 
-  const { universalAccount } = usePushWalletContext('wallet1');
+  const { universalAccount, connectionType } = usePushWalletContext("wallet1");
+  const { pushChainClient } = usePushChainClient('wallet1');
   const { signMessage: signMessageEthereum } = useSignMessageWithEthereum();
   const { signMessage: signMessageSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessagePush } = useSignPushMessage();
+
+  const isPushSocialWallet = connectionType === 'social';
 
   const walletAddress = universalAccount?.address;
   const chain = universalAccount?.chain;
-  const { chainId } = parseCAIP(chain);
+  const isSolana = chain
+    ? parseCAIP(chain).chainId === WalletChainType.SOLANA
+    : false;
 
-  const isSolana = chainId === WalletChainType.SOLANA;
-  const signMessage = isSolana ? signMessageSolana : signMessageEthereum;
+  const caip10WalletAddress =
+    universalAccount?.address && universalAccount?.chain
+      ? walletToFullCAIP10(universalAccount.address, universalAccount.chain)
+      : null;
 
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
+   const isSignerReady = !!pushChainClient?.universal;
 
-  const { data: userDetails } = useGetSeasonThreeUserByWallet({
-    walletAddress: caip10WalletAddress,
-  });
-
-  const hasSigned = !!authHeaders;
-
-  // Load from sessionStorage on wallet connect
+  // Restore from sessionStorage on wallet-connect
   useEffect(() => {
     if (walletAddress) {
       const stored = getStoredAuthHeaders(walletAddress);
-      if (stored) {
-        setAuthHeaders(stored);
-        hasAttemptedSign.current = true;
-      }
+      if (stored) setAuthHeaders(stored);
     }
   }, [walletAddress]);
 
@@ -92,61 +97,88 @@ export const AuthHeadersProvider = ({ children }: { children: ReactNode }) => {
     if (!universalAccount) {
       setAuthHeaders(undefined);
       clearStoredAuthHeaders();
-      hasAttemptedSign.current = false;
     }
   }, [universalAccount]);
 
-  useEffect(() => {
-    if (!userDetails) return;
-    if (!universalAccount) return;
-    if (authHeaders) return;
-    if (hasAttemptedSign.current) return;
-    // no signings needed for cult
-    if (FLAGS.CULT) return;
+  const getAuthHeaders = async (): Promise<AuthHeaders | null> => {
 
-    hasAttemptedSign.current = true;
+    if (walletAddress) {
+      const stored = getStoredAuthHeaders(walletAddress);
+      if (stored) {
+        setAuthHeaders(stored);
+        return stored;
+      }
+    }
 
-    const signOnce = async () => {
+    if (!universalAccount || !caip10WalletAddress) return null;
+    if (FLAGS.CULT) return null;
+    if (location.pathname === '/discord/verification') return null;
+
+
+    const signFn = isPushSocialWallet
+      ? signMessagePush
+      : isSolana
+        ? signMessageSolana
+        : signMessageEthereum;
+
       setIsSigningMessage(true);
+
       try {
-        const { signature, messageToSend, messageToSign, error } = await signMessage();
-        if (error || !signature) return;
+        const { signature, messageToSend, messageString, error } =
+          await signFn();
 
-        const messagePayload = isSolana ? messageToSign : messageToSend;
-        if (!messagePayload) return;
+        if (error || !signature) return null;
 
-        const newAuthHeaders: AuthHeaders = {
-          message: messagePayload as AuthHeaders['message'],
+        const messagePayload = isPushSocialWallet
+          ? messageToSend
+          : isSolana
+            ? messageString
+            : messageToSend;
+
+        if (!messagePayload) return null;
+
+        const newHeaders: AuthHeaders = {
+          message: messagePayload as AuthHeaders["message"],
           signature,
           walletAddress: caip10WalletAddress,
         };
 
-        setAuthHeaders(newAuthHeaders);
-        storeAuthHeaders(newAuthHeaders);
+
+        setAuthHeaders(newHeaders);
+        storeAuthHeaders(newHeaders);
+
+        return newHeaders;
       } catch (err) {
-        console.error("Failed to sign:", err);
+        return null;
       } finally {
         setIsSigningMessage(false);
       }
-    };
+  }
 
-    signOnce();
-  }, [userDetails, universalAccount, authHeaders, signMessage, isSolana, caip10WalletAddress]);
+  // Auto-sign on wallet connect so authHeaders is ready before user interaction
+  // useEffect(() => {
+  //     if (!walletAddress || FLAGS.CULT) return;
+  //     if (location.pathname === '/discord/verification') return
+  //     if (!isSignerReady) return;
+  //     if (authHeaders) return;
+
+  //     const stored = getStoredAuthHeaders(walletAddress);
+  //     if (stored) {
+  //       setAuthHeaders(stored);
+  //       return;
+  //     }
+  //     getAuthHeaders();
+  //   }, [walletAddress, isSignerReady]);
 
   const clearAuthHeaders = useCallback(() => {
     setAuthHeaders(undefined);
     clearStoredAuthHeaders();
-    hasAttemptedSign.current = false;
   }, []);
+
 
   return (
     <AuthHeadersContext.Provider
-      value={{
-        authHeaders,
-        isSigningMessage,
-        hasSigned,
-        clearAuthHeaders,
-      }}
+      value={{ authHeaders, getAuthHeaders, isSigningMessage, clearAuthHeaders }}
     >
       {children}
     </AuthHeadersContext.Provider>
