@@ -13,6 +13,7 @@ import { useLocation } from "react-router-dom";
 import { trackEvent } from "../../../helpers/analytics";
 import { FAILED_CHECK_MESSAGES } from "../utils/sybilCheckMessages";
 import { useLinkedWallet } from "../../../context/linkedWalletContext";
+import { WalletChainType } from "../utils/wallet";
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
 
@@ -44,6 +45,8 @@ export const useUnverifiedStateLogic = () => {
   const { refetchSybilStatus } = useRewardStatus();
   const { data: linkedWalletData, handleLinkedWalletConnection, setData, handleLogOut } = useLinkedWallet();
   const { chainId: linkedChainId } = parseCAIP(linkedWalletData?.account?.chain);
+  const isSolana = linkedChainId === WalletChainType.SOLANA;
+
 
   const location = useLocation();
 
@@ -126,11 +129,13 @@ export const useUnverifiedStateLogic = () => {
     );
   };
 
+  const isLinkedWalletReady = !!linkedWalletData?.signature && !!linkedWalletData?.account?.address;
+
   // Push wallet user → pushWalletSybilCheck (uses linked wallet)
   const runPushCheck = async () => {
     setIsVerifying(true);
     const headers = authHeaders ?? (await getAuthHeaders());
-    if (!linkedWalletData?.account?.address || !headers) {
+    if (!isLinkedWalletReady || !headers) {
       clearSybil();
       setIsVerifying(false);
       return;
@@ -141,7 +146,7 @@ export const useUnverifiedStateLogic = () => {
         address: linkedWalletData.account.address,
         authHeaders: headers,
         ...(linkedWalletData.signature && { verificationProof: linkedWalletData.signature }),
-        ...(linkedWalletData.messageToSend && { message: linkedWalletData.messageToSend }),
+        ...(linkedWalletData.messageToSend && { message: isSolana ? linkedWalletData?.messageString : linkedWalletData.messageToSend }),
         ...(linkedChainId && { chainId: linkedChainId }),
       },
       {
@@ -151,13 +156,17 @@ export const useUnverifiedStateLogic = () => {
     );
   };
 
-  console.log(linkedWalletData)
+  // If iframe returned an error (address but no signature), clear stale data
+  useEffect(() => {
+    if (linkedWalletData?.error && !linkedWalletData?.signature) {
+      setData(null);
+    }
+  }, [linkedWalletData]);
 
   // Auto-trigger push check when linkedWalletData arrives from iframe
   useEffect(() => {
-    if (!linkedWalletData?.signature) return;
+    if (!isLinkedWalletReady) return;
     if (sybilEligible !== null) return;
-    console.log(linkedWalletData, 'data data', sybilEligible)
     runPushCheck();
   }, [linkedWalletData]);
 
@@ -180,7 +189,7 @@ export const useUnverifiedStateLogic = () => {
     setErrorMessage("");
     trackEvent('sybil_verify_wallet_clicked', { event_category: 'verification', event_label: isPushWalletUser ? 'push_wallet' : 'evm_wallet' });
     if (isPushWalletUser) {
-      if (!linkedWalletData?.account?.address) {
+      if (!isLinkedWalletReady) {
         handleLinkedWalletConnection();
         return;
       }

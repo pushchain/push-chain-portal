@@ -33,7 +33,7 @@ export const LinkedWalletProvider = ({ children }: { children: React.ReactNode }
       try {
         iframeRef.current.contentWindow.postMessage(
           message,
-          "https://portal-link.push.org//",
+          "https://portal-link.push.org/", // TODO: Replace with actual domain
         );
       } catch (error) {
         console.error('Error sending message to push wallet tab:', error);
@@ -96,7 +96,7 @@ export const LinkedWalletProvider = ({ children }: { children: React.ReactNode }
         `}
       >
         <iframe
-          src={`http://portal-link.push.org?app=${window.location.origin}`}
+          src={`https://portal-link.push.org?app=${window.location.origin}`}
           allow="clipboard-write; clipboard-read; publickey-credentials-create; publickey-credentials-get; display-capture; *"
           ref={iframeRef}
           style={{

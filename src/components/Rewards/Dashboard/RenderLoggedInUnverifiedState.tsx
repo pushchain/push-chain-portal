@@ -218,7 +218,7 @@ export const RenderLoggedInUnverifiedState = () => {
               sybilEligible={sybilEligible}
               isVerifying={isVerifying}
               isPushWalletUser={isPushWalletUser}
-              hasLinkedAccount={!!linkedWalletData?.account?.address}
+              hasLinkedAccount={!!linkedWalletData?.signature && !!linkedWalletData?.account?.address}
               verify={verify}
               sybilStatusData={sybilStatusData}
             />
