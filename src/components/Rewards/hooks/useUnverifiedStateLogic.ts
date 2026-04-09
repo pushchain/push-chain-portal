@@ -97,6 +97,13 @@ export const useUnverifiedStateLogic = () => {
   );
 
   const handleSybilError = (error: any) => {
+    const errorCode = error?.response?.data?.error?.code;
+    if (errorCode === 'WALLET_ALREADY_EXISTS') {
+      setErrorMessage('The account is already used by another wallet');
+      saveResult(false);
+      return;
+    }
+
     const failedChecks: string[] = error?.response?.data?.error?.failedChecks || error?.response?.data?.data?.summary?.failedChecks || [];
     if (failedChecks.length > 0) {
       const messages = failedChecks?.map((check) => FAILED_CHECK_MESSAGES[check] || check);
