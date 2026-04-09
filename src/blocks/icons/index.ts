@@ -1,4 +1,5 @@
 export * from "./IconWrapper";
+
 export * from "./Icons.types";
 
 export { default as Add } from "./components/Add";
@@ -94,26 +95,33 @@ export { default as ExternalLink } from "./components/ExternalLink";
 export { default as Faucet } from "./components/Faucet";
 
 export { default as Front } from "./components/Front";
+
 export { default as FillCircle } from "./components/FillCircle";
 
 export { default as Gif } from "./components/Gif";
 
 export { default as InfoFilled } from "./components/InfoFilled";
+
 export { default as Image } from "./components/Image";
 
 export { default as Governance } from "./components/Governance";
+
 export { default as GovernanceFilled } from "./components/GovernanceFilled";
 
 export { default as Group } from "./components/Group";
+
 export { default as GroupFilled } from "./components/GroupFilled";
 
 export { default as InboxBell } from "./components/InboxBell";
+
 export { default as EmptyInbox } from "./components/EmptyInbox";
+
 export { default as InboxBellFilled } from "./components/InboxBellFilled";
 
 export { default as Info } from "./components/Info";
 
 export { default as KebabMenuVertical } from "./components/KebabMenuVertical";
+
 export { default as KebabMenuHorizontal } from "./components/KebabMenuHorizontal";
 
 export { default as Leaderboard } from "./components/Leaderboard";
@@ -124,17 +132,20 @@ export { default as Lock } from "./components/Lock";
 
 export { default as LockFilled } from "./components/LockFilled";
 
-
 export { default as Logout } from "./components/Logout";
 
 export { default as MaximizeRight } from "./components/MaximizeRight";
+
 export { default as MaximizeLeft } from "./components/MaximizeLeft";
 
 export { default as MegaPhone } from "./components/MegaPhone";
 
+export { default as Minus } from "./components/Minus";
+
 export { default as Meteor } from "./components/Meteor";
 
 export { default as Moon } from "./components/Moon";
+
 export { default as MoonFilled } from "./components/MoonFilled";
 
 export { default as NFTGated } from "./components/NFTGated";
@@ -152,12 +163,16 @@ export { default as OptimismMonotone } from "./components/OptimismMonotone";
 export { default as Pencil } from "./components/Pencil";
 
 export { default as PlusCircle } from "./components/PlusCircle";
+
 export { default as PlusCircleFilled } from "./components/PlusCircleFilled";
 
 export { default as PlusSquare } from "./components/PlusSquare";
+
 export { default as PlusSquareFilled } from "./components/PlusSquareFilled";
 
 export { default as PushPass } from "./components/PushPass";
+
+export { default as PushIcon } from "./components/PushIcon";
 
 export { default as PrevIconSlider } from "./components/PrevIconSlider";
 
@@ -168,6 +183,7 @@ export { default as PolygonMonotone } from "./components/PolygonMonotone";
 export { default as PushMonotone } from "./components/PushMonotone";
 
 export { default as PublicChat } from "./components/PublicChat";
+
 export { default as PrivateChat } from "./components/PrivateChat";
 
 export { default as QRCode } from "./components/QRCode";
@@ -175,6 +191,7 @@ export { default as QRCode } from "./components/QRCode";
 export { default as Ranking } from "./components/Ranking";
 
 export { default as ReceiveNotification } from "./components/ReceiveNotification";
+
 export { default as ReceiveNotificationFilled } from "./components/ReceiveNotificationFilled";
 
 export { default as Refresh } from "./components/Refresh";
@@ -218,8 +235,11 @@ export { default as Stopwatch } from "./components/Stopwatch";
 export { default as Swap } from "./components/Swap";
 
 export { default as Tick } from "./components/Tick";
+
 export { default as TickCircleFilled } from "./components/TickCircleFilled";
+
 export { default as TickDecoratedCircleFilled } from "./components/TickDecoratedCircleFilled";
+
 export { default as Tutorial } from "./components/Tutotial";
 
 export { default as UserFilled } from "./components/UserFilled";
@@ -227,15 +247,19 @@ export { default as UserFilled } from "./components/UserFilled";
 export { default as UserSwitch } from "./components/UserSwitch";
 
 export { default as VideoCamera } from "./components/VideoCamera";
+
 export { default as VideoCameraFilled } from "./components/VideoCameraFilled";
 
 export { default as VideoCameraSlash } from "./components/VideoCameraSlash";
+
 export { default as VideoCameraslashFilled } from "./components/VideoCameraSlashFilled";
 
 export { default as WarningCircleFilled } from "./components/WarningCircleFilled";
 
 export { default as Waveform } from "./components/Waveform";
+
 export { default as WaveformFilled } from "./components/WaveformFilled";
 
 export { default as YieldFarming } from "./components/YieldFarming";
+
 export { default as YieldFarmingFilled } from "./components/YieldFarmingFilled";

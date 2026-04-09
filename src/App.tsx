@@ -36,6 +36,7 @@ import { Sidebar } from "./components/sidebar";
 import Header from "./structure/Header";
 import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
+import PreMigratePage from "./pages/PreMigratePage";
 import AdminPage from "./pages/AdminPage";
 import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
@@ -151,8 +152,13 @@ const AppContent = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const hideSideBar = location.pathname === "/discord/verification" || location.pathname === "/admin/controls";
-  const isAdminPage = location.pathname === "/admin/controls";
+  const hideSideBar =
+    location.pathname === "/discord/verification" ||
+    location.pathname === "/admin/controls" ||
+    location.pathname === "/pre-migrate";
+  const hideBackgroundOnThesePages =
+    location.pathname === "/admin/controls" ||
+    location.pathname === "/pre-migrate";
 
   return (
     <Box
@@ -161,7 +167,7 @@ const AppContent = () => {
       height="100vh"
       css={css``}
     >
-      {!isAdminPage &&
+      {!hideBackgroundOnThesePages &&
         (<Box
         css={css`
           position: fixed;
@@ -207,9 +213,10 @@ const AppContent = () => {
         >
           <Routes>
             {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
+             <Route path="/admin/controls" element={<AdminPage />} />
+             <Route path="/pre-migrate" element={<PreMigratePage />} />
             {FLAGS.SEASON_THREE && <>
               <Route path="/" element={<Navigate to="/rewards" replace />} />
-              <Route path="/admin/controls" element={<AdminPage />} />
               <Route path="/rewards" element={<RewardsPage />} />
               <Route path="/rewards/pushpass" element={<PushPassPage />} />
               <Route path="/rewards/squads" element={<SquadsPage />} />
@@ -220,7 +227,6 @@ const AppContent = () => {
               <Route path="/rewards/leaderboard-s1" element={<LeaderBoardPage />} />
             </>}
             {FLAGS.CULT && <>
-              <Route path="/admin/controls" element={<AdminPage />} />
               <Route path="/" element={<S3CountdownPage />} />
               <Route path="/cult" element={<CultPage />} />
               {/*TODO: comment out for now */}
