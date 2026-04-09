@@ -284,10 +284,10 @@ const AppContent = () => {
                   <Route path="/" element={<S3CountdownPage />} />
                   <Route path="/cult" element={<CultPage />} />
                   {/*TODO: comment out for now */}
-                  <Route
+                  {/*<Route
                     path="/cult/leaderboard"
                     element={<CultLeaderboardPage />}
-                  />
+                  />*/}
                 </>
               )}
               <Route path="*" element={<NotFound />} />

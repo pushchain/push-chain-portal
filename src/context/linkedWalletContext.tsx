@@ -33,7 +33,7 @@ export const LinkedWalletProvider = ({ children }: { children: React.ReactNode }
       try {
         iframeRef.current.contentWindow.postMessage(
           message,
-          "https://portal-link.push.org/", // TODO: Replace with actual domain
+          "https://portal-link.push.org/",
         );
       } catch (error) {
         console.error('Error sending message to push wallet tab:', error);
