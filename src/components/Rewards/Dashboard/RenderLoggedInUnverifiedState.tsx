@@ -39,12 +39,12 @@ const ACTIVITY_LIST = [
 
 const WALLET_ACTIVITY = {
   icon: "link_an_active_wallet",
-  activityTitle: "Link an active wallet ($15+ balance & history) to verify",
+  activityTitle: "Link an active wallet ($5+ balance & history) to verify",
 } as const;
 
 const EVM_WALLET_ACTIVITY = {
   icon: "link_an_active_wallet",
-  activityTitle: "Verify your wallet ($15+ balance & on-chain transaction history)",
+  activityTitle: "Verify your wallet ($5+ balance & on-chain transaction history)",
 } as const;
 
 const WalletVerificationAction = ({
