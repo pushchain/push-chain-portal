@@ -96,7 +96,7 @@ export const PushPassItem = () => {
   const nextFeeType = reshuffleFeeData?.nextReshuffleFeeType;
   const nextFee = reshuffleFeeData?.nextReshuffleFee;
 
-  const PC_TOKEN_RECIPIENT = "0x54cd69927A869DDCb6786bf5C2C82a93790D3";
+  const PC_TOKEN_RECIPIENT = "0x54cd69927A869DDCb6786bf5C2C82a93790D321E";
 
   const handleOpenPass = async () => {
     if (!caip10WalletAddress) return;

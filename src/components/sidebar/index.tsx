@@ -69,7 +69,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
 
   const isCultUser = userCultStatus?.data?.isCultMember;
 
-  const showCultDashboard = isWalletConnected && isCultUser && isVerified;
+  const showCultDashboard = isWalletConnected && isCultUser;
 
   const getActiveItemId = (): string => {
     const path = location.pathname;
@@ -129,6 +129,12 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         label: 'Leaderboards',
         route: '/rewards/leaderboard'
       },
+      ...(showCultDashboard ? [{
+        id: 'cult',
+        icon: Cult,
+        label: 'Cult',
+        route: '/cult'
+      }] : []),
     ] : []),
 
     ...(FLAGS.CULT ? [
@@ -138,12 +144,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         label: 'Season 3',
         route: '/'
       },
-      {
-        id: 'cult',
-        icon: Cult,
-        label: 'Cult',
-        route: '/cult'
-      },
+
       // ...(showCultDashboard ? [{
       //   id: 'cult-leaderboard',
       //   icon: Ranking,
