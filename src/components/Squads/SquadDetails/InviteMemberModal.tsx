@@ -75,7 +75,8 @@ export const InviteMemberModal = ({ isOpen, onClose, squadId }: InviteMemberModa
                 onClose();
               },
               onError: (err: AxiosError<{ message?: string }>) => {
-                setError(err?.response?.data?.message || "Failed to send invite");
+                const response = err?.response?.data?.error || err?.response?.data?.message ;
+                setError(response || "Failed to send invite");
               },
             }
           );

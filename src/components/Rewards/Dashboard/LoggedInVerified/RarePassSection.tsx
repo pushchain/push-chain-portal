@@ -4,7 +4,7 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { Box, Text, ArrowRight, Link, Lock, Button, Skeleton } from '../../../../blocks';
 import { LockedPassCard } from './LockedPassCard';
-import { useGetCharacterInfo, useGetRarePassHistory, useGetSeasonThreeUserByWallet } from '../../../../queries';
+import { useGetCharacterInfo, useGetRarePassHistory, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { useNavigate } from 'react-router-dom';
 import OpenPassImage from '../../../../../static/assets/website/pushpass/OpenPass.webp';
@@ -36,12 +36,22 @@ export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => 
     userId: userDetails?.userId ?? '',
   });
 
+  const { data: bossQuestActivity } = useGetRewardsActivity(
+    { userId: userDetails?.userId as string, activityTypes: ['boss_hold_5_rare_passes'] },
+    { enabled: !!userDetails?.userId },
+  );
+
   const isLoading = isLoadingCharacters || isLoadingUserDetails || isLoadingHistory;
 
   const rareActiveCount = rarePassHistory?.summary?.currentBalance?.rareActiveCount ?? 0;
   const rareDormantCount = rarePassHistory?.summary?.currentBalance?.rareDormantCount ?? 0;
+  const rarePassesProgress = rareActiveCount + rareDormantCount;
+  const isBossQuestClaimed = (bossQuestActivity as any)?.boss_hold_5_rare_passes?.status === 'COMPLETED';
+
   const characters = userCharacterInfo?.characters || [];
   const unmintedCharacters = characters?.filter((c) => c.status === 'UNMINTED');
+  const userLevel = userDetails?.level ?? 0;
+
 
   const passes = [
     // Active rare passes — all openable
@@ -51,15 +61,43 @@ export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => 
       lockMessage: 'Open Pass',
     })),
 
-    // Dormant passes — locked until Level 25
-    ...Array.from({ length: rareDormantCount }, (_, index) => ({
-      id: rareActiveCount + unmintedCharacters.length + index + 1,
+
+    // Placeholder: "Unlock at Level 10" — hidden once user has dormant passes
+    ...(rareDormantCount === 0
+      ? [{
+          id: rareActiveCount + 1,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 10',
+        }]
+      : []),
+
+    // Placeholder: "Spin to Win"
+    {
+      id: rareActiveCount + rareDormantCount + 2,
       isLocked: true,
-      lockMessage: 'Unlocks at Lv. 25',
-    })),
+      lockMessage: 'Spin to Win',
+    },
+
+    // Placeholder: "Complete Boss Quest" — hidden once rarePassesProgress >= 5 and quest claimed
+    ...(rarePassesProgress < 5 || !isBossQuestClaimed
+      ? [{
+          id: rareActiveCount + rareDormantCount + 4,
+          isLocked: true,
+          lockMessage: 'Complete Boss Quest',
+        }]
+      : []),
+
+    // Placeholder: "Unlock at Level 50" — hidden once user reaches Level 50
+    ...(userLevel < 50
+      ? [{
+          id: rareActiveCount + rareDormantCount + 3,
+          isLocked: true,
+          lockMessage: 'Unlocks at Lv. 50',
+        }]
+      : []),
   ];
 
-  const displayPasses = passes.slice(0, 2);
+  const displayPasses = passes?.slice(0, 2);
 
   return (
     <Box
@@ -68,7 +106,6 @@ export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => 
       alignItems="flex-start"
       justifyContent="flex-end"
       padding={{ initial: "spacing-md", ml: "spacing-sm" }}
-      // height={{ initial: '374px' }}
       minHeight={{ tb: '300px' }}
       overflow='hidden'
       position='relative'
