@@ -10,9 +10,12 @@ import { trackEvent } from "../../helpers/analytics";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardStatus } from "../../context/rewardStatusContext";
+import { device } from "../../config/globals";
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
+  const isTablet = useMediaQuery(device.tablet)
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
 
@@ -50,6 +53,11 @@ export const RewardsUpdatedDashboard = () => {
         max-height: 333px;
         background: #F1D5FF;
         box-sizing: border-box;
+
+        @media ${device.tablet}{
+            min-height: fit-content;
+            min-height: fit-content;
+        }
       `}
     >
 
@@ -69,19 +77,23 @@ export const RewardsUpdatedDashboard = () => {
         >
         </Box>
 
-      <Box
-          css={css`
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          `}
-        >
-          <GlowStreaks />
-        </Box>
+
+
+        {!isTablet &&
+        <>
+          <Box
+              css={css`
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 0;
+              `}
+            >
+              <GlowStreaks />
+          </Box>
 
         <Box
             css={css`
@@ -110,7 +122,7 @@ export const RewardsUpdatedDashboard = () => {
             >
               <GlowStreaks />
          </Box>
-
+        </>}
 
         <Box
         display="flex"
