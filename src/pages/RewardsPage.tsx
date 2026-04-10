@@ -11,7 +11,7 @@ const RewardsPage: React.FC = () => {
         <meta property="og:title" content="Push Rewards" />
         <meta
           property="og:description"
-          content="Earn rewards on Push Protocol"
+          content="Earn rewards on Push Chain"
         />
         <meta
           property="og:image"
@@ -27,7 +27,7 @@ const RewardsPage: React.FC = () => {
         <meta name="twitter:title" content="Push Rewards" />
         <meta
           name="twitter:description"
-          content="Earn rewards on Push Protocol"
+          content="Earn rewards on Push Chain"
         />
       </Helmet>
       <RewardsWrapper>
