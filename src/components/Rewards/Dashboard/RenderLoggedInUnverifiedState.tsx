@@ -39,7 +39,7 @@ const ACTIVITY_LIST = [
 
 const WALLET_ACTIVITY = {
   icon: "link_an_active_wallet",
-  activityTitle: "Link an active wallet ($5+ balance & history) to verify",
+  activityTitle: "Link an active wallet with ~$5 Native Token Balance, 7 day history",
 } as const;
 
 const EVM_WALLET_ACTIVITY = {
