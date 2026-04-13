@@ -106,7 +106,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     >
       <Box
         display="flex"
-        flexDirection="row"
+        flexDirection={{ initial: "row", tb: "column" }}
+        gap="spacing-xs"
         width="-webkit-fill-available"
         justifyContent="space-between"
       >
@@ -229,6 +230,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
           }
 
           @media (max-width: 700px) {
+            margin-top: 32px;
             grid-template-columns: repeat(2, minmax(0, 1fr));
 
             .item:last-child {
