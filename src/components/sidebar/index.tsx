@@ -25,7 +25,7 @@ import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { usePushWalletContext } from '@pushchain/ui-kit';
+import { PushUniversalAccountButton, usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 import { useGetUserCultStatus } from '../../queries';
 import { useActivityContext } from '../../context/activityContext';
@@ -248,12 +248,14 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         {isLaptop && (
           <Box
             display="flex"
-            justifyContent="flex-end"
+            justifyContent="space-between"
+            alignItems="center"
             padding="spacing-none spacing-none spacing-xs spacing-none"
-            cursor="pointer"
-            onClick={onClose}
           >
-            <Cross size={24} color="icon-primary" />
+            <PushUniversalAccountButton uid='wallet1' />
+            <Box cursor="pointer" onClick={onClose}>
+              <Cross size={24} color="icon-primary" />
+            </Box>
           </Box>
         )}
 
