@@ -2,6 +2,8 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext, usePushChainClient } from "@pushchain/ui-kit";
 import { useNavigate, useParams } from "react-router-dom";
+import Lottie from "lottie-react";
+
 
 import { device } from "../../config/globals";
 import {
@@ -14,7 +16,6 @@ import {
 import { CharacterInfoResponse } from "../../queries/types/character";
 
 import OpenPassImage from "../../../static/assets/website/pushpass/OpenPass.webp";
-import { Alert, Back, Box, Button, Skeleton, Spinner, Text, Twitter } from "../../blocks";
 import { Image } from "../../css/SharedStyling";
 import { CharacterImage } from "./CharacterImage";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
@@ -22,7 +23,9 @@ import { trackEvent } from "../../helpers/analytics";
 
 import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
 import RarePassAnimation from "../../../static/assets/website/pushpass/rare-glow.json";
-import Lottie from "lottie-react";
+import { Alert, Back, Box, Button, Link,Skeleton, Spinner, Text, Twitter } from "../../blocks";
+import { parseCharacterId, getImagePath } from "./CharacterImage";
+
 
 
 
@@ -98,6 +101,64 @@ export const PushPassItem = () => {
 
   const PC_TOKEN_RECIPIENT = "0x54cd69927A869DDCb6786bf5C2C82a93790D321E";
 
+  const loadImage = (src: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+
+  const handleSharePass = async () => {
+    const traits = parseCharacterId(characterId as string);
+    if (!traits) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 496;
+    canvas.height = 636;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Draw background first
+    const bgImg = await loadImage(RarePassBg);
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+    // Draw character layers on top
+    const layers = [
+      getImagePath('Body', traits.body),
+      getImagePath('Head', traits.head),
+      getImagePath('Accessory', traits.accessory),
+      getImagePath('Headgear', traits.headgear),
+    ];
+
+    for (const src of layers) {
+      const img = await loadImage(src);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/png')
+    );
+    if (!blob) return;
+
+    const tweetText = `I just minted my Push Pass on @PushChain! Check it out 👇\n\n*Attach Image*`;
+
+    // Download the composited image
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'push-pass.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    // Open Twitter with pre-filled tweet
+    const encoded = encodeURIComponent(tweetText);
+    window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
+  };
+
   const handleOpenPass = async () => {
     if (!caip10WalletAddress) return;
     setGenerateError("");
@@ -132,7 +193,7 @@ export const PushPassItem = () => {
     setReshuffleError("");
 
     if (nextFeeType === 'tweet') {
-      const tweetText = encodeURIComponent("I just rerolled my Rare Pass on @pushchain! 🎲✨");
+      const tweetText = encodeURIComponent("I just rerolled my Rare Pass on @PushChain! 🎲✨");
       window.open(`https://x.com/intent/tweet?text=${tweetText}`, '_blank');
       trackEvent('rare_pass_reshuffle_tweet', { event_category: 'rarepass', event_label: characterId });
 
@@ -162,7 +223,7 @@ export const PushPassItem = () => {
           value: feeInWei,
         });
 
-        console.log(txResponse, 'txResponse');
+        // console.log(txResponse, 'txResponse');
 
         const data = await reshuffle({
           userWallet: caip10WalletAddress,
@@ -203,6 +264,7 @@ export const PushPassItem = () => {
   };
 
   return (
+    <>
     <Box
       padding="spacing-md"
       borderRadius="radius-md"
@@ -384,7 +446,7 @@ export const PushPassItem = () => {
                 -webkit-text-fill-color: transparent;
               `}
             >
-              {isMinted ? "Your Rare Pass" : "Your Rare Pass has been revealed!"}
+              {isMinted ? "Congratulations on your unique pass" : "Your Rare Pass has been revealed!"}
             </Text>
             <Text
               variant="bm-regular"
@@ -419,22 +481,6 @@ export const PushPassItem = () => {
             `}
           >
 
-            {/*<Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              css={css`
-                background: url(${RarePassBg}) center/cover;
-                width: 249px;
-                max-width: 100%;
-                height: 329px;
-                overflow: visible;
-              `}
-            >
-              <CharacterImage characterId={characterId} width={249} height={326} reflectionBg={`url(${RarePassBg}) center/cover`} />
-            </Box>*/}
-
-
             <Box
               display="flex"
               alignItems="center"
@@ -465,7 +511,29 @@ export const PushPassItem = () => {
               >
                 <CharacterImage characterId={characterId} width={248} height={328} reflectionBg={`url(${RarePassBg}) center/cover`} />
               </Box>
-            </Box>
+              </Box>
+
+              {isMinted && (
+                <Box
+                  width="100%"
+                  display="flex"
+                  justifyContent="center"
+                >
+                  <Button
+                    variant="primary"
+                    size="medium"
+                    leadingIcon={<Twitter width={20} height={20}  />}
+                    onClick={handleSharePass}
+                    css={css`
+                      min-width: 140px;
+                      z-index: 99;
+                    `}
+                  >
+                    Share
+                  </Button>
+                </Box>
+              )}
+
 
             {!isMinted && (
               <Box
@@ -528,5 +596,16 @@ export const PushPassItem = () => {
         </>
       )}
     </Box>
+
+
+    {!isMinted && <Box
+      width="100%"
+      padding="spacing-md spacing-none"
+    >
+      <Text
+        variant='h5-regular'
+        textAlign='center'>Not happy with the roll? Tweet something about Push Chain to Reroll the pass.</Text>
+    </Box>}
+    </>
   );
 };
