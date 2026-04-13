@@ -56,7 +56,7 @@ export const RewardsUpdatedDashboard = () => {
 
         @media ${device.tablet}{
             min-height: fit-content;
-            min-height: fit-content;
+            max-height: fit-content;
         }
       `}
     >
