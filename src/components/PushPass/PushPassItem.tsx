@@ -162,6 +162,8 @@ export const PushPassItem = () => {
           value: feeInWei,
         });
 
+        console.log(txResponse, 'txResponse');
+
         const data = await reshuffle({
           userWallet: caip10WalletAddress,
           characterId,
@@ -374,6 +376,7 @@ export const PushPassItem = () => {
           >
             <Text
               variant="h2-semibold"
+              textAlign="center"
               css={css`
                 background: linear-gradient(180deg, #fff 49.73%, #c968e7 100%);
                 background-clip: text;
@@ -385,13 +388,14 @@ export const PushPassItem = () => {
             </Text>
             <Text
               variant="bm-regular"
+              textAlign="center"
               css={css`
                 color: rgba(255, 255, 255, 0.75);
               `}
             >
               {isMinted
-                ? "This pass has been minted and locked forever."
-                : "HODL onto your passes until the burn event and be one of the lucky few to get Eternal Rewards*"}
+                ? "HODL onto your passes until the burn event and be one of the lucky few to get Eternal Rewards*"
+                : "You can confirm and claim or reroll for different traits"}
             </Text>
           </Box>
 
@@ -407,13 +411,15 @@ export const PushPassItem = () => {
             justifyContent="center"
             alignItems="center"
             width="100%"
-            gap="spacing-md"
             css={css`
-              margin: 40px 0px 60px 0px;
+              @media ${device.mobileL}{
+                  margin: 40px 0px 0px 0px;
+                  gap: 24px;
+              }
             `}
           >
 
-            <Box
+            {/*<Box
               display="flex"
               flexDirection="column"
               alignItems="center"
@@ -426,11 +432,10 @@ export const PushPassItem = () => {
               `}
             >
               <CharacterImage characterId={characterId} width={249} height={326} reflectionBg={`url(${RarePassBg}) center/cover`} />
-            </Box>
+            </Box>*/}
 
 
-            {/*TODO: test animations flow later*/}
-            {/*<Box
+            <Box
               display="flex"
               alignItems="center"
               justifyContent="center"
@@ -441,7 +446,7 @@ export const PushPassItem = () => {
               <Lottie
                 animationData={RarePassAnimation}
                 loop
-                style={{ width: '100%', margin: '-60px 0' }}
+                style={{ maxWidth: '450px', maxHeight: '450px' }}
               />
 
 
@@ -452,17 +457,15 @@ export const PushPassItem = () => {
                 position="absolute"
                 css={css`
                   background: url(${RarePassBg}) center/cover;
-                  width: 249px;
-                  height: 329px;
-                  overflow: hidden;
-
-                  top: 150px;
-
+                  width: 248px;
+                  max-width: 100%;
+                  height: 328px;
+                  overflow: visible;
                 `}
               >
-                <CharacterImage characterId={characterId} width={249} height={326} />
+                <CharacterImage characterId={characterId} width={248} height={328} reflectionBg={`url(${RarePassBg}) center/cover`} />
               </Box>
-            </Box>*/}
+            </Box>
 
             {!isMinted && (
               <Box
@@ -470,9 +473,6 @@ export const PushPassItem = () => {
                 flexDirection="column"
                 alignItems="center"
                 gap="spacing-sm"
-                css={css`
-                  margin-top: 24px;
-                `}
               >
                 <Skeleton isLoading={isFeeLoading} width="340px" height="40px" borderRadius="radius-xs">
                   <Box
