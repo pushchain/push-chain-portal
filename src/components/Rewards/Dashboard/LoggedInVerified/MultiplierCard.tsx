@@ -8,6 +8,12 @@ import TotalMultiplierBg from '../../../../../static/assets/website/rewards/tota
 import { device } from '../../../../config/globals';
 import { fadeInCss } from '../../utils/FadeIn';
 
+const formatTimeLeft = (ms: number): string => {
+  if (ms <= 0) return '0H';
+  const hours = Math.ceil(ms / 3600000);
+  return `${hours}H`;
+};
+
 export const MultiplierCard: FC = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
@@ -18,6 +24,28 @@ export const MultiplierCard: FC = () => {
   const { data: userDetails, isLoading } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   });
+
+  const now = new Date();
+
+  const permaBoostPercent = Math.round(((userDetails?.permaXPMultiplier ?? 1) - 1) * 100);
+
+  const activeBoosts = (userDetails?.xpTempBoosts ?? [])?.filter(
+    (b: { expiresAt: string }) => new Date(b.expiresAt) > now
+  );
+
+  const tempBoostPercent = Math.round(
+    activeBoosts?.reduce((sum: number, b: { amount: number }) => sum + b.amount, 0) * 100
+  );
+
+  const earliestExpiry = activeBoosts.length > 0
+    ? activeBoosts.reduce(
+        (earliest: Date, b: { expiresAt: string }) => {
+          const exp = new Date(b.expiresAt);
+          return exp < earliest ? exp : earliest;
+        },
+        new Date(activeBoosts[0].expiresAt)
+      )
+    : null;
 
   return (
     <Box
@@ -77,6 +105,16 @@ export const MultiplierCard: FC = () => {
                 `}>
           { userDetails?.permaMultiplier }x
         </Text>
+        {permaBoostPercent > 0 && (
+          <Text variant='h5-regular' color='#68FFB4'>
+            +{permaBoostPercent}% permanent
+          </Text>
+        )}
+        {tempBoostPercent > 0 && earliestExpiry && (
+          <Text variant='h5-regular' color='#68FFB4'>
+            +{tempBoostPercent}% for {formatTimeLeft(earliestExpiry.getTime() - now.getTime())}
+          </Text>
+        )}
         <Text variant="h5-semibold" color="text-tertiary">
           XP
           <br />

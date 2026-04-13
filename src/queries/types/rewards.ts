@@ -315,7 +315,9 @@ export type SeasonThreeUserByWalletResponse = {
   spinDate: string | null;
   totalSpins: number;
   permaMultiplier: number;
+  permaXPMultiplier: number;
   previousPermaMultiplier: number;
+  xpTempBoosts: number;
   tempMultiplier: number;
   hasEternalTorch: boolean;
   inviteCodes: number;
