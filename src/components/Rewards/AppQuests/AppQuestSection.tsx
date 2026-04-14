@@ -84,22 +84,26 @@ const AppQuestSection = () => {
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
     const map: Record<string, boolean> = {};
-    quests?.forEach((q) => {
-      const activityCompleted = activityStatuses?.[q.questId]?.status === 'COMPLETED';
-      if (activityCompleted) {
-        map[q.questId] = true;
-      } else if (q.frequency === 'REPEATABLE' && q.completed && q.completedAt) {
-        const timeSinceCompleted = Date.now() - new Date(q.completedAt).getTime();
-        map[q.questId] = timeSinceCompleted < ONE_WEEK_MS;
-      } else {
-        map[q.questId] = q.completed;
-      }
-    });
+    // disable completion status temp
+    // quests?.forEach((q) => {
+    //   const activityCompleted = activityStatuses?.[q.questId]?.status === 'COMPLETED';
+    //   if (activityCompleted) {
+    //     map[q.questId] = true;
+    //   } else if (q.frequency === 'REPEATABLE' && q.completed && q.completedAt) {
+    //     const timeSinceCompleted = Date.now() - new Date(q.completedAt).getTime();
+    //     map[q.questId] = timeSinceCompleted < ONE_WEEK_MS;
+    //   } else {
+    //     map[q.questId] = q.completed;
+    //   }
+    // });
     return map;
   };
 
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
   const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
+
+  const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -125,7 +129,7 @@ const AppQuestSection = () => {
               bgImage={lastOneBg}
               description="Complete quests on lastone.fun and claim to level up and earn rewards"
               resetTime={timeLeft}
-              quests={lastOneQuests?.data.quests}
+              quests={enabledLastOneQuests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
               refetchActivities={refetchAll}
@@ -143,7 +147,7 @@ const AppQuestSection = () => {
               bgImage={ramenBg}
               description="Complete quests on ramenfi.xyz and claim to level up and earn rewards"
               resetTime={timeLeft}
-              quests={ramenSwapQuests?.data.quests}
+              quests={enabledRamenSwapQuests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
               refetchActivities={refetchAll}
