@@ -16,6 +16,7 @@ import { useRewardStatus } from "../../context/rewardStatusContext";
 import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
 import { FALLBACK_LEVEL_CONFIG } from "./utils/levelConfig";
 import { fadeInCss } from "./utils/FadeIn";
+import { getLevelBadge } from "../../helpers/getLevelBadge";
 
 export const LevelUp = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,8 +39,8 @@ export const LevelUp = () => {
 
   const { data: getTokenBalance, isLoading: isLoadingPCTokens } = useGetPCTokenBalance(userDetails?.userId);
 
-    // TODO: fix for admin
-    // const { data: levelConfig } = useGetUserLevelConfig();
+  const { name: badgeName, Icon: BadgeIcon } = getLevelBadge(userDetails?.level);
+
 
     const canClaimPCTokens = getTokenBalance?.claimableTokens > 0 && !rewardsLocked;
     const isLoadingClaimButton = isLoadingPCTokens && isLockedStatusLoading;
@@ -110,7 +111,7 @@ export const LevelUp = () => {
 
       <Box>
           <Box display="flex" flexDirection="row" justifyContent="center" gap="spacing-xs" alignItems="center">
-          <LevelUpIcon />
+              {userDetails && <BadgeIcon />}
               <Skeleton isLoading={isLoading}>
                 <Text variant="h2-semibold">Lv. {levelProgress?.level} </Text>
               </Skeleton>
