@@ -127,10 +127,20 @@ const useVerifyRewards = ({
     }
 
     try {
+      const getClaimData = () => {
+        if (activityTypeId === 'lastone_share_bid_or_win_social') {
+          return { data: { status: 'success', description: 'User-shared text/reason' } };
+        }
+        if (skipVerification) {
+          return { data: {} };
+        }
+        return { data: messageToSend, verificationProof };
+      };
+
       const response = await claimRewardsActivity({
         userId: updatedId || (userId as string),
         activityTypeId,
-        ...(skipVerification ? { data: {}} : { data: messageToSend, verificationProof }),
+        ...getClaimData(),
       });
 
       if (response.data.status === "COMPLETED" || response?.status === "COMPLETED") {
