@@ -21,7 +21,9 @@ export const getRewardsBaseURL = () => {
 export const getSeasonThreeBaseURL = () => {
   switch (appEnv) {
     case "prod":
-      return `https://us-east1-push-prod-apps.cloudfunctions.net/pushpointsrewardsystem`;
+      // TODO: update this before deploy
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
+      // return `https://us-east1-push-prod-apps.cloudfunctions.net/pushpointsrewardsystem`;
     case "staging":
       return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
     case "dev":
