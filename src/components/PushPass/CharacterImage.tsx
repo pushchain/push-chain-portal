@@ -170,4 +170,4 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
   );
 };
 
-export { parseCharacterId };
+export { parseCharacterId, getImagePath };

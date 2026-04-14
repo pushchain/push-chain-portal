@@ -239,13 +239,53 @@ const MyCollectionContent: FC<MyCollectionContentProps> = ({ characters, isLoadi
                     overflow: hidden;
                     position: relative;
                     ${isUnminted ? 'filter: grayscale(100%); opacity: 0.5;' : ''}
+                    ${!isUnminted ? 'cursor: pointer;' : ''}
+
+                    &:hover .view-pass-overlay {
+                      opacity: 1;
+                    }
                   `}
+                  onClick={!isUnminted ? () => navigate(`/rewards/pushpass/${character.characterId}`) : undefined}
                 >
                   <CharacterImage
                     characterId={character.characterId}
                     width="100%"
                     height="100%"
                   />
+
+                  {!isUnminted && (
+                    <div
+                      className="view-pass-overlay"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(0, 0, 0, 0.5)',
+                        opacity: 0,
+                        transition: 'opacity 0.2s ease',
+                        zIndex: 2,
+                      }}
+                    >
+                      <Button
+                        size="medium"
+                        variant="primary"
+                        css={css`
+                          background: #d548ec;
+                          box-shadow: 0px 4px 18.9px rgba(0, 0, 0, 0.5);
+                          min-width: 100px;
+                          height: 48px;
+                          pointer-events: none;
+                        `}
+                      >
+                        View Pass
+                      </Button>
+                    </div>
+                  )}
                 </Box>
 
                 {isUnminted && (

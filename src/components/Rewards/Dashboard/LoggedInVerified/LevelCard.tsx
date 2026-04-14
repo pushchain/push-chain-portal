@@ -64,11 +64,13 @@ export const LevelCard: FC = () => {
         <BadgeIcon />
       </Box>
       <Skeleton isLoading={ isLoading }>
-        <Box display="flex" flexDirection="column" alignItems="center" width="100%" padding="spacing-xxxs spacing-none spacing-none spacing-none">
+        <Box display="flex" flexDirection="column" alignItems="center" width="100%">
           <Text
             variant="h5-semibold"
             color="text-tertiary"
-            textAlign="center">
+            textAlign="center"
+            css={css`padding-top: 4px;`}
+          >
             {badgeName}
           </Text>
           <Text
