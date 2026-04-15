@@ -118,6 +118,8 @@ export { default as SetupProfilePoints } from "./components/SetupProfilePoints";
 
 export { default as Sidekick } from "./components/Sidekick";
 
+export { default as SpinGlow } from "./components/SpinGlow";
+
 export { default as Superhero } from "./components/Superhero";
 
 export { default as StakePushBlueCoin } from "./components/StakePushBlueCoin";
