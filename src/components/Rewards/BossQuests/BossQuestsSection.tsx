@@ -76,7 +76,7 @@ const BossQuestsSection = () => {
   const targetDate = "2026-04-17T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
-  const finishFiveQuestDescription = "Earn a Rare Pass by completing 5 quests on a single app in a week";
+  const finishFiveQuestDescription = "Earn XP by completing 5 quests on a single app in a week";
   const holdFiveDescription = "Earn a Rare Pass by collecting 5 Rare Passes during Season 3";
 
   return (

@@ -111,7 +111,7 @@ export const LevelUp = () => {
 
       <Box>
           <Box display="flex" flexDirection="row" justifyContent="center" gap="spacing-xs" alignItems="center">
-              {userDetails && <BadgeIcon />}
+              {userDetails && <BadgeIcon width={45} height={45} />}
               <Skeleton isLoading={isLoading}>
                 <Text variant="h2-semibold">Lv. {levelProgress?.level} </Text>
               </Skeleton>
