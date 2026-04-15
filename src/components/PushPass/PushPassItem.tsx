@@ -487,12 +487,23 @@ export const PushPassItem = () => {
               justifyContent="center"
               position="relative"
               width="100%"
+              height="450px"
               margin="spacing-sm spacing-none spacing-none spacing-none"
+              css={css`overflow: visible;`}
             >
               <Lottie
                 animationData={RarePassAnimation}
                 loop
-                style={{ maxWidth: '450px', maxHeight: '450px' }}
+                style={{
+                  position: 'absolute',
+                  // TODO: check size
+                  width: '850px',
+                  height: '850px',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                }}
               />
 
 
