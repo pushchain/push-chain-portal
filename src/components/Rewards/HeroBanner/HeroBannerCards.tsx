@@ -1,12 +1,10 @@
-import { useState } from 'react';
 import { css } from 'styled-components';
-import { Alert, Box } from '../../../blocks';
+import { Box } from '../../../blocks';
 import SpinToWinCard from './SpinToWinCard';
 import CollectRaresCard from './CollectRaresCard';
 import { RarePassSection } from '../Dashboard/LoggedInVerified/RarePassSection';
 
 const HeroBannerCards = () => {
-  const [showUnmintedAlert, setShowUnmintedAlert] = useState(false);
 
   return (
     <Box
@@ -15,13 +13,6 @@ const HeroBannerCards = () => {
       gap="spacing-md"
       width="100%"
     >
-      {showUnmintedAlert && (
-        <Alert
-          variant="error"
-          description="You must confirm and claim your pass before opening another one."
-          onClose={() => setShowUnmintedAlert(false)}
-        />
-      )}
 
       <Box
         display="flex"
@@ -41,7 +32,7 @@ const HeroBannerCards = () => {
       >
         <SpinToWinCard />
         <CollectRaresCard />
-        <RarePassSection onBlockedOpen={() => setShowUnmintedAlert(true)} />
+        <RarePassSection />
       </Box>
     </Box>
   );

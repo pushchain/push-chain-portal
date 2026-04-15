@@ -12,11 +12,8 @@ import OpenPassLockedImage from '../../../../../static/assets/website/pushpass/O
 import { device } from '../../../../config/globals';
 import { fadeInCss } from '../../utils/FadeIn';
 
-type RarePassSectionProps = {
-  onBlockedOpen?: () => void;
-};
 
-export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => {
+export const RarePassSection: FC = () => {
   const navigate = useNavigate();
   const { universalAccount } = usePushWalletContext('wallet1');
   const caip10WalletAddress = walletToFullCAIP10(
@@ -192,8 +189,8 @@ export const RarePassSection: FC<RarePassSectionProps> = ({ onBlockedOpen }) => 
                 cursor={!pass.isLocked ? 'pointer' : 'default'}
                 onClick={() => {
                   if (!pass.isLocked) {
-                    if (unmintedCharacters.length > 0 && onBlockedOpen) {
-                      onBlockedOpen();
+                    if (unmintedCharacters.length > 0) {
+                      navigate('/rewards/pushpass')
                       return;
                     }
                     navigate('/rewards/pushpass/open');
