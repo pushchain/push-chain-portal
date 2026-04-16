@@ -35,6 +35,7 @@ export type LeaderboardListItemProps = {
   points: number;
   isLoading: boolean;
   userWallet: string;
+  highlighted?: boolean;
 };
 
 const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
@@ -42,7 +43,8 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   address,
   points,
   isLoading,
-  userWallet
+  userWallet,
+  highlighted,
 }) => {
   const web3NameList = useResolveWeb3Name(address);
   const isMobile = useMediaQuery(device.mobileL);
@@ -52,6 +54,8 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   const displayName = web3Name
     ? web3Name
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
+
+  const textColor = highlighted ? '#D548EC' : 'text-primary';
 
 
 
@@ -102,7 +106,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
       <Skeleton isLoading={isLoading} width={{ initial: "250px", tb: "auto" }}>
         <Box display="flex" gap="spacing-xs" alignItems="center">
           <Box minWidth="48px" justifyContent="center" display="flex">
-            <Text variant="bm-bold" color="text-primary">
+            <Text variant="bm-bold" color={textColor}>
               {rank > 0 && rank?.toLocaleString()}
             </Text>
           </Box>
@@ -131,14 +135,14 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
@@ -157,14 +161,14 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
           <Text
             variant="bm-bold"
             display={{ ml: "none", initial: "block" }}
-            color="text-primary"
+            color={textColor}
           >
             {points?.toLocaleString()}
           </Text>
           <Text
             variant="bs-bold"
             display={{ ml: "block", initial: "none" }}
-            color="text-primary"
+            color={textColor}
           >
             {points?.toLocaleString()}
           </Text>
