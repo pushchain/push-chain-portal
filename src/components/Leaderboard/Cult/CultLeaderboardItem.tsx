@@ -5,10 +5,15 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 
 import { useResolveWeb3Name } from "../../../hooks/useResolveWeb3Name";
-import { shortenText, fullCAIP10ToWallet } from "../../../helpers/web3helper";
+import { shortenText, fullCAIP10ToWallet, getChainIdFromFullCaip } from "../../../helpers/web3helper";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { device } from "../../../config/globals";
-import { Box, Skeleton, Text } from "../../../blocks";
+import {
+  Box,
+  Skeleton,
+  Text,
+} from "../../../blocks";
+import { getChainLogo } from "../utils/getChainLogo";
 
 export type CultLeaderboardItemProps = {
   rank: number;
@@ -30,6 +35,7 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
   const address = fullCAIP10ToWallet(userWallet);
   const web3NameList = useResolveWeb3Name(address);
   const isMobile = useMediaQuery(device.mobileL);
+  const chainId = getChainIdFromFullCaip(userWallet);
 
   const web3Name = web3NameList?.[address];
   const displayName = web3Name
@@ -37,6 +43,7 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
 
   const textColor = highlighted ? '#D548EC' : 'text-primary';
+  const chainLogo = getChainLogo(chainId);
 
   return (
     <Box
@@ -56,9 +63,23 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
             </Text>
           </Box>
           <Box display="flex" gap="spacing-xs" alignItems="center">
+            {chainLogo ? <Box
+              width="24px"
+              height="24px"
+              overflow="hidden"
+              css={css`
+                background: #EAEBF2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 4px;
+              `}
+            >
+              {chainLogo}
+            </Box> :
             <Box width="32px" height="32px" borderRadius="radius-xl" overflow="hidden">
               <BlockiesSvg address={address} size={8} scale={4} />
-            </Box>
+            </Box>}
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}

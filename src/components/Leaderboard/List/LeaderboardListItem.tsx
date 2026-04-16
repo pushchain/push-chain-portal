@@ -11,23 +11,11 @@ import useMediaQuery from "../../../hooks/useMediaQuery";
 import { device } from "../../../config/globals";
 
 import {
-  AptosLogo,
-  ArbitrumLogo,
-  AvalancheLogo,
-  BaseLogo,
-  BnbLogo,
   Box,
-  EthereumLogo,
-  OptimismLogo,
-  PolygonLogo,
-  PushChainLogo,
   Skeleton,
-  SolanaLogo,
-  SuiLogo,
   Text,
-  zKsyncLogo as ZKsyncLogo,
 } from "../../../blocks";
-import { WalletChainType } from "../../Rewards/utils/wallet";
+import { getChainLogo } from "../utils/getChainLogo";
 
 export type LeaderboardListItemProps = {
   rank: number;
@@ -56,42 +44,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
 
   const textColor = highlighted ? '#D548EC' : 'text-primary';
-
-
-
-  const getChainLogo = () => {
-    switch (chainId) {
-      case 1:
-        return <EthereumLogo size={18} />;
-      case 11155111:
-        return <EthereumLogo size={16} />;
-      case 42101:
-        return <PushChainLogo size={16} />;
-      case 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1':
-        return <SolanaLogo size={16} />;
-      case 42161:
-        return <ArbitrumLogo size={16} />;
-      case 43114:
-        return <AvalancheLogo size={16} />;
-      case 8453:
-      case 84532:
-        return <BaseLogo size={11} />;
-      case 56:
-        return <BnbLogo size={16} />;
-      case 10:
-        return <OptimismLogo size={16} />;
-      case 137:
-        return <PolygonLogo size={16} />;
-      case 324:
-        return <ZKsyncLogo size={16} />;
-      case 'aptos':
-        return <AptosLogo size={16} />;
-      case 'sui':
-        return <SuiLogo size={16} />;
-      default:
-        return null;
-    }
-  };
+  const chainLogo = getChainLogo(chainId);
 
   return (
     <Box
@@ -111,7 +64,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
             </Text>
           </Box>
           <Box display="flex" gap="spacing-xs" alignItems="center">
-            {getChainLogo() ? <Box
+            {chainLogo ? <Box
               width="24px"
               height="24px"
               overflow="hidden"
@@ -123,7 +76,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
                 border-radius: 4px;
             `}
             >
-              {getChainLogo()}
+              {chainLogo}
             </Box> :
             <Box
               width="32px"

@@ -10,7 +10,7 @@ import { LeaderboardHeader } from "./Header/LeaderboardHeader";
 import { LeaderBoardNullState } from "./List/LeaderboardNullState";
 import { CultLeaderboardColumns } from "./Cult/CultLeaderboardColumns";
 import { CultLeaderboardItem } from "./Cult/CultLeaderboardItem";
-import { useGetCultLeaderboard, useGetSeasonThreeUserByWallet, CultLeaderboardUser } from "../../queries";
+import { useGetCultLeaderboard, CultLeaderboardUser } from "../../queries";
 import { walletToFullCAIP10, fullCAIP10ToWallet } from "../../helpers/web3helper";
 import Footer from "../../structure/Footer";
 import { device } from "../../config/globals";
@@ -22,9 +22,6 @@ const CultLeaderboard: FC = () => {
     universalAccount?.chain,
   );
 
-  const { data: currentUser } = useGetSeasonThreeUserByWallet({
-    walletAddress: caip10WalletAddress,
-  });
 
   const {
     data,
@@ -49,8 +46,6 @@ const CultLeaderboard: FC = () => {
           item.userWallet && fullCAIP10ToWallet(item.userWallet)?.toLowerCase() === fullCAIP10ToWallet(caip10WalletAddress)?.toLowerCase()
       )
     : null;
-
-  console.log(leaderboardList, 'lllll')
 
   return (
     <Box
@@ -81,6 +76,10 @@ const CultLeaderboard: FC = () => {
           margin-top: -20px;
           position: relative;
           z-index: 1;
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
           border-radius: 0 0 32px 32px;
           border: 1px solid rgba(171, 70, 248, 0.40);
           background: rgba(0, 0, 0, 0.10);
@@ -97,7 +96,14 @@ const CultLeaderboard: FC = () => {
             subHeading={isError ? "Please refresh to view the Leaderboard" : ""}
           />
         ) : (
-          <Box margin="spacing-sm spacing-none spacing-none spacing-none" gap="spacing-sm" display="flex" flexDirection="column">
+            <Box
+              margin="spacing-sm spacing-none spacing-none spacing-none"
+              display="flex"
+              flexDirection="column"
+              css={css`
+                flex: 1;
+                min-height: 0;
+              `}>
             <CultLeaderboardColumns />
 
             {currentUserEntry && (
@@ -114,9 +120,10 @@ const CultLeaderboard: FC = () => {
             )}
 
             <Box
-              height="calc(100vh - 356px)"
               customScrollbar={true}
               css={css`
+                flex: 1;
+                min-height: 0;
                 overflow: scroll;
                 overflow-x: hidden;
               `}
@@ -130,7 +137,7 @@ const CultLeaderboard: FC = () => {
               >
                 {leaderboardList.map((item: CultLeaderboardUser, index: number) => {
                   const nextItem = leaderboardList[index + 1];
-                  const showSeparator = !isLoading && item.rank <= 50 && (!nextItem || nextItem.rank > 50);
+                  const showSeparator = !isLoading && item?.length > 50 &&  item.rank <= 50 && (!nextItem || nextItem.rank > 50);
 
                   return (
                     <Box key={`${index}`}>
