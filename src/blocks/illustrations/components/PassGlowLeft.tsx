@@ -9,7 +9,7 @@ const PassGlowLeft: FC<IllustrationProps> = (allProps) => {
       componentName="PassGlowLeft"
       illustration={
         <svg xmlns="http://www.w3.org/2000/svg" width={restProps?.width ?? "341"} height={restProps?.height ?? "441"} viewBox="0 0 341 441" fill="none" {...props}>
-          <g filter="url(#filter0_f_46918_2044)" style={{ mixBlendMode: 'plus-lighter' }}>
+          <g filter="url(#filter0_f_46918_2044)">
             <path d="M220.384 100C286.871 100 169.269 153.898 169.269 220.384C169.269 286.871 286.871 340.769 220.384 340.769C153.898 340.769 100 286.871 100 220.384C100 153.898 153.898 100 220.384 100Z" fill="#FFB167"/>
           </g>
           <defs>

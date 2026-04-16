@@ -510,10 +510,10 @@ export const PushPassItem = () => {
               <Box
                 css={css`
                   position: absolute;
-                  /*left: 0;*/
                   top: 50%;
                   transform: translate(-40%, -50%);
                   pointer-events: none;
+                  mix-blend-mode: plus-lighter;
                 `}
               >
                 <PassGlowLeft width={300} height={390} />
@@ -522,10 +522,10 @@ export const PushPassItem = () => {
               <Box
                 css={css`
                   position: absolute;
-                  /*right: 0;*/
                   top: 50%;
                   transform: translate(40%, -50%);
                   pointer-events: none;
+                  mix-blend-mode: plus-lighter;
                 `}
               >
                 <PassGlowRight width={300} height={390} />
