@@ -23,7 +23,7 @@ import { trackEvent } from "../../helpers/analytics";
 
 import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
 import RarePassAnimation from "../../../static/assets/website/pushpass/rare-glow.json";
-import { Alert, Back, Box, Button, Link,Skeleton, Spinner, Text, Twitter } from "../../blocks";
+import { Alert, Back, Box, Button, Link, PassGlowLeft, PassGlowRight, Skeleton, Spinner, Text, Twitter } from "../../blocks";
 import { parseCharacterId, getImagePath } from "./CharacterImage";
 
 
@@ -506,6 +506,30 @@ export const PushPassItem = () => {
                 }}
               />
 
+
+              <Box
+                css={css`
+                  position: absolute;
+                  /*left: 0;*/
+                  top: 50%;
+                  transform: translate(-40%, -50%);
+                  pointer-events: none;
+                `}
+              >
+                <PassGlowLeft width={300} height={390} />
+              </Box>
+
+              <Box
+                css={css`
+                  position: absolute;
+                  /*right: 0;*/
+                  top: 50%;
+                  transform: translate(40%, -50%);
+                  pointer-events: none;
+                `}
+              >
+                <PassGlowRight width={300} height={390} />
+              </Box>
 
               <Box
                 display="flex"
