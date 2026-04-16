@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Alert, Box } from '../../../blocks';
 import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet, useGetQuestActivities } from '../../../queries';
 import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
@@ -9,9 +9,12 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
-import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
-import { useState } from 'react';
+// import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
+import moleSwapBg from '../../../../static/assets/website/rewards/moleswap-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
+
+import { Box } from '../../../blocks';
+
 
 const AppQuestSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,8 +33,8 @@ const AppQuestSection = () => {
     appId: "lastone"
   });
 
-  const { data: ramenSwapQuests } = useGetQuests({
-    appId: "ramen-swap"
+  const { data: moleSwapQuests } = useGetQuests({
+    appId: "moleswap"
   });
 
   const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
@@ -39,17 +42,17 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: ramenSwapQuestsProgress, refetch: refetchRamenProgress } = useGetQuestsProgress({
-    appId: "ramen-swap",
+  const { data: moleSwapQuestsProgress, refetch: refetchMoleProgress } = useGetQuestsProgress({
+    appId: "moleswap",
     userId: userDetails?.userId
   });
 
   const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
-  const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
+  const moleSwapQuestIds = moleSwapQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
     ...lastOneQuestIds,
-    ...ramenSwapQuestIds,
+    ...moleSwapQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -73,11 +76,11 @@ const AppQuestSection = () => {
   const refetchAll = () => {
     refetchActivities();
     refetchLastOneProgress();
-    refetchRamenProgress();
+    refetchMoleProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-04-17T14:00:00Z";
+  const targetDate = "2026-04-24T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -100,11 +103,11 @@ const AppQuestSection = () => {
   };
 
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
-  const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
+  const moleSwapCompletedMap = buildCompletedMap(moleSwapQuestsProgress?.data?.quests);
 
-  const hiddenLastOneQuestIds = ['lastone_win_50pc_claim', 'lastone_win_3_rounds_claim', 'lastone_participate_25_rounds'];
+  const hiddenLastOneQuestIds = [ 'lastone_place_bid','lastone_win_50pc_claim', 'lastone_win_3_rounds_claim', 'lastone_participate_25_rounds', 'lastone_bid_10_single_round', 'lastone_bet_20pc_single_round', 'lastone_participate_3_rounds', 'lastone_share_bid_or_win_social'];
   const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED' && !hiddenLastOneQuestIds.includes(q.id));
-  const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledMoleSwapQuests = moleSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -140,9 +143,29 @@ const AppQuestSection = () => {
               setErrorMessage={setErrorMessage}
               linkColor="#653468"
               titleGradient='linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);'
-            />
+        />
 
             <AppQuestCard
+              appName="MoleSwap"
+              appUrl="moleswap.com"
+              bgImage={moleSwapBg}
+              description="Complete quests on moleswap.com and claim to level up and earn rewards"
+              resetTime={timeLeft}
+              quests={enabledMoleSwapQuests}
+              activityStatus={activityStatuses}
+              isLoading={isLoadingActivities}
+              refetchActivities={refetchAll}
+              userId={userDetails?.userId}
+              completedMap={moleSwapCompletedMap}
+              questProgressMap={questProgressMap}
+              setErrorMessage={setErrorMessage}
+              gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
+              titleGradient="linear-gradient(180deg, #000 16.15%, #5562F3 89.06%)"
+              linkColor="#184581"
+              blurColor="#80D597"
+            />
+
+            {/*<AppQuestCard
               appName="Ramen Swap"
               appUrl="ramenfi.xyz"
               bgImage={ramenBg}
@@ -160,7 +183,7 @@ const AppQuestSection = () => {
               titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%)"
               linkColor="#DB2D33"
               blurColor="#40ee8b"
-            />
+            />*/}
           </Box>
     </Box>
   );
