@@ -38,6 +38,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const [isSigning, setIsSigning] = useState(false);
+  const [justClaimed, setJustClaimed] = useState(false);
   const { universalAccount } = usePushWalletContext("wallet1");
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -54,7 +55,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     data: getDailyCheckInDetails,
     refetch,
     isLoading: isLoadingRewards,
-    isRefetching,
   } = useGetDailyCheckInDetails(userDetails?.userId);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } =
     useClaimDailyRewardsSeasonThree();
@@ -69,6 +69,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
       onSuccess: () => {
+        setJustClaimed(true);
         trackEvent(`daily_reward_day_${currentDay}_claimed`, {
           event_category: "rewards",
           event_label: `day_${currentDay}`,
@@ -183,11 +184,10 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
             <Skeleton
               isLoading={
                 isLockedStatusLoading ||
-                isLoadingRewards ||
-                (isRefetching && !(isClaimingRewards || isSigning))
+                (isLoadingRewards && !isClaimingRewards && !isSigning)
               }
             >
-              {canClaimRewards ? (
+              {canClaimRewards && !justClaimed ? (
                 <Button
                   variant="tertiary"
                   size="small"

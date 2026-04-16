@@ -17,6 +17,7 @@ import useMediaQuery from '../../../hooks/useMediaQuery';
 import { device } from '../../../config/globals';
 import { useAuthHeaders } from '../../../context/authHeadersContext';
 import { trackEvent } from '../../../helpers/analytics';
+import { useSpinSounds } from '../hooks/useSpinSounds';
 
 import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
 import PCTokenAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
@@ -67,6 +68,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const [isSigning, setIsSigning] = useState(false);
+  const { playSpinSound, startDeceleration, stopSpinSound, playWinSound } = useSpinSounds();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -91,6 +93,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
+      stopSpinSound();
       setShowResult(false);
       setWonPrize(null);
       setIsSpinning(false);
@@ -132,11 +135,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     setShowResult(false);
     setIsSpinning(true);
     spinboardRef.current?.startSpin();
+    playSpinSound();
     trackEvent('spin_wheel_clicked', { event_category: 'rewards', event_label: isFirstSpin ? 'free_spin' : 'paid_spin', value: nextSpinCost });
 
     spin(headers, {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
+        startDeceleration();
         spinboardRef.current?.landOn(slotId);
         setWonPrize(getPrizeBySlotId(slotId) ?? null);
         trackEvent('spin_wheel_completed', { event_category: 'rewards', event_label: getPrizeBySlotId(slotId)?.label ?? 'unknown', reward_type: getPrizeBySlotId(slotId)?.rewardType });
@@ -144,6 +149,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
         refetchUserDetails();
       },
       onError: () => {
+        stopSpinSound();
         spinboardRef.current?.stopSpin();
         setIsSpinning(false);
       },
@@ -151,6 +157,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   };
 
   const handleSpinComplete = () => {
+    stopSpinSound();
+    playWinSound();
     setIsSpinning(false);
     setShowResult(true);
   };
