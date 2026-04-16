@@ -134,6 +134,12 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         icon: Cult,
         label: 'Cult',
         route: '/cult'
+      },
+      {
+        id: 'cult-leaderboard',
+        icon: Ranking,
+        label: 'Cult Leaderboards',
+        route: '/cult/leaderboard',
       }] : []),
     ] : []),
 

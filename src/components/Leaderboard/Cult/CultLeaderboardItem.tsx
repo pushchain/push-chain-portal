@@ -16,6 +16,7 @@ export type CultLeaderboardItemProps = {
   userWallet: string;
   totalPoints: number;
   isLoading: boolean;
+  highlighted?: boolean;
 };
 
 const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
@@ -24,6 +25,7 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
   userWallet,
   totalPoints,
   isLoading,
+  highlighted,
 }) => {
   const address = fullCAIP10ToWallet(userWallet);
   const web3NameList = useResolveWeb3Name(address);
@@ -33,6 +35,8 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
   const displayName = web3Name
     ? web3Name
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
+
+  const textColor = highlighted ? '#D548EC' : 'text-primary';
 
   return (
     <Box
@@ -47,7 +51,7 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
       <Skeleton isLoading={isLoading} width={{ initial: "250px", tb: "auto" }}>
         <Box display="flex" gap="spacing-xs" alignItems="center">
           <Box minWidth="48px" justifyContent="center" display="flex">
-            <Text variant="bm-bold" color="text-primary">
+            <Text variant="bm-bold" color={textColor}>
               {rank > 0 && rank?.toLocaleString()}
             </Text>
           </Box>
@@ -58,14 +62,14 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
@@ -92,14 +96,14 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {totalPoints?.toLocaleString()}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {totalPoints?.toLocaleString()}
             </Text>

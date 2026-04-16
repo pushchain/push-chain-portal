@@ -278,16 +278,17 @@ const AppContent = () => {
                     element={<LeaderBoardPage />}
                   />
                   <Route path="/cult" element={<CultPage />} />
+                  <Route
+                    path="/cult/leaderboard"
+                    element={<CultLeaderboardPage />}
+                  />
                 </>
+
               )}
               {FLAGS.CULT && (
                 <>
                   <Route path="/" element={<S3CountdownPage />} />
-                  {/*TODO: comment out for now */}
-                  {/*<Route
-                    path="/cult/leaderboard"
-                    element={<CultLeaderboardPage />}
-                  />*/}
+
                 </>
               )}
               <Route path="*" element={<NotFound />} />
