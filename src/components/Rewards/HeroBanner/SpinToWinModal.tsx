@@ -345,6 +345,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
                     left: 50%;
                     transform: translate(-50%, -30%);
                     pointer-events: none;
+                    mix-blend-mode: plus-lighter;
                   `}
                 >
                   <SpinGlow width={300} height={230} />
