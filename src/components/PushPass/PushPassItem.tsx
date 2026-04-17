@@ -23,7 +23,7 @@ import { trackEvent } from "../../helpers/analytics";
 
 import RarePassBg from '../../../static/assets/website/pushpass/RarePassBG.webp';
 import RarePassAnimation from "../../../static/assets/website/pushpass/rare-glow.json";
-import { Alert, Back, Box, Button, Link,Skeleton, Spinner, Text, Twitter } from "../../blocks";
+import { Alert, Back, Box, Button, Link, PassGlowLeft, PassGlowRight, Skeleton, Spinner, Text, Twitter } from "../../blocks";
 import { parseCharacterId, getImagePath } from "./CharacterImage";
 
 
@@ -487,14 +487,49 @@ export const PushPassItem = () => {
               justifyContent="center"
               position="relative"
               width="100%"
+              height="450px"
               margin="spacing-sm spacing-none spacing-none spacing-none"
+              css={css`overflow: visible;`}
             >
               <Lottie
                 animationData={RarePassAnimation}
                 loop
-                style={{ maxWidth: '450px', maxHeight: '450px' }}
+                style={{
+                  position: 'absolute',
+                  // TODO: check size
+                  width: '850px',
+                  height: '850px',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                }}
               />
 
+
+              <Box
+                css={css`
+                  position: absolute;
+                  top: 50%;
+                  transform: translate(-40%, -50%);
+                  pointer-events: none;
+                  mix-blend-mode: plus-lighter;
+                `}
+              >
+                <PassGlowLeft width={300} height={390} />
+              </Box>
+
+              <Box
+                css={css`
+                  position: absolute;
+                  top: 50%;
+                  transform: translate(40%, -50%);
+                  pointer-events: none;
+                  mix-blend-mode: plus-lighter;
+                `}
+              >
+                <PassGlowRight width={300} height={390} />
+              </Box>
 
               <Box
                 display="flex"

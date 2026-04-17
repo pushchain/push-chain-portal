@@ -112,7 +112,7 @@ export const MultiplierCard: FC = () => {
         )}
         {tempBoostPercent > 0 && earliestExpiry && (
           <Text variant='h5-regular' color='#68FFB4'>
-            +{tempBoostPercent}% for {formatTimeLeft(earliestExpiry.getTime() - now.getTime())}
+            +{tempBoostPercent}% ({formatTimeLeft(earliestExpiry.getTime() - now.getTime())})
           </Text>
         )}
         <Text variant="h5-semibold" color="text-tertiary">

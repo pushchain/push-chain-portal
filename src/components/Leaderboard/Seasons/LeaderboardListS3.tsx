@@ -4,19 +4,31 @@
 import { FC } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { css } from "styled-components";
+import { usePushWalletContext } from "@pushchain/ui-kit";
 import {
   useGetRewardsLeaderboardS3,
+  useGetSeasonThreeUserByWallet,
   ModelledLeaderBoardUser,
 } from "../../../queries";
 import { Box, Spinner } from "../../../blocks";
 
 import { LeaderboardListItem } from "../List/LeaderboardListItem";
 
-import { fullCAIP10ToWallet } from "../../../helpers/web3helper";
+import { fullCAIP10ToWallet, walletToFullCAIP10 } from "../../../helpers/web3helper";
 import { LeaderBoardNullState } from "../List/LeaderboardNullState";
 import { LeaderboardListColumns } from "../List/LeaderboardListColumns";
 
 const LeaderboardListS3: FC = () => {
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: currentUser } = useGetSeasonThreeUserByWallet({
+    walletAddress: caip10WalletAddress,
+  });
+
   const {
     data,
     isError,
@@ -42,8 +54,21 @@ const LeaderboardListS3: FC = () => {
     />
   ) : (
     !!leaderboardList.length && (
-      <Box gap="spacing-sm" display="flex" flexDirection="column">
-        <LeaderboardListColumns />
+      <Box display="flex" flexDirection="column">
+          <LeaderboardListColumns />
+
+          {currentUser?.userId && (
+            <Box>
+              <LeaderboardListItem
+                rank={currentUser.rank}
+                address={fullCAIP10ToWallet(currentUser.userWallet)}
+                points={currentUser.totalPoints}
+                isLoading={false}
+                userWallet={currentUser.userWallet}
+                highlighted
+              />
+            </Box>
+          )}
         <Box
           height="calc(100vh - 356px)"
           customScrollbar={true}

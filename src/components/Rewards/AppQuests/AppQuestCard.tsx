@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { css, keyframes } from 'styled-components';
-import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, XP } from '../../../blocks';
+import { ArrowUpRight, Box, HoverableSVG, Link, ProgressBar, QuestBox, Refresh, RewardsStarGradient, Text, Tick, Tooltip, XP } from '../../../blocks';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
@@ -141,7 +141,15 @@ const QuestItem: FC<QuestItemProps> = ({
                         progress={apiProgress || null}
                         max={100}
                         size="large"
-                        progressIcon={<RewardsStarGradient size={35} />}
+                        progressIcon={
+                          userId && !rewardsLocked ? (
+                            <Tooltip title={`${apiProgress}%`}>
+                              <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                            </Tooltip>
+                          ) : (
+                            <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                          )
+                        }
                       />
                     </Box>
                   )}

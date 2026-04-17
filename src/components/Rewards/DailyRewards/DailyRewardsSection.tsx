@@ -37,7 +37,6 @@ export type DailyRewardsSectionProps = Record<string, never>;
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
-  const [isSigning, setIsSigning] = useState(false);
   const { universalAccount } = usePushWalletContext("wallet1");
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -54,7 +53,6 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     data: getDailyCheckInDetails,
     refetch,
     isLoading: isLoadingRewards,
-    isRefetching,
   } = useGetDailyCheckInDetails(userDetails?.userId);
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } =
     useClaimDailyRewardsSeasonThree();
@@ -62,9 +60,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
   const handleClaimRewards = async () => {
-    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? (await getAuthHeaders());
-    setIsSigning(false);
     if (!headers) return;
     const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
@@ -75,8 +71,9 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         });
         refetch();
       },
-      onError: (error) => {
+      onError: (error: any) => {
         console.error(error);
+        setErrorMessage(error?.response?.data?.error?.message || error?.message || "Failed to claim rewards. Please try again.");
       },
     });
   };
@@ -183,8 +180,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
             <Skeleton
               isLoading={
                 isLockedStatusLoading ||
-                isLoadingRewards ||
-                (isRefetching && !(isClaimingRewards || isSigning))
+                (isLoadingRewards && !isClaimingRewards)
               }
             >
               {canClaimRewards ? (
@@ -192,8 +188,8 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
                   variant="tertiary"
                   size="small"
                   onClick={handleClaimRewards}
-                  disabled={isClaimingRewards || isSigning}
-                  loading={isClaimingRewards || isSigning}
+                  disabled={isClaimingRewards}
+                  loading={isClaimingRewards}
                 >
                   Claim
                 </Button>
@@ -241,6 +237,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
       >
         {dailyRewardsActivities?.map((activity) => (
           <DailyRewardsItem
+            key={activity.id}
             dailyCheckInDetails={getDailyCheckInDetails}
             isLoading={isLoadingRewards}
             activity={activity}

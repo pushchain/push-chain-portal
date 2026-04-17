@@ -10,16 +10,18 @@ import { useGetSeasonThreeUserByWallet, useSpinTheWheel } from '../../../queries
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
-import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } from '../../../blocks';
+import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, SpinGlow, Text } from '../../../blocks';
 import { Image } from '../../../css/SharedStyling';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import { device } from '../../../config/globals';
 import { useAuthHeaders } from '../../../context/authHeadersContext';
 import { trackEvent } from '../../../helpers/analytics';
+import { useSpinSounds } from '../hooks/useSpinSounds';
 
-// import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
-// import PointsAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
+import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
+import PCTokenAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
+import MultiplierAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-2.json";
 
 
 type SpinToWinModalProps = {
@@ -66,6 +68,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const [isSigning, setIsSigning] = useState(false);
+  const { playSpinSound, startDeceleration, stopSpinSound, playWinSound } = useSpinSounds();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -90,6 +93,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
+      stopSpinSound();
       setShowResult(false);
       setWonPrize(null);
       setIsSpinning(false);
@@ -131,11 +135,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     setShowResult(false);
     setIsSpinning(true);
     spinboardRef.current?.startSpin();
+    playSpinSound();
     trackEvent('spin_wheel_clicked', { event_category: 'rewards', event_label: isFirstSpin ? 'free_spin' : 'paid_spin', value: nextSpinCost });
 
     spin(headers, {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
+        startDeceleration();
         spinboardRef.current?.landOn(slotId);
         setWonPrize(getPrizeBySlotId(slotId) ?? null);
         trackEvent('spin_wheel_completed', { event_category: 'rewards', event_label: getPrizeBySlotId(slotId)?.label ?? 'unknown', reward_type: getPrizeBySlotId(slotId)?.rewardType });
@@ -143,6 +149,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
         refetchUserDetails();
       },
       onError: () => {
+        stopSpinSound();
         spinboardRef.current?.stopSpin();
         setIsSpinning(false);
       },
@@ -150,6 +157,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   };
 
   const handleSpinComplete = () => {
+    stopSpinSound();
+    playWinSound();
     setIsSpinning(false);
     setShowResult(true);
   };
@@ -321,28 +330,51 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             css={css`
               width: 226px;
               height: 127px;
-              border-radius: 20.239px;
-              border: 0.843px solid rgba(255, 255, 255, 0.40);
-              background: radial-gradient(79.77% 79.77% at 31.11% 22.5%, #C35FF5 0%, #635CC8 100%);
               margin: 125px 0px 25px 0px;
-              display: flex;
-              align-items: flex-end;
-              padding: 24px;
-              box-sizing: border-box;
             `}
           >
-            {/*<Box css={css`
+            <Box css={css`
               position: absolute;
               top: -15%;
               left: 50%;
               transform: translate(-50%, -50%);
+              z-index: 0;
+              pointer-events: none;
             `}>
                 <Lottie
                   animationData={BurstBgAnimation}
                   loop
-                  style={{ width: '100%', margin: "40px 0 0 0"}}
+                  style={{ width: '240px', margin: "40px 0 0 0"}}
                 />
-          </Box>*/}
+                <Box
+                  css={css`
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -30%);
+                    pointer-events: none;
+                    mix-blend-mode: plus-lighter;
+                  `}
+                >
+                  <SpinGlow width={300} height={230} />
+                </Box>
+            </Box>
+
+            <Box
+              css={css`
+                width: 226px;
+                height: 127px;
+                border-radius: 20.239px;
+                border: 0.843px solid rgba(255, 255, 255, 0.40);
+                background: radial-gradient(79.77% 79.77% at 31.11% 22.5%, #C35FF5 0%, #635CC8 100%);
+                display: flex;
+                align-items: flex-end;
+                padding: 24px;
+                box-sizing: border-box;
+                position: relative;
+                z-index: 1;
+              `}
+            >
 
             <Box css={css`
               position: absolute;
@@ -350,14 +382,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
               left: 50%;
               transform: translate(-50%, -50%);
             `}>
-              {/*<Lottie
-                animationData={PointsAnimation}
+              {(isXPBoostWinning || isPCTokenWinning) && <Lottie
+                animationData={isPCTokenWinning ? PCTokenAnimation : MultiplierAnimation}
                 loop
-              />*/}
+                style={{ width: '340px', margin: "60px 0 0 0" }}
+              />}
               {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
               {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
-              {isXPBoostWinning && <Multiplier width={80} height={80} />}
-              {isPCTokenWinning && <PCTokens width={153} height={137} />}
             </Box>
 
             <Box css={css`width: 100%;`}>
@@ -379,6 +410,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             {/*<Box css={css`width: 100%;`}>
               <Text variant='h4-semibold' textAlign='center'>{wonPrize?.label}</Text>
             </Box>*/}
+            </Box>
           </Box>
         )}
 

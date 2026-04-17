@@ -5,10 +5,15 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 
 import { useResolveWeb3Name } from "../../../hooks/useResolveWeb3Name";
-import { shortenText, fullCAIP10ToWallet } from "../../../helpers/web3helper";
+import { shortenText, fullCAIP10ToWallet, getChainIdFromFullCaip } from "../../../helpers/web3helper";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { device } from "../../../config/globals";
-import { Box, Skeleton, Text } from "../../../blocks";
+import {
+  Box,
+  Skeleton,
+  Text,
+} from "../../../blocks";
+import { getChainLogo } from "../utils/getChainLogo";
 
 export type CultLeaderboardItemProps = {
   rank: number;
@@ -16,6 +21,7 @@ export type CultLeaderboardItemProps = {
   userWallet: string;
   totalPoints: number;
   isLoading: boolean;
+  highlighted?: boolean;
 };
 
 const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
@@ -24,15 +30,20 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
   userWallet,
   totalPoints,
   isLoading,
+  highlighted,
 }) => {
   const address = fullCAIP10ToWallet(userWallet);
   const web3NameList = useResolveWeb3Name(address);
   const isMobile = useMediaQuery(device.mobileL);
+  const chainId = getChainIdFromFullCaip(userWallet);
 
   const web3Name = web3NameList?.[address];
   const displayName = web3Name
     ? web3Name
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
+
+  const textColor = highlighted ? '#D548EC' : 'text-primary';
+  const chainLogo = getChainLogo(chainId);
 
   return (
     <Box
@@ -47,25 +58,39 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
       <Skeleton isLoading={isLoading} width={{ initial: "250px", tb: "auto" }}>
         <Box display="flex" gap="spacing-xs" alignItems="center">
           <Box minWidth="48px" justifyContent="center" display="flex">
-            <Text variant="bm-bold" color="text-primary">
+            <Text variant="bm-bold" color={textColor}>
               {rank > 0 && rank?.toLocaleString()}
             </Text>
           </Box>
           <Box display="flex" gap="spacing-xs" alignItems="center">
+            {chainLogo ? <Box
+              width="24px"
+              height="24px"
+              overflow="hidden"
+              css={css`
+                background: #EAEBF2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 4px;
+              `}
+            >
+              {chainLogo}
+            </Box> :
             <Box width="32px" height="32px" borderRadius="radius-xl" overflow="hidden">
               <BlockiesSvg address={address} size={8} scale={4} />
-            </Box>
+            </Box>}
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
@@ -75,13 +100,6 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
 
       <Skeleton isLoading={isLoading}>
         <Box display="flex" alignItems="center" gap="spacing-md">
-          <Text
-            variant="bs-semibold"
-            color="text-tertiary"
-            display={{ ml: "none", initial: "block" }}
-          >
-            {userId}
-          </Text>
           <Box
             width="88px"
             minWidth="88px"
@@ -92,14 +110,14 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {totalPoints?.toLocaleString()}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {totalPoints?.toLocaleString()}
             </Text>

@@ -19,6 +19,8 @@ import PepperedCodesImg from '../../static/assets/website/rewards/codes-peppered
 import FollowPushImg from '../../static/assets/website/rewards/invitecode-follow.webp'
 import PepperCodeText from '../../static/assets/website/rewards/peppered-codetext.webp';
 import FollowText from '../../static/assets/website/rewards/followtext.webp';
+import useMediaQuery from "../hooks/useMediaQuery";
+import { device } from "../config/globals";
 
 
 const PUSH_CHAIN_IDS = ["42101", "42102"];
@@ -29,6 +31,7 @@ type InviteCodeModalProps = {
 };
 
 export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
+  const isMobile = useMediaQuery(device.mobileL)
   const { universalAccount, handleUserLogOutEvent, connectionType } = usePushWalletContext('wallet1');
   const { pushChainClient } = usePushChainClient('wallet1');
   const [inviteCode, setInviteCode] = useState("");
@@ -251,7 +254,8 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
         </Box>
       </Box>
 
-      <Box
+      {!isMobile &&
+        <Box
         display="flex"
         flexDirection="column"
         width="100%"
@@ -336,7 +340,7 @@ export const InviteCodeModal = ({ isOpen, onClose }: InviteCodeModalProps) => {
             </Box>
           </Box>
         </a>
-      </Box>
+      </Box>}
     </Modal>
   );
 };

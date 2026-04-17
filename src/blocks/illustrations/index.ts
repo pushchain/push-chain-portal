@@ -78,6 +78,10 @@ export { default as PushDev } from "./components/PushDev";
 
 export { default as Points } from "./components/Points";
 
+export { default as PassGlowLeft } from "./components/PassGlowLeft";
+
+export { default as PassGlowRight } from "./components/PassGlowRight";
+
 export { default as PCTokens } from './components/PCTokens';
 
 export { default as Quests } from "./components/Quests";
@@ -117,6 +121,8 @@ export { default as SeasonThreePoints } from "./components/SeasonThreePoints";
 export { default as SetupProfilePoints } from "./components/SetupProfilePoints";
 
 export { default as Sidekick } from "./components/Sidekick";
+
+export { default as SpinGlow } from "./components/SpinGlow";
 
 export { default as Superhero } from "./components/Superhero";
 

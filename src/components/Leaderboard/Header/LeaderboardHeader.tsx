@@ -74,7 +74,7 @@ const LeaderboardHeader: FC = ({ title }) => {
                 width: 100%;
             }
         `}>
-        Rise up the leaderboards to be a part of Exclusive Rewards Staking Pool at TGE with special rewards.
+        Rise up the leaderboards by sharing content and completing missions. Top 50 by the end of Cult Program will share a pool of 20M $PC Tokens.
       </Text>
     </Box>
   );

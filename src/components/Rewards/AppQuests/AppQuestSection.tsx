@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Alert, Box } from '../../../blocks';
 import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet, useGetQuestActivities } from '../../../queries';
 import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
@@ -10,8 +10,11 @@ import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
 import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
-import { useState } from 'react';
+// import moleSwapBg from '../../../../static/assets/website/rewards/moleswap-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
+
+import { Box } from '../../../blocks';
+
 
 const AppQuestSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,6 +33,10 @@ const AppQuestSection = () => {
     appId: "lastone"
   });
 
+  // const { data: moleSwapQuests } = useGetQuests({
+  //   appId: "moleswap"
+  // });
+
   const { data: ramenSwapQuests } = useGetQuests({
     appId: "ramen-swap"
   });
@@ -39,10 +46,15 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: ramenSwapQuestsProgress, refetch: refetchRamenProgress } = useGetQuestsProgress({
+  const { data: ramenSwapQuestsProgress, refetch: refetchRamenSwapProgress } = useGetQuestsProgress({
     appId: "ramen-swap",
     userId: userDetails?.userId
   });
+
+  // const { data: moleSwapQuestsProgress, refetch: refetchMoleProgress } = useGetQuestsProgress({
+  //   appId: "moleswap",
+  //   userId: userDetails?.userId
+  // });
 
   const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
   const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
@@ -73,11 +85,11 @@ const AppQuestSection = () => {
   const refetchAll = () => {
     refetchActivities();
     refetchLastOneProgress();
-    refetchRamenProgress();
+    refetchRamenSwapProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-04-17T14:00:00Z";
+  const targetDate = "2026-04-21T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -102,7 +114,7 @@ const AppQuestSection = () => {
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
   const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
 
-  const hiddenLastOneQuestIds = ['lastone_win_50pc_claim', 'lastone_win_3_rounds_claim', 'lastone_participate_25_rounds'];
+  const hiddenLastOneQuestIds = [ 'lastone_place_bid','lastone_win_50pc_claim', 'lastone_win_3_rounds_claim', 'lastone_participate_25_rounds', 'lastone_bid_10_single_round', 'lastone_bet_20pc_single_round', 'lastone_participate_3_rounds', 'lastone_share_bid_or_win_social'];
   const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED' && !hiddenLastOneQuestIds.includes(q.id));
   const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
@@ -140,7 +152,27 @@ const AppQuestSection = () => {
               setErrorMessage={setErrorMessage}
               linkColor="#653468"
               titleGradient='linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);'
-            />
+        />
+
+            {/*<AppQuestCard
+              appName="MoleSwap"
+              appUrl="moleswap.com"
+              bgImage={moleSwapBg}
+              description="Complete quests on moleswap.com and claim to level up and earn rewards"
+              resetTime={timeLeft}
+              quests={enabledMoleSwapQuests}
+              activityStatus={activityStatuses}
+              isLoading={isLoadingActivities}
+              refetchActivities={refetchAll}
+              userId={userDetails?.userId}
+              completedMap={moleSwapCompletedMap}
+              questProgressMap={questProgressMap}
+              setErrorMessage={setErrorMessage}
+              gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
+              titleGradient="linear-gradient(180deg, #000 16.15%, #5562F3 89.06%)"
+              linkColor="#184581"
+              blurColor="#80D597"
+            />*/}
 
             <AppQuestCard
               appName="Ramen Swap"
