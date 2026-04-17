@@ -2,10 +2,9 @@
 // @ts-nocheck
 import { FC } from "react";
 import { css } from "styled-components";
-import InfiniteScroll from "react-infinite-scroller";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 
-import { Box, Spinner, Text } from "../../blocks";
+import { Box } from "../../blocks";
 import { LeaderboardHeader } from "./Header/LeaderboardHeader";
 import { LeaderBoardNullState } from "./List/LeaderboardNullState";
 import { CultLeaderboardColumns } from "./Cult/CultLeaderboardColumns";
@@ -27,17 +26,12 @@ const CultLeaderboard: FC = () => {
     data,
     isError,
     refetch,
-    fetchNextPage,
-    hasNextPage,
     isLoading,
-    isFetchingNextPage,
-  } = useGetCultLeaderboard({ pageSize: 20 });
+  } = useGetCultLeaderboard({ pageSize: 100 });
 
   const leaderboardList = isLoading
     ? Array(10).fill(0)
-    : data?.pages.flatMap((page) => page.users) || [];
-
-  const hasMoreData = !isFetchingNextPage && hasNextPage;
+    : (data?.pages.flatMap((page) => page.users) || []).slice(0, 100);
 
   // Find current user in loaded leaderboard data
   const currentUserEntry = !isLoading
@@ -128,57 +122,36 @@ const CultLeaderboard: FC = () => {
                 overflow-x: hidden;
               `}
             >
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={() => fetchNextPage()}
-                hasMore={hasMoreData}
-                useWindow={false}
-                threshold={150}
-              >
-                {leaderboardList.map((item: CultLeaderboardUser, index: number) => {
-                  const nextItem = leaderboardList[index + 1];
-                  const showSeparator = !isLoading && leaderboardList.length > 50 && item.rank <= 50 && (!nextItem || nextItem.rank > 50);
+              {leaderboardList.map((item: CultLeaderboardUser, index: number) => {
+                const showSeparator = !isLoading && index === 49 && leaderboardList.length > 50;
 
-                  return (
-                    <Box key={`${index}`}>
-                      <CultLeaderboardItem
-                        rank={item.rank}
-                        userId={item.userId}
-                        userWallet={item.userWallet}
-                        totalPoints={item.totalScore}
-                        isLoading={isLoading}
-                      />
-                      {showSeparator && (
+                return (
+                  <Box key={`${index}`}>
+                    <CultLeaderboardItem
+                      rank={item.rank}
+                      userId={item.userId}
+                      userWallet={item.userWallet}
+                      totalPoints={item.totalScore}
+                      isLoading={isLoading}
+                    />
+                    {showSeparator && (
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap="spacing-xs"
+                      >
                         <Box
-                          display="flex"
-                          alignItems="center"
-                          gap="spacing-xs"
-                        >
-                          <Box
-                            css={css`
-                              flex: 1;
-                              height: 2px;
-                              background: #D548EC;
-                            `}
-                          />
-                        </Box>
-                      )}
-                    </Box>
-                  );
-                })}
-
-                {isFetchingNextPage && (
-                  <Box
-                    width="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    margin="spacing-sm spacing-none"
-                  >
-                    <Spinner size="medium" variant="primary" />
+                          css={css`
+                            flex: 1;
+                            height: 2px;
+                            background: #D548EC;
+                          `}
+                        />
+                      </Box>
+                    )}
                   </Box>
-                )}
-              </InfiniteScroll>
+                );
+              })}
             </Box>
           </Box>
         )}
