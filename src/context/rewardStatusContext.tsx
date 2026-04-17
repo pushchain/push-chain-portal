@@ -53,7 +53,6 @@ export const RewardStatusContextProvider = ({ children }: { children: ReactNode 
 
   const isLocked = !isWalletConnected || (isCultUser ? false : (!(
     (sybilData?.summary?.completedCriteria ?? 0) >= 2 &&
-    sybilData?.advanced?.completed === true &&
     sybilData?.basic?.twitter?.completed === true &&
     sybilData?.basic?.discord?.completed === true
   ) && isFetched));

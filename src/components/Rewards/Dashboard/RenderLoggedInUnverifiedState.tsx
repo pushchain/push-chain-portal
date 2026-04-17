@@ -139,8 +139,9 @@ export const RenderLoggedInUnverifiedState = () => {
 		{ enabled: !!userDetails?.userId },
     );
 
-  const isStep1Complete = !!sybilStatusData?.data?.advanced?.completed;
-  const isStep2Complete = userActivity?.follow_push_on_twitter?.status === 'COMPLETED';
+  // const isWalletStepComplete = !!sybilStatusData?.data?.advanced?.completed;
+  const isStep1Complete = userActivity?.follow_push_on_twitter?.status === 'COMPLETED';
+  const isStep2Complete = userActivity?.follow_push_on_discord?.status === 'COMPLETED';
 
   return (
     <Box
@@ -193,6 +194,7 @@ export const RenderLoggedInUnverifiedState = () => {
 
         <Box display="flex" flexDirection="column" width="100%" margin="spacing-sm spacing-none spacing-none spacing-none" gap="spacing-sm" css={css`z-index: 1;`}>
 
+          {/* Wallet verification step - commented out
           <Box
             display="flex"
             flexDirection={{ initial: "row", tb: "column" }}
@@ -202,7 +204,7 @@ export const RenderLoggedInUnverifiedState = () => {
             gap="spacing-xs"
             css={css`
               border-radius: var(--radius-md, 24px);
-              border: ${isStep1Complete ? '1px solid #fff' : '2px solid var(--stroke-brand-medium, #D548EC)'};
+              border: ${isWalletStepComplete ? '1px solid #fff' : '2px solid var(--stroke-brand-medium, #D548EC)'};
               background: rgba(255, 255, 255, 0.4);
               box-sizing: border-box;
             `}
@@ -223,16 +225,14 @@ export const RenderLoggedInUnverifiedState = () => {
               sybilStatusData={sybilStatusData}
             />
           </Box>
+          */}
 
-          {/* Step 2 & 3: Social Verifications */}
+          {/* Step 1: Twitter, Step 2: Discord */}
           <Box display="flex" flexDirection={{ initial: "row", tb: "column" }} gap="spacing-sm" width="100%">
             {ACTIVITY_LIST.map((item, index) => {
-              const stepNumber = index + 2;
-              const isStep2 = stepNumber === 2;
-              const isLocked = isStep2
-                ? !isStep1Complete
-                : !isStep2Complete;
-              const isCompleted = isStep2 ? isStep2Complete : userActivity?.follow_push_on_discord?.status === 'COMPLETED';
+              const stepNumber = index + 1;
+              const isLocked = stepNumber === 2 ? !isStep1Complete : false;
+              const isCompleted = stepNumber === 1 ? isStep1Complete : isStep2Complete;
               const isActive = !isLocked && !isCompleted;
 
               return (
