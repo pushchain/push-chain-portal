@@ -100,13 +100,6 @@ const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
 
       <Skeleton isLoading={isLoading}>
         <Box display="flex" alignItems="center" gap="spacing-md">
-          <Text
-            variant="bs-semibold"
-            color="text-tertiary"
-            display={{ ml: "none", initial: "block" }}
-          >
-            {userId}
-          </Text>
           <Box
             width="88px"
             minWidth="88px"

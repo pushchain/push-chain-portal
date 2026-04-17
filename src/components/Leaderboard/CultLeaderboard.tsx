@@ -64,7 +64,7 @@ const CultLeaderboard: FC = () => {
       `}
     >
       <Box css={css`position: relative; z-index: 2;`}>
-        <LeaderboardHeader title="Cult Leaderboard" />
+        <LeaderboardHeader title="Top Cult Leaderboard" />
       </Box>
 
       <Box
@@ -112,7 +112,7 @@ const CultLeaderboard: FC = () => {
                   rank={currentUserEntry.rank}
                   userId={currentUserEntry.userId}
                   userWallet={currentUserEntry.userWallet}
-                  totalPoints={currentUserEntry.totalPoints}
+                  totalPoints={currentUserEntry.totalScore}
                   isLoading={false}
                   highlighted
                 />
@@ -145,7 +145,7 @@ const CultLeaderboard: FC = () => {
                         rank={item.rank}
                         userId={item.userId}
                         userWallet={item.userWallet}
-                        totalPoints={item.totalPoints}
+                        totalPoints={item.totalScore}
                         isLoading={isLoading}
                       />
                       {showSeparator && (
