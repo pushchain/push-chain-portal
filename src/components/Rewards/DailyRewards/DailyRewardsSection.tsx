@@ -37,8 +37,6 @@ export type DailyRewardsSectionProps = Record<string, never>;
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
-  const [isSigning, setIsSigning] = useState(false);
-  const [justClaimed, setJustClaimed] = useState(false);
   const { universalAccount } = usePushWalletContext("wallet1");
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -62,14 +60,11 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
 
   const handleClaimRewards = async () => {
-    if (!authHeaders) setIsSigning(true);
     const headers = authHeaders ?? (await getAuthHeaders());
-    setIsSigning(false);
     if (!headers) return;
     const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
       onSuccess: () => {
-        setJustClaimed(true);
         trackEvent(`daily_reward_day_${currentDay}_claimed`, {
           event_category: "rewards",
           event_label: `day_${currentDay}`,
@@ -184,16 +179,16 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
             <Skeleton
               isLoading={
                 isLockedStatusLoading ||
-                (isLoadingRewards && !isClaimingRewards && !isSigning)
+                (isLoadingRewards && !isClaimingRewards)
               }
             >
-              {canClaimRewards && !justClaimed ? (
+              {canClaimRewards ? (
                 <Button
                   variant="tertiary"
                   size="small"
                   onClick={handleClaimRewards}
-                  disabled={isClaimingRewards || isSigning}
-                  loading={isClaimingRewards || isSigning}
+                  disabled={isClaimingRewards}
+                  loading={isClaimingRewards}
                 >
                   Claim
                 </Button>
