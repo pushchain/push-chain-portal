@@ -142,9 +142,13 @@ const QuestItem: FC<QuestItemProps> = ({
                         max={100}
                         size="large"
                         progressIcon={
-                          <Tooltip title={`${apiProgress}%`}>
+                          userId && !rewardsLocked ? (
+                            <Tooltip title={`${apiProgress}%`}>
+                              <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                            </Tooltip>
+                          ) : (
                             <Box display="flex"><RewardsStarGradient size={35} /></Box>
-                          </Tooltip>
+                          )
                         }
                       />
                     </Box>
