@@ -55,8 +55,8 @@ const BossQuestsSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: moleSwapQuestsProgress } = useGetQuestsProgress({
-    appId: "moleswap",
+  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
+    appId: "ramen-swap",
     userId: userDetails?.userId
   });
 
@@ -66,14 +66,14 @@ const BossQuestsSection = () => {
 
   const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
 
-  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0,moleSwapQuestsProgress?.data?.progressPercentage ?? 0);
+  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0,ramenSwapQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
     bossCompletedMap[q.questId] = q.completed;
   });
 
-  const targetDate = "2026-04-24T14:00:00Z";
+  const targetDate = "2026-04-21T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const finishFiveQuestDescription = "Earn XP by completing 5 quests on a single app in a week";
