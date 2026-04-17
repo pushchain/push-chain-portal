@@ -114,8 +114,7 @@ const AppQuestSection = () => {
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
   const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
 
-  const hiddenLastOneQuestIds = [ 'lastone_place_bid','lastone_win_50pc_claim', 'lastone_win_3_rounds_claim', 'lastone_participate_25_rounds', 'lastone_bid_10_single_round', 'lastone_bet_20pc_single_round', 'lastone_participate_3_rounds', 'lastone_share_bid_or_win_social'];
-  const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED' && !hiddenLastOneQuestIds.includes(q.id));
+  const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
   const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
