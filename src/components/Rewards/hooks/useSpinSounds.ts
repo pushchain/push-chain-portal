@@ -21,7 +21,7 @@ const useSpinSounds = () => {
     const env = c.createGain();
     osc.type = 'square';
     osc.frequency.value = freq;
-    env.gain.setValueAtTime(0.25, c.currentTime);
+    env.gain.setValueAtTime(0.12, c.currentTime);
     env.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
     osc.connect(env);
     env.connect(g);
@@ -33,7 +33,7 @@ const useSpinSounds = () => {
     const env2 = c.createGain();
     osc2.type = 'square';
     osc2.frequency.value = freq * 2;
-    env2.gain.setValueAtTime(0.08, c.currentTime);
+    env2.gain.setValueAtTime(0.04, c.currentTime);
     env2.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.04);
     osc2.connect(env2);
     env2.connect(g);
@@ -71,7 +71,7 @@ const useSpinSounds = () => {
     try {
       const c = ctx();
       const g = c.createGain();
-      g.gain.value = 0.15;
+      g.gain.value = 0.07;
       g.connect(c.destination);
       gainRef.current = g;
       activeRef.current = true;
@@ -102,7 +102,7 @@ const useSpinSounds = () => {
     try {
       const c = ctx();
       const g = c.createGain();
-      g.gain.value = 0.18;
+      g.gain.value = 0.08;
       g.connect(c.destination);
 
       const notes = [
@@ -120,7 +120,7 @@ const useSpinSounds = () => {
         osc.type = 'square';
         osc.frequency.value = freq;
         env.gain.setValueAtTime(0, c.currentTime + time);
-        env.gain.linearRampToValueAtTime(0.3, c.currentTime + time + 0.02);
+        env.gain.linearRampToValueAtTime(0.15, c.currentTime + time + 0.02);
         env.gain.exponentialRampToValueAtTime(0.001, c.currentTime + time + 0.15);
         osc.connect(env);
         env.connect(g);
@@ -134,7 +134,7 @@ const useSpinSounds = () => {
         osc.type = 'square';
         osc.frequency.value = freq;
         env.gain.setValueAtTime(0, c.currentTime + 0.55);
-        env.gain.linearRampToValueAtTime(0.15, c.currentTime + 0.6);
+        env.gain.linearRampToValueAtTime(0.07, c.currentTime + 0.6);
         env.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.2);
         osc.connect(env);
         env.connect(g);
