@@ -117,7 +117,7 @@ const QuestItem: FC<QuestItemProps> = ({
                 min-width: 0;
               `}
             >
-              {quest.appName === 'Last One' ? quest.title : quest.description }
+              {quest.title}
             </Text>
 
             <Box
