@@ -71,8 +71,9 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
         });
         refetch();
       },
-      onError: (error) => {
+      onError: (error: any) => {
         console.error(error);
+        setErrorMessage(error?.response?.data?.error?.message || error?.message || "Failed to claim rewards. Please try again.");
       },
     });
   };
@@ -236,6 +237,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
       >
         {dailyRewardsActivities?.map((activity) => (
           <DailyRewardsItem
+            key={activity.id}
             dailyCheckInDetails={getDailyCheckInDetails}
             isLoading={isLoadingRewards}
             activity={activity}

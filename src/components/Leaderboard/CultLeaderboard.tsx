@@ -137,7 +137,7 @@ const CultLeaderboard: FC = () => {
               >
                 {leaderboardList.map((item: CultLeaderboardUser, index: number) => {
                   const nextItem = leaderboardList[index + 1];
-                  const showSeparator = !isLoading && item?.length > 50 &&  item.rank <= 50 && (!nextItem || nextItem.rank > 50);
+                  const showSeparator = !isLoading && leaderboardList.length > 50 && item.rank <= 50 && (!nextItem || nextItem.rank > 50);
 
                   return (
                     <Box key={`${index}`}>
