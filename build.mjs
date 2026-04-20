@@ -9,6 +9,7 @@ const envPresets = {
   prod: {
     VITE_APP_DEPLOY_ENV: "PROD",
     VITE_APP_PUBLIC_URL: "https://portal.push.org/",
+    VITE_APP_ENV: "prod",
   },
   preview: {
     VITE_APP_DEPLOY_ENV: "PREVIEW",

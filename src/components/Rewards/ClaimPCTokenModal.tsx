@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { css } from "styled-components";
-
-import { Alert, Box, Button, Modal, PCTokens, Text } from "../../blocks";
-import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
 import { usePushWalletContext } from "@pushchain/ui-kit";
-import { walletToFullCAIP10 } from "../../helpers/web3helper";
+
 import { useGetSeasonThreeUserByWallet } from "../../queries";
 import { useGetPCTokenBalance } from "../../queries/hooks/rewards/useGetPCTokenBalance";
 import { useClaimPCTokens } from "../../queries/hooks/rewards/useClaimPCTokens";
 import { useAuthHeaders } from "../../context/authHeadersContext";
-import { trackEvent } from "../../helpers/analytics";
 import useMediaQuery from "../../hooks/useMediaQuery";
+
+import { trackEvent } from "../../helpers/analytics";
 import { device } from "../../config/globals";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
+
+import { Alert, Box, Button, Modal, PCTokens, Text } from "../../blocks";
+import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
+
+
 
 type ClaimPCTokenModalProps = {
   isOpen: boolean;
@@ -172,6 +176,12 @@ const ClaimPCTokenModal = ({ isOpen, onClose }: ClaimPCTokenModalProps) => {
             </Text>
           </Box>
         </Box>
+
+        {claimed && (
+          <Box width="100%">
+            <Alert variant="success" description="Tokens claimed successfully!" />
+          </Box>
+        )}
 
         {claimError && (
           <Box width="100%">
