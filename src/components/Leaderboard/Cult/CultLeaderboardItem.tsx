@@ -26,7 +26,6 @@ export type CultLeaderboardItemProps = {
 
 const CultLeaderboardItem: FC<CultLeaderboardItemProps> = ({
   rank,
-  userId,
   userWallet,
   totalPoints,
   isLoading,
