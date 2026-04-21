@@ -89,7 +89,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-04-21T14:00:00Z";
+  const targetDate = "2026-04-23T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
