@@ -306,7 +306,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
         border="border-xs solid stroke-tertiary"
         overflow="hidden"
         css={css`
-          background: ${bgImage ? `url(${bgImage}) center/cover no-repeat, ${gradient}` : gradient};
+          background: ${bgImage ? `url(${bgImage}) center/cover no-repeat${gradient ? `, ${gradient}` : ''}` : gradient};
           z-index: 1;
         `}
       >
@@ -345,6 +345,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
             css={css`
               background: rgba(255, 255, 255, 0.20);
               border: 1px solid rgba(255, 255, 255, 0.50);
+              backdrop-filter: blur(5.30px);
             `}
           >
             <Text
