@@ -14,6 +14,7 @@ const envPresets = {
   preview: {
     VITE_APP_DEPLOY_ENV: "PREVIEW",
     VITE_APP_PUBLIC_URL: `https://pushchain.github.io${getPreviewBasePath()}`,
+    VITE_APP_ENV: "dev",
   },
 };
 

@@ -114,6 +114,13 @@ const AppQuestSection = () => {
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
   const bridgeAppCompletedMap = buildCompletedMap(bridgeAppQuestsProgress?.data?.quests);
 
+  const lastOneAllowedIds = new Set([
+    "lastone_place_5_bids",
+    "lastone_bid_15_single_round",
+    "lastone_participate_5_rounds",
+    "lastone_place_30_bids_total",
+    "lastone_share_bid_or_win_on_x",
+  ]);
   const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
   const enabledBridgeAppQuests = bridgeAppQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
