@@ -372,6 +372,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
                 padding: 24px;
                 box-sizing: border-box;
                 position: relative;
+                pointer-events: none;
                 z-index: 1;
               `}
             >

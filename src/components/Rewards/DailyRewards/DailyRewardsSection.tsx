@@ -36,6 +36,7 @@ export type DailyRewardsSectionProps = Record<string, never>;
 
 const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [justClaimed, setJustClaimed] = useState(false);
   const { authHeaders, getAuthHeaders } = useAuthHeaders();
   const { universalAccount } = usePushWalletContext("wallet1");
   const caip10WalletAddress = walletToFullCAIP10(
@@ -57,7 +58,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
   const { mutate: claimDailyRewards, isPending: isClaimingRewards } =
     useClaimDailyRewardsSeasonThree();
 
-  const canClaimRewards = getDailyCheckInDetails?.canCheckInToday;
+  const canClaimRewards = getDailyCheckInDetails?.canCheckInToday && !justClaimed;
 
   const handleClaimRewards = async () => {
     const headers = authHeaders ?? (await getAuthHeaders());
@@ -65,6 +66,7 @@ const DailyRewardsSection: FC<DailyRewardsSectionProps> = () => {
     const currentDay = getDailyCheckInDetails?.streak ?? 0;
     claimDailyRewards(headers, {
       onSuccess: () => {
+        setJustClaimed(true);
         trackEvent(`daily_reward_day_${currentDay}_claimed`, {
           event_category: "rewards",
           event_label: `day_${currentDay}`,
