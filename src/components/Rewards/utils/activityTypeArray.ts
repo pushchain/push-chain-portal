@@ -25,6 +25,7 @@ export const otherRewardActivities: ActvityType[] = [
   "push_bridge_from_push_five",
   "push_bridge_usdc_usdt_ten",
   "boss_complete_all_5_app_quests",
+  "boss_complete_all_5_app_quests_after_2026_04_23_1900_ist",
   "boss_hold_5_rare_passes",
 
 ];

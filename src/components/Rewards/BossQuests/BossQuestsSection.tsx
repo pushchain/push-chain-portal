@@ -55,8 +55,8 @@ const BossQuestsSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: ramenSwapQuestsProgress } = useGetQuestsProgress({
-    appId: "ramen-swap",
+  const { data: bridgeAppQuestsProgress } = useGetQuestsProgress({
+    appId: "push-chain-bridge",
     userId: userDetails?.userId
   });
 
@@ -66,7 +66,7 @@ const BossQuestsSection = () => {
 
   const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
 
-  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0,ramenSwapQuestsProgress?.data?.progressPercentage ?? 0);
+  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0,bridgeAppQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
@@ -199,7 +199,7 @@ const BossQuestsSection = () => {
             image={contentBossQuestImg}
             />
 
-          {bossQuests?.data.quests.map((item) => {
+          {bossQuests?.data.quests.filter((q) => q.status === 'ENABLED').map((item) => {
             const isRarePass = item.baseXP == 0 && item.basePoints == 0;
             return (
               <BossQuestCard
