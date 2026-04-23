@@ -35,7 +35,7 @@ const BossQuestsSection = () => {
     appId:'boss-quests'
   })
 
-  const bossQuestIds = bossQuests?.data?.quests?.map((q) => q.id) || [];
+  const bossQuestIds = bossQuests?.data?.quests?.filter((q) => q.status === 'ENABLED').map((q) => q.id) || [];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
@@ -66,7 +66,7 @@ const BossQuestsSection = () => {
 
   const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
 
-  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0,bridgeAppQuestsProgress?.data?.progressPercentage ?? 0);
+  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0, bridgeAppQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
