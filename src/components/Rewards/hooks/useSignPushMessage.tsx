@@ -63,6 +63,9 @@ export const useSignPushMessage = () => {
         const messageString = siweMessage.prepareMessage();
         const messageBytes = new TextEncoder().encode(messageString);
         const signedMessageBytes = await handleSignMessage(messageBytes);
+        if (!signedMessageBytes?.length) {
+          throw new Error("Signature request failed or was rejected. Please try again.");
+        }
         const signature = ethers.utils.hexlify(signedMessageBytes);
 
         setSignature(signature);

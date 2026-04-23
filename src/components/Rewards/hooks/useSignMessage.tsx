@@ -71,6 +71,9 @@ export const useSignMessageWithEthereum = () => {
         const messageBytes = encoder.encode(messageToSign);
 
         const signedMessageBytes = await handleSignMessage(messageBytes);
+        if (!signedMessageBytes?.length) {
+          throw new Error("Signature request failed or was rejected. Please try again.");
+        }
         const signature = ethers.utils.hexlify(signedMessageBytes);
 
 
