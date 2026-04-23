@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
-import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
+import bridgeAppBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
 // import moleSwapBg from '../../../../static/assets/website/rewards/moleswap-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
@@ -37,8 +37,8 @@ const AppQuestSection = () => {
   //   appId: "moleswap"
   // });
 
-  const { data: ramenSwapQuests } = useGetQuests({
-    appId: "ramen-swap"
+  const { data: bridgeAppQuests } = useGetQuests({
+    appId: "push-chain-bridge"
   });
 
   const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
@@ -46,8 +46,8 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: ramenSwapQuestsProgress, refetch: refetchRamenSwapProgress } = useGetQuestsProgress({
-    appId: "ramen-swap",
+  const { data: bridgeAppQuestsProgress, refetch: refetchBridgeAppProgress } = useGetQuestsProgress({
+    appId: "push-chain-bridge",
     userId: userDetails?.userId
   });
 
@@ -57,11 +57,11 @@ const AppQuestSection = () => {
   // });
 
   const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
-  const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
+  const bridgeAppQuestIds = bridgeAppQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
     ...lastOneQuestIds,
-    ...ramenSwapQuestIds,
+    ...bridgeAppQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -85,11 +85,11 @@ const AppQuestSection = () => {
   const refetchAll = () => {
     refetchActivities();
     refetchLastOneProgress();
-    refetchRamenSwapProgress();
+    refetchBridgeAppProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-04-23T14:00:00Z";
+  const targetDate = "2026-04-30T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -112,10 +112,17 @@ const AppQuestSection = () => {
   };
 
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
-  const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
+  const bridgeAppCompletedMap = buildCompletedMap(bridgeAppQuestsProgress?.data?.quests);
 
+  const lastOneAllowedIds = new Set([
+    "lastone_place_5_bids",
+    "lastone_bid_15_single_round",
+    "lastone_participate_5_rounds",
+    "lastone_place_30_bids_total",
+    "lastone_share_bid_or_win_on_x",
+  ]);
   const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledBridgeAppQuests = bridgeAppQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -153,45 +160,44 @@ const AppQuestSection = () => {
               titleGradient='linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);'
         />
 
-            {/*<AppQuestCard
-              appName="MoleSwap"
-              appUrl="moleswap.com"
-              bgImage={moleSwapBg}
-              description="Complete quests on moleswap.com and claim to level up and earn rewards"
-              resetTime={timeLeft}
-              quests={enabledMoleSwapQuests}
-              activityStatus={activityStatuses}
-              isLoading={isLoadingActivities}
-              refetchActivities={refetchAll}
-              userId={userDetails?.userId}
-              completedMap={moleSwapCompletedMap}
-              questProgressMap={questProgressMap}
-              setErrorMessage={setErrorMessage}
-              gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
-              titleGradient="linear-gradient(180deg, #000 16.15%, #5562F3 89.06%)"
-              linkColor="#184581"
-              blurColor="#80D597"
-            />*/}
 
             <AppQuestCard
-              appName="Ramen Swap"
-              appUrl="ramenfi.xyz"
-              bgImage={ramenBg}
-              description="Complete quests on ramenfi.xyz and claim to level up and earn rewards"
+              appName="Push Chain Bridge"
+              appUrl="bridge.push.org"
+              bgImage={bridgeAppBg}
+              description="Complete quests on lastone.fun and claim to level up and earn rewards"
               resetTime={timeLeft}
-              quests={enabledRamenSwapQuests}
+              quests={enabledBridgeAppQuests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
               refetchActivities={refetchAll}
               userId={userDetails?.userId}
-              completedMap={ramenSwapCompletedMap}
+              completedMap={bridgeAppCompletedMap}
               questProgressMap={questProgressMap}
               setErrorMessage={setErrorMessage}
-              gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
-              titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%)"
-              linkColor="#DB2D33"
-              blurColor="#40ee8b"
-            />
+              titleGradient="linear-gradient(180deg, #000 16.15%, #9C60E4 89.06%)"
+              linkColor="#5A1881"
+        />
+
+        {/*<AppQuestCard
+          appName="MoleSwap"
+          appUrl="moleswap.com"
+          bgImage={moleSwapBg}
+          description="Complete quests on moleswap.com and claim to level up and earn rewards"
+          resetTime={timeLeft}
+          quests={enabledMoleSwapQuests}
+          activityStatus={activityStatuses}
+          isLoading={isLoadingActivities}
+          refetchActivities={refetchAll}
+          userId={userDetails?.userId}
+          completedMap={moleSwapCompletedMap}
+          questProgressMap={questProgressMap}
+          setErrorMessage={setErrorMessage}
+          gradient="linear-gradient(241deg, rgba(221, 245, 255, 1) 0%, rgba(127, 231, 169, 1) 100%)"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #5562F3 89.06%)"
+          linkColor="#184581"
+          blurColor="#80D597"
+        />*/}
           </Box>
     </Box>
   );
