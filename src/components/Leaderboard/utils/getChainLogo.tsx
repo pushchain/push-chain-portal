@@ -30,8 +30,9 @@ export const getChainLogo = (chainId: number | string | null) => {
     case 8453:
     case 84532:
       return <BaseLogo size={11} />;
-    case 56:
-      return <BnbLogo size={16} />;
+      case 56:
+      case 97:
+      return <BnbLogo size={18} />;
     case 10:
       return <OptimismLogo size={16} />;
     case 137:
