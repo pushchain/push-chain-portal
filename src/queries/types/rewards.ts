@@ -32,6 +32,7 @@ export type ActvityType =
   | "push_ninja_buy_assets_worth_four_pc"
   | "boss_complete_all_5_app_quests"
   | "boss_complete_all_5_app_quests_after_2026_04_23_1900_ist"
+  | "boss_complete_all_5_app_quests_after_2026_04_30_1930_ist"
   | "boss_hold_5_rare_passes"
 
 
