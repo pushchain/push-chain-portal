@@ -50,13 +50,13 @@ const BossQuestsSection = () => {
     userId: userDetails?.userId,
   });
 
-  const { data: lastOneQuestsProgress } = useGetQuestsProgress({
-    appId: "lastone",
+  const { data: unichessQuestsProgress } = useGetQuestsProgress({
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
-  const { data: bridgeAppQuestsProgress } = useGetQuestsProgress({
-    appId: "push-chain-bridge",
+  const { data: pushNinjaQuestsProgress } = useGetQuestsProgress({
+    appId: "push-ninja",
     userId: userDetails?.userId
   });
 
@@ -66,14 +66,14 @@ const BossQuestsSection = () => {
 
   const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
 
-  const questsProgress = Math.max(lastOneQuestsProgress?.data?.progressPercentage ?? 0, bridgeAppQuestsProgress?.data?.progressPercentage ?? 0);
+  const questsProgress = Math.max(unichessQuestsProgress?.data?.progressPercentage ?? 0, pushNinjaQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
     bossCompletedMap[q.questId] = q.completed;
   });
 
-  const targetDate = "2026-04-30T14:00:00Z";
+  const targetDate = "2026-05-07T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const finishFiveQuestDescription = "Earn XP by completing 5 quests on a single app in a week";
