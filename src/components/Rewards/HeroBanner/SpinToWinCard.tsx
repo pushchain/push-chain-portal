@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { css } from 'styled-components';
+import { css, keyframes } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import { useSpinStatus } from '../hooks/useSpinStatus';
@@ -14,6 +14,13 @@ import stopperImage from '/static/assets/website/rewards/stopper.webp';
 import SpinToWinModal from './SpinToWinModal';
 
 
+
+const wiggle = keyframes`
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(8deg); }
+`;
 
 const SpinToWinCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -175,6 +182,10 @@ const SpinToWinCard = () => {
                 css={css`
                   width: 100%;
                   position: relative;
+                  ${canShowFreeSpin && isWalletConnected && css`
+                    animation: ${wiggle} 1s ease-in-out infinite;
+                    transform-origin: center;
+                  `}
                 `}
               >
                 Spin Now
