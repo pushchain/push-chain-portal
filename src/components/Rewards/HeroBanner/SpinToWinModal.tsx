@@ -44,7 +44,7 @@ type ButtonConfig = {
 };
 
 const spinConfig: SpinPrize[] = [
-  { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "RARE PASS" },
+  { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "Rare Pass" },
   { slotId: 1, rewardType: "POINTS", rewardValue: 50, label: "50 Points" },
   { slotId: 2, rewardType: "POINTS", rewardValue: 100, label: "100 Points" },
   { slotId: 3, rewardType: "POINTS", rewardValue: 150, label: "150 Points" },
@@ -382,13 +382,14 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
               top: -5%;
               left: 50%;
               transform: translate(-50%, -50%);
+
             `}>
               {(isXPBoostWinning || isPCTokenWinning) && <Lottie
                 animationData={isPCTokenWinning ? PCTokenAnimation : MultiplierAnimation}
                 loop
                 style={{ width: '340px', margin: "60px 0 0 0" }}
               />}
-              {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
+              {isRarePass && <Image src={OpenPassImage} alt="Open Pass" style={{ marginBottom: '40px', filter: 'drop-shadow(0 12px 16px rgba(0,0,0,0.6))' }} width={120} />}
               {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
             </Box>
 
