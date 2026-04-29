@@ -132,14 +132,14 @@ export const CharacterImage = ({ characterId, width = 248, height = 318, reflect
       <img
         src={accessoryPath}
         alt={`Accessory ${traits.accessory}`}
-        style={{ ...imgStyle, zIndex: 3 }}
+        style={{ ...imgStyle, zIndex: 4 }}
         onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
       {/* Headgear */}
       <img
         src={headgearPath}
         alt={`Headgear ${traits.headgear}`}
-        style={{ ...imgStyle, zIndex: 4 }}
+        style={{ ...imgStyle, zIndex: 3 }}
         onError={(e) => { console.log('[CharacterImage] Failed to load:', (e.target as HTMLImageElement).src); setImageError(true); }}
       />
 

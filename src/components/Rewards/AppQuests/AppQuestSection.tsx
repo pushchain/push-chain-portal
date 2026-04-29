@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
-import bridgeAppBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
+import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
+import pushNinjaBg from '../../../../static/assets/website/rewards/Push-Ninja-bg.webp';
 // import moleSwapBg from '../../../../static/assets/website/rewards/moleswap-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
@@ -29,25 +29,25 @@ const AppQuestSection = () => {
     walletAddress: caip10WalletAddress,
   })
 
-  const { data: lastOneQuests } = useGetQuests({
-    appId: "lastone"
+  const { data: unichessQuests } = useGetQuests({
+    appId: "unichess"
   });
 
   // const { data: moleSwapQuests } = useGetQuests({
   //   appId: "moleswap"
   // });
 
-  const { data: bridgeAppQuests } = useGetQuests({
-    appId: "push-chain-bridge"
+  const { data: pushNinjaQuests } = useGetQuests({
+    appId: "push-ninja"
   });
 
-  const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
-    appId: "lastone",
+  const { data: unichessQuestsProgress, refetch: refetchUnichessProgress } = useGetQuestsProgress({
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
-  const { data: bridgeAppQuestsProgress, refetch: refetchBridgeAppProgress } = useGetQuestsProgress({
-    appId: "push-chain-bridge",
+  const { data: pushNinjaQuestsProgress, refetch: refetchPushNinjaProgress } = useGetQuestsProgress({
+    appId: "push-ninja",
     userId: userDetails?.userId
   });
 
@@ -56,12 +56,12 @@ const AppQuestSection = () => {
   //   userId: userDetails?.userId
   // });
 
-  const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
-  const bridgeAppQuestIds = bridgeAppQuests?.data?.quests?.map((q) => q.id) || [];
+  const unichessQuestIds = unichessQuests?.data?.quests?.map((q) => q.id) || [];
+  const pushNinjaQuestIds = pushNinjaQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
-    ...lastOneQuestIds,
-    ...bridgeAppQuestIds,
+    ...unichessQuestIds,
+    ...pushNinjaQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -84,12 +84,12 @@ const AppQuestSection = () => {
 
   const refetchAll = () => {
     refetchActivities();
-    refetchLastOneProgress();
-    refetchBridgeAppProgress();
+    refetchUnichessProgress();
+    refetchPushNinjaProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-04-30T14:00:00Z";
+  const targetDate = "2026-05-07T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -111,18 +111,11 @@ const AppQuestSection = () => {
     return map;
   };
 
-  const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
-  const bridgeAppCompletedMap = buildCompletedMap(bridgeAppQuestsProgress?.data?.quests);
+  const unichessCompletedMap = buildCompletedMap(unichessQuestsProgress?.data?.quests);
+  const pushNinjaCompletedMap = buildCompletedMap(pushNinjaQuestsProgress?.data?.quests);
 
-  const lastOneAllowedIds = new Set([
-    "lastone_place_5_bids",
-    "lastone_bid_15_single_round",
-    "lastone_participate_5_rounds",
-    "lastone_place_30_bids_total",
-    "lastone_share_bid_or_win_on_x",
-  ]);
-  const enabledLastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledBridgeAppQuests = bridgeAppQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledUnichessQuests = unichessQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledPushNinjaQuests = pushNinjaQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -143,40 +136,40 @@ const AppQuestSection = () => {
               `}
         >
             <AppQuestCard
-              appName="Last One"
-              appUrl="lastone.fun"
-              bgImage={lastOneBg}
-              description="Complete quests on lastone.fun and claim to level up and earn rewards"
+              appName="Degen Chess"
+              appUrl="degenchess.fun"
+              bgImage={unichessBg}
+              description=""
               resetTime={timeLeft}
-              quests={enabledLastOneQuests}
+              quests={enabledUnichessQuests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
               refetchActivities={refetchAll}
               userId={userDetails?.userId}
-              completedMap={lastOneCompletedMap}
+              completedMap={unichessCompletedMap}
               questProgressMap={questProgressMap}
               setErrorMessage={setErrorMessage}
-              linkColor="#653468"
-              titleGradient='linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);'
+              linkColor="#40278D"
+              titleGradient="linear-gradient(180deg, #000 16.15%, #40278D 89.06%)"
         />
 
 
             <AppQuestCard
-              appName="Push Chain Bridge"
-              appUrl="bridge.push.org"
-              bgImage={bridgeAppBg}
-              description="Complete quests on lastone.fun and claim to level up and earn rewards"
+              appName="Push Ninja"
+              appUrl="pushninja.fun"
+              bgImage={pushNinjaBg}
+              description=""
               resetTime={timeLeft}
-              quests={enabledBridgeAppQuests}
+              quests={enabledPushNinjaQuests}
               activityStatus={activityStatuses}
               isLoading={isLoadingActivities}
               refetchActivities={refetchAll}
               userId={userDetails?.userId}
-              completedMap={bridgeAppCompletedMap}
+              completedMap={pushNinjaCompletedMap}
               questProgressMap={questProgressMap}
               setErrorMessage={setErrorMessage}
-              titleGradient="linear-gradient(180deg, #000 16.15%, #9C60E4 89.06%)"
-              linkColor="#5A1881"
+              titleGradient="linear-gradient(180deg, #000 16.15%, #B53838 89.06%)"
+              linkColor="#771B1D"
         />
 
         {/*<AppQuestCard

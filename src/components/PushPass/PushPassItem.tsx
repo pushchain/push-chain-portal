@@ -110,21 +110,19 @@ export const PushPassItem = () => {
       img.src = src;
     });
 
-  const handleSharePass = async () => {
+  const buildPassBlob = async (): Promise<Blob | null> => {
     const traits = parseCharacterId(characterId as string);
-    if (!traits) return;
+    if (!traits) return null;
 
     const canvas = document.createElement('canvas');
     canvas.width = 496;
     canvas.height = 636;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) return null;
 
-    // Draw background first
     const bgImg = await loadImage(RarePassBg);
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-    // Draw character layers on top
     const layers = [
       getImagePath('Body', traits.body),
       getImagePath('Head', traits.head),
@@ -133,18 +131,20 @@ export const PushPassItem = () => {
     ];
 
     for (const src of layers) {
-      const img = await loadImage(src);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      try {
+        const img = await loadImage(src);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      } catch {
+        console.warn('[buildPassBlob] Failed to load layer:', src);
+      }
     }
 
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, 'image/png')
-    );
+    return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+  };
+
+  const handleDownloadPass = async () => {
+    const blob = await buildPassBlob();
     if (!blob) return;
-
-    const tweetText = `I just minted my Push Pass on @PushChain! Check it out 👇\n\n*Attach Image*`;
-
-    // Download the composited image
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -153,8 +153,10 @@ export const PushPassItem = () => {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
-    // Open Twitter with pre-filled tweet
+  const handleSharePass = () => {
+    const tweetText = `I just minted my Push Pass on @PushChain! Check it out 👇\n\n*Attach Image*`;
     const encoded = encodeURIComponent(tweetText);
     window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
   };
@@ -553,16 +555,25 @@ export const PushPassItem = () => {
                   width="100%"
                   display="flex"
                   justifyContent="center"
+                  gap="spacing-sm"
                 >
+                  <Button
+                    variant="outline"
+                    size="medium"
+                    onClick={handleDownloadPass}
+                    css={css`
+                        min-width: 140px;
+                        z-index: 99;
+                    `}
+                  >
+                    Download
+                  </Button>
                   <Button
                     variant="primary"
                     size="medium"
-                    leadingIcon={<Twitter width={20} height={20}  />}
+                    leadingIcon={<Twitter width={20} height={20} />}
                     onClick={handleSharePass}
-                    css={css`
-                      min-width: 140px;
-                      z-index: 99;
-                    `}
+                    css={css`min-width: 140px; z-index: 99;`}
                   >
                     Share
                   </Button>
