@@ -1,31 +1,4 @@
-import { ActvityType } from "../../../queries";
+const OTHER_ACTIVITY_PREFIXES = ['unichess_', 'push_ninja_', 'moleswap_', 'boss_'];
 
-export const otherRewardActivities: ActvityType[] = [
-  "lastone_place_bid",
-  "lastone_win_50pc_claim",
-  "lastone_win_3_rounds_claim",
-  "lastone_bid_10_single_round",
-  "lastone_participate_25_rounds",
-  "lastone_participate_3_rounds",
-  "lastone_bet_20pc_single_round",
-  "lastone_share_bid_or_win_social",
-  "lastone_place_5_bids",
-  "lastone_bid_15_single_round",
-  "lastone_participate_5_rounds",
-  "lastone_place_30_bids_total",
-  "lastone_share_bid_or_win_on_x",
-  "moleswap_first_swap",
-  "moleswap_add_liquidity",
-  "moleswap_collect_fees",
-  "moleswap_ten_swaps",
-  "moleswap_multi_pool_lp",
-  "push_bridge_to_push_once",
-  "push_bridge_to_push_five",
-  "push_bridge_from_push_once",
-  "push_bridge_from_push_five",
-  "push_bridge_usdc_usdt_ten",
-  "boss_complete_all_5_app_quests",
-  "boss_complete_all_5_app_quests_after_2026_04_23_1900_ist",
-  "boss_hold_5_rare_passes",
-
-];
+export const isOtherRewardActivity = (activityTypeId: string): boolean =>
+  OTHER_ACTIVITY_PREFIXES.some((prefix) => activityTypeId?.startsWith(prefix));

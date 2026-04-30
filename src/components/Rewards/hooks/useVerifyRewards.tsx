@@ -14,7 +14,7 @@ import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
 import { useSignPushMessage } from "./useSignPushMessage";
 import { WalletChainType } from "../utils/wallet";
-import { SKIP_VERIFICATION_ACTIVITIES } from "../utils/skipVerificationActivities";
+import { shouldSkipVerification } from "../utils/skipVerificationActivities";
 import { trackEvent } from "../../../helpers/analytics";
 
 export type UseVerifyRewardsParams = {
@@ -82,9 +82,7 @@ const useVerifyRewards = ({
   const handleVerify = async (userId: string | null) => {
     setErrorMessage("");
 
-    const skipVerification = SKIP_VERIFICATION_ACTIVITIES?.some(
-      (item) => activityTypeId === item
-    );
+    const skipVerification = shouldSkipVerification(activityTypeId);
 
     let verificationProof: string | undefined;
     let messageToSend: Record<string, string | undefined> = {};
