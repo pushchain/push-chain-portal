@@ -5,7 +5,7 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useVerifyTwitter } from "../hooks/useVerifyTwitter";
 import { useVerifyDiscord } from "../hooks/useVerifyDiscord";
 import { useVerifyRewards } from "../hooks/useVerifyRewards";
-import { otherRewardActivities } from "../utils/activityTypeArray";
+import { isOtherRewardActivity } from "../utils/activityTypeArray";
 import { ActvityType } from "../../../queries/types";
 import { Button } from "../../../blocks";
 import { trackEvent } from "../../../helpers/analytics";
@@ -84,7 +84,7 @@ export const ActivityVerificationButton = ({
       };
     }
 
-    if (otherRewardActivities.includes(activityType)) {
+    if (isOtherRewardActivity(activityType)) {
       return {
         isLoading: verifyingRewards,
         label: "Claim",

@@ -1,18 +1,4 @@
-export const SKIP_VERIFICATION_ACTIVITIES = [
-  "unichess_check_elo",
-  "unichess_win_bets_success_rate",
-  "unichess_bet_ten_eth",
-  "unichess_play_ten_games",
-  "unichess_win_fast_games",
-  "push_ninja_play_one_multiplayer_game",
-  "push_ninja_play_five_multiplayer_games",
-  "push_ninja_win_three_multiplayer_games",
-  "push_ninja_purchase_in_game_asset",
-  "push_ninja_win_six_multiplayer_games",
-  "push_ninja_buy_assets_worth_four_pc",
-  "moleswap_first_swap",
-  "moleswap_add_liquidity",
-  "moleswap_collect_fees",
-  "moleswap_ten_swaps",
-  "moleswap_multi_pool_lp",
-];
+const SKIP_VERIFICATION_PREFIXES = ['unichess_', 'push_ninja_', 'moleswap_', 'boss_'];
+
+export const shouldSkipVerification = (activityTypeId: string): boolean =>
+  SKIP_VERIFICATION_PREFIXES.some((prefix) => activityTypeId?.startsWith(prefix));
