@@ -16,10 +16,11 @@ import SpinToWinModal from './SpinToWinModal';
 
 
 const wiggle = keyframes`
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-8deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(8deg); }
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-4px) rotate(-3deg); }
+  40% { transform: translateX(4px) rotate(3deg); }
+  60% { transform: translateX(-3px) rotate(-2deg); }
+  80% { transform: translateX(3px) rotate(2deg); }
 `;
 
 const SpinToWinCard = () => {
