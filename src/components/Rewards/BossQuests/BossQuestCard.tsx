@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
-import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Skeleton, XP } from '../../../blocks';
+import { Box, Button, Text, Lock, ProgressBar, RewardsStarGradient, RarePass, Skeleton, Tooltip, XP } from '../../../blocks';
 import { ActvityType } from '../../../queries';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { usePushWalletContext } from '@pushchain/ui-kit';
@@ -206,10 +206,18 @@ const BossQuestCard: FC<BossQuestCardProps> = ({
 
             {icon && (
               <ProgressBar
-                progress={progress ||(0) || null}
+                progress={progress || 0 || null}
                 max={maxProgress}
                 size="large"
-                progressIcon={<RewardsStarGradient size={35} />}
+                progressIcon={
+                  userId && !isLocked ? (
+                    <Tooltip title={`${Math.round(((progress || 0) / (maxProgress || 1)) * 100)}%`}>
+                      <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                    </Tooltip>
+                  ) : (
+                    <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                  )
+                }
               />
             )}
 
