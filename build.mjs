@@ -17,7 +17,7 @@ const envPresets = {
     VITE_APP_ENV: "dev",
   },
 };
-
+console.log('dummy')
 // Get environment from command line argument (default to "preview")
 const appEnv = process.argv[2] || "preview";
 
