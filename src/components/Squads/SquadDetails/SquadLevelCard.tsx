@@ -1,5 +1,5 @@
 import { css } from "styled-components"
-import { Box, ProgressBar, RewardsStarGradient, Text } from "../../../blocks"
+import { Box, ProgressBar, RewardsStarGradient, Text, Tooltip } from "../../../blocks"
 import { getSquadLevelProgress } from "../utils/squadLevelConfig";
 
 type SquadLevelCardProps = {
@@ -89,7 +89,11 @@ export const SquadLevelCard = ({ squadName, totalXp }: SquadLevelCardProps) => {
               progress={progressPercent}
               max={100}
               size="large"
-              progressIcon={<RewardsStarGradient size={35} />}
+              progressIcon={
+                <Tooltip title={`${Math.round(progressPercent)}%`}>
+                  <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                </Tooltip>
+              }
             />
           </Box>
         </Box>

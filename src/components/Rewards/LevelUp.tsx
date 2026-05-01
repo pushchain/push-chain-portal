@@ -9,7 +9,7 @@ import useMediaQuery from "../../hooks/useMediaQuery";
 import { device } from "../../config/globals";
 import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
-import { Box, Button, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text } from "../../blocks"
+import { Box, Button, LevelUpIcon, ProgressBar, RewardsStarGradient, Skeleton, Text, Tooltip } from "../../blocks"
 import LevelUpModal from "./LevelUpModal";
 import ClaimPCTokenModal from "./ClaimPCTokenModal";
 import { useRewardStatus } from "../../context/rewardStatusContext";
@@ -146,7 +146,15 @@ export const LevelUp = () => {
               progress={(progressPercentage) || null}
               max={100}
               size="large"
-              progressIcon={<RewardsStarGradient size={35} />}
+              progressIcon={
+                userDetails?.userId && !rewardsLocked ? (
+                  <Tooltip title={`${Math.round(progressPercentage)}%`}>
+                    <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                  </Tooltip>
+                ) : (
+                  <Box display="flex"><RewardsStarGradient size={35} /></Box>
+                )
+              }
             />
       </Box>
 
