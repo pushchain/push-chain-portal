@@ -19,9 +19,18 @@ const LeaderboardListColumns: FC = () => {
           USER
         </Text>
       </Box>
-      <Text variant="c-bold" color="text-tertiary">
-        TOTAL POINTS
-      </Text>
+      <Box display="flex" gap="spacing-md" alignItems="center">
+        <Text
+          variant="c-bold"
+          color="text-tertiary"
+          display={{ ml: "none", initial: "block" }}
+        >
+          TOTAL RARE PASS
+        </Text>
+        <Text variant="c-bold" color="text-tertiary">
+          TOTAL POINTS
+        </Text>
+      </Box>
     </Box>
   );
 };

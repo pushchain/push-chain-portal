@@ -21,6 +21,7 @@ export type LeaderboardListItemProps = {
   rank: number;
   address: string;
   points: number;
+  rarePass?: number;
   isLoading: boolean;
   userWallet: string;
   highlighted?: boolean;
@@ -30,6 +31,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   rank,
   address,
   points,
+  rarePass,
   isLoading,
   userWallet,
   highlighted,
@@ -104,27 +106,40 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
       </Skeleton>
 
       <Skeleton isLoading={isLoading}>
-        <Box
-          width="88px"
-          minWidth="88px"
-          minHeight="22px"
-          display="flex"
-          justifyContent="center"
-        >
-          <Text
-            variant="bm-bold"
-            display={{ ml: "none", initial: "block" }}
-            color={textColor}
+        <Box display="flex" gap="spacing-md" alignItems="center">
+          <Box
+            width="88px"
+            minWidth="88px"
+            minHeight="22px"
+            display={{ ml: "none", initial: "flex" }}
+            justifyContent="center"
           >
-            {points?.toLocaleString()}
-          </Text>
-          <Text
-            variant="bs-bold"
-            display={{ ml: "block", initial: "none" }}
-            color={textColor}
+            <Text variant="bm-bold" color={textColor}>
+              {rarePass?.toLocaleString() ?? '-'}
+            </Text>
+          </Box>
+          <Box
+            width="88px"
+            minWidth="88px"
+            minHeight="22px"
+            display="flex"
+            justifyContent="center"
           >
-            {points?.toLocaleString()}
-          </Text>
+            <Text
+              variant="bm-bold"
+              display={{ ml: "none", initial: "block" }}
+              color={textColor}
+            >
+              {points?.toLocaleString()}
+            </Text>
+            <Text
+              variant="bs-bold"
+              display={{ ml: "block", initial: "none" }}
+              color={textColor}
+            >
+              {points?.toLocaleString()}
+            </Text>
+          </Box>
         </Box>
       </Skeleton>
     </Box>

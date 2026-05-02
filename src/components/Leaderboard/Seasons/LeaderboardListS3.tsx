@@ -45,6 +45,8 @@ const LeaderboardListS3: FC = () => {
 
   const hasMoreData = !isFetchingNextPage && hasNextPage;
 
+  const totalCurrentUserRarePass = currentUser?.rareActiveCount + currentUser?.rareDormantCount;
+
   return !leaderboardList.length ? (
     <LeaderBoardNullState
       refetchLeaderboard={isError ? refetch : undefined}
@@ -63,6 +65,7 @@ const LeaderboardListS3: FC = () => {
                 rank={currentUser.rank}
                 address={fullCAIP10ToWallet(currentUser.userWallet)}
                 points={currentUser.totalPoints}
+                rarePass={totalCurrentUserRarePass}
                 isLoading={false}
                 userWallet={currentUser.userWallet}
                 highlighted
@@ -91,6 +94,7 @@ const LeaderboardListS3: FC = () => {
                   rank={item.rank}
                   address={fullCAIP10ToWallet(item.userWallet)}
                   points={item.totalPoints}
+                  rarePass={item.totalRarePass}
                   isLoading={isLoading}
                   userWallet={item.userWallet}
                 />
