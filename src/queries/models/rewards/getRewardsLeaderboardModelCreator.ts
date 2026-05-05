@@ -9,6 +9,7 @@ export const getRewardsLeaderboardModalCreator = (
       userWallet: user.userWallet,
       totalPoints: user.totalPoints,
       totalRarePass: user.totalRarePass,
+      lifetimePointsEarned: user.lifetimePointsEarned,
       rank: user.rank,
     })),
     page: response.page,

@@ -57,7 +57,7 @@ const LeaderboardListS3: FC = () => {
   ) : (
     !!leaderboardList.length && (
       <Box display="flex" flexDirection="column">
-          <LeaderboardListColumns />
+          <LeaderboardListColumns showRarePass />
 
           {currentUser?.userId && (
             <Box>
@@ -93,7 +93,7 @@ const LeaderboardListS3: FC = () => {
                   key={`${index}`}
                   rank={item.rank}
                   address={fullCAIP10ToWallet(item.userWallet)}
-                  points={item.totalPoints}
+                  points={item.lifetimePointsEarned}
                   rarePass={item.totalRarePass}
                   isLoading={isLoading}
                   userWallet={item.userWallet}

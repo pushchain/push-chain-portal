@@ -239,6 +239,7 @@ type LeaderBoardUser = {
   referralPoints: number;
   totalPoints: number;
   totalRarePass?: number;
+  lifetimePointsEarned?: number;
   multiplier: number;
   lastUpdated: string;
   pgpPublicKey: string;
@@ -250,6 +251,7 @@ export type ModelledLeaderBoardUser = {
   userWallet: string;
   totalPoints: number;
   totalRarePass?: number;
+  lifetimePointsEarned: number;
   rank: number;
 };
 

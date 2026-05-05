@@ -107,17 +107,19 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
 
       <Skeleton isLoading={isLoading}>
         <Box display="flex" gap="spacing-md" alignItems="center">
-          <Box
-            width="88px"
-            minWidth="88px"
-            minHeight="22px"
-            display={{ ml: "none", initial: "flex" }}
-            justifyContent="center"
-          >
-            <Text variant="bm-bold" color={textColor}>
-              {rarePass?.toLocaleString() ?? '-'}
-            </Text>
-          </Box>
+          {rarePass !== undefined && (
+            <Box
+              width="88px"
+              minWidth="88px"
+              minHeight="22px"
+              display={{ ml: "none", initial: "flex" }}
+              justifyContent="center"
+            >
+              <Text variant="bm-bold" color={textColor}>
+                {rarePass?.toLocaleString()}
+              </Text>
+            </Box>
+          )}
           <Box
             width="88px"
             minWidth="88px"

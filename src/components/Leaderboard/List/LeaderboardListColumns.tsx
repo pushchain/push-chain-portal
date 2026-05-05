@@ -4,7 +4,11 @@ import { FC } from "react";
 import { Box, Text } from "../../../blocks";
 import { css } from "styled-components";
 
-const LeaderboardListColumns: FC = () => {
+type LeaderboardListColumnsProps = {
+  showRarePass?: boolean;
+};
+
+const LeaderboardListColumns: FC<LeaderboardListColumnsProps> = ({ showRarePass }) => {
   return (
     <Box display="flex" justifyContent="space-between">
       <Box display="flex" gap="spacing-xs">
@@ -20,13 +24,15 @@ const LeaderboardListColumns: FC = () => {
         </Text>
       </Box>
       <Box display="flex" gap="spacing-md" alignItems="center">
-        <Text
-          variant="c-bold"
-          color="text-tertiary"
-          display={{ ml: "none", initial: "block" }}
-        >
-          TOTAL RARE PASS
-        </Text>
+        {showRarePass && (
+          <Text
+            variant="c-bold"
+            color="text-tertiary"
+            display={{ ml: "none", initial: "block" }}
+          >
+            TOTAL RARE PASS
+          </Text>
+        )}
         <Text variant="c-bold" color="text-tertiary">
           TOTAL POINTS
         </Text>
