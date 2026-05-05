@@ -297,6 +297,7 @@ export type SeasonThreeUserByWalletResponse = {
   referralPoints: number;
   frozenPoints: number;
   totalPoints: number;
+  lifetimePointsEarned?: number;
   cachePCTokens: number;
   xp: number;
   level: number;

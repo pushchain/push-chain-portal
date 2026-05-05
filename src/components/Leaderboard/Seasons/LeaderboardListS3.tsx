@@ -64,7 +64,7 @@ const LeaderboardListS3: FC = () => {
               <LeaderboardListItem
                 rank={currentUser.rank}
                 address={fullCAIP10ToWallet(currentUser.userWallet)}
-                points={currentUser.totalPoints}
+                points={currentUser.lifetimePointsEarned ?? currentUser.totalPoints}
                 rarePass={totalCurrentUserRarePass}
                 isLoading={false}
                 userWallet={currentUser.userWallet}
