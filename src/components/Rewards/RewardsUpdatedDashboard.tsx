@@ -12,12 +12,19 @@ import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverif
 import { useRewardStatus } from "../../context/rewardStatusContext";
 import { device } from "../../config/globals";
 import useMediaQuery from "../../hooks/useMediaQuery";
+import { useCountdown } from "./hooks/useCountdown";
+
+export const BONUS_QUEST_DEADLINE = "2026-05-19T14:00:00Z";
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isTablet = useMediaQuery(device.tablet)
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
+  const { timeLeft, isExpired: isBonusExpired } = useCountdown(BONUS_QUEST_DEADLINE);
+  const countdownString = `${pad(timeLeft.days)}D : ${pad(timeLeft.hours)}H : ${pad(timeLeft.minutes)}M : ${pad(timeLeft.seconds)}S`;
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -155,21 +162,36 @@ export const RewardsUpdatedDashboard = () => {
       </Box>
       </Box>
 
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        gap="spacing-xxxs"
-        css={css`
-          padding: var(--spacing-xs) var(--spacing-md);
-          cursor: pointer;
-        `}
-      >
-        <Text variant="h5-regular">
-          Explore Season 3
-        </Text>
-        <ArrowDown size={20} color="white" />
+      {isBonusExpired ? (
+        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+          <Text variant="h5-regular">Explore Season 3</Text>
+          <ArrowDown size={20} color="white" />
         </Box>
+      ) : (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          gap="spacing-xxs"
+          css={css`padding: 16px 24px; cursor: pointer;`}
+        >
+          <Text variant="h5-regular" css={css`
+              color: #FFF;
+              font-family: "DM Sans";
+              font-size: 32px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 110%;
+              letter-spacing: -0.64px;
+            `}>
+            Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+          </Text>
+          <Text variant="h5-regular" color="#FFE489">
+            Complete the 2 bonus quests before time runs out.
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 
@@ -316,21 +338,21 @@ export const RewardsUpdatedDashboard = () => {
         </Box>
         </Box>
 
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          gap="spacing-xxxs"
-          css={css`
-            padding: var(--spacing-xs) var(--spacing-md);
-            cursor: pointer;
-          `}
-        >
-          <Text variant="h5-regular">
-            Explore Season 3
-          </Text>
-          <ArrowDown size={20} color="white" />
+        {isBonusExpired ? (
+          <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+            <Text variant="h5-regular">Explore Season 3</Text>
+            <ArrowDown size={20} color="white" />
           </Box>
+        ) : (
+          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" css={css`padding: 16px 24px; cursor: pointer;`}>
+            <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
+              Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+            </Text>
+            <Text variant="h5-regular" color="#FFE489">
+              Complete the 2 bonus quests before time runs out.
+            </Text>
+          </Box>
+        )}
       </Box>
 
     );

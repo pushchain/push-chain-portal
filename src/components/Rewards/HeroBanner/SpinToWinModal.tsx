@@ -10,7 +10,7 @@ import { useGetSeasonThreeUserByWallet, useSpinTheWheel } from '../../../queries
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
-import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, SpinGlow, Text } from '../../../blocks';
+import { Box, Button, Modal, SeasonThreePoints, SpinGlow, Text } from '../../../blocks';
 import { Image } from '../../../css/SharedStyling';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import useMediaQuery from '../../../hooks/useMediaQuery';
