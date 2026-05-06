@@ -4,6 +4,7 @@ import { useRewardStatus } from '../../context/rewardStatusContext';
 
 import HeroBannerCards from './HeroBanner/HeroBannerCards';
 import AppQuestSection from './AppQuests/AppQuestSection';
+import BonusQuestsSection from './BonusQuests/BonusQuestsSection';
 import BossQuestsSection from './BossQuests/BossQuestsSection';
 import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
@@ -80,6 +81,8 @@ const RewardsActivities = () => {
         <StreakDays />
         <DailyRewardsSection />
       </Box>
+
+      <BonusQuestsSection />
 
       <AppQuestSection />
 

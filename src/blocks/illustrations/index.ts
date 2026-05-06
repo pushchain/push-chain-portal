@@ -18,6 +18,8 @@ export { default as BlueBonusActivitySubscribers } from "./components/BlueBonusA
 
 export { default as BNB } from "./components/BNB";
 
+export { default as BonusQuests } from "./components/BonusQuests";
+
 export { default as ChatIllustration } from "./components/Chat";
 
 export { default as ChatDark } from "./components/ChatDark";
