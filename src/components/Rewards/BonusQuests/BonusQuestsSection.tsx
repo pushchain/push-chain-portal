@@ -1,19 +1,35 @@
+import { useState } from 'react';
 import { css } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { BonusQuests, Box, Button, Lock, Multiplier, Quests, RarePass, Referral, Text, Twitter, XP } from '../../../blocks';
+import { Alert, BonusQuests, Box, Button, Lock, Multiplier, RarePass, ReferralQuestsIcon, Text, Twitter } from '../../../blocks';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
+import { useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { fadeInCss } from '../utils/FadeIn';
 import { RewardsActivityTitle } from '../RewardsActivity/RewardsActivityTitle';
+import { ActivityButton } from '../RewardsActivity/ActivityButton';
 
-const TWEET_URL =
-  'https://twitter.com/intent/tweet?text=Tweet%20about%20%40PushChain%20Season%203%20with%20%23pushchainmainnet';
+const INVITE_ACTIVITY_ID = 'bonus_non_cult_invites_rare_pass';
+const TWEET_ACTIVITY_ID = 'bonus_non_cult_share_on_x_xp_boost';
 
 const BonusQuestsSection = () => {
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
+
   const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivity } = useGetRewardsActivity(
+    { userId: userDetails?.userId as string, activityTypes: [INVITE_ACTIVITY_ID, TWEET_ACTIVITY_ID] },
+    { enabled: !!userDetails?.userId },
+  );
 
   const isWalletConnected = Boolean(universalAccount?.address);
   const rewardsLocked = isLocked && !isLockedStatusLoading;
@@ -21,6 +37,11 @@ const BonusQuestsSection = () => {
 
   return (
     <Box width="100%" css={css`${fadeInCss(200)}`}>
+      {errorMessage && (
+        <Box position="relative" margin="spacing-none spacing-none spacing-md spacing-none">
+          <Alert variant="error" description={errorMessage} />
+        </Box>
+      )}
       <Box
         display="flex"
         flexDirection="column"
@@ -114,8 +135,11 @@ const BonusQuestsSection = () => {
                   min-width: 0;
                 `}
             >
-              <Box css={css`width: 40px; height: 40px; flex-shrink: 0;`}>
-                <Referral width={40} height={40} />
+              <Box css={css`
+                  flex-shrink: 0;
+                  box-sizing: border-box;
+                `}>
+                <ReferralQuestsIcon width={40} height={40} />
               </Box>
               <RewardsActivityTitle activityTitle="Invite 3 people to Season 3 using your [invite codes](/rewards/squads)" variant="bl-semibold" isLoading={false} color="#fff"
               />
@@ -125,29 +149,27 @@ const BonusQuestsSection = () => {
               display="flex"
               alignItems="center"
               gap="spacing-sm"
-              css={css`
-                  flex-shrink: 0;
-                `}
+              css={css`flex-shrink: 0;`}
             >
-            <RarePass />
+              <RarePass />
 
-              {canInteract ? (
-                <Button
-                  size="small"
-                  variant="outline"
-                  onClick={() => navigate('/rewards/squads')}
-                >
-                  Invite
-                </Button>
-              ) : (
-                <Button
-                  size="small"
-                  variant="outline"
-                  leadingIcon={<Lock />}
-                  disabled
-                >
+              {!canInteract ? (
+                <Button size="small" variant="outline" leadingIcon={<Lock />} disabled>
                   Locked
                 </Button>
+              ) : (
+                <ActivityButton
+                  userId={userDetails?.userId as string}
+                  activityTypeId={INVITE_ACTIVITY_ID}
+                  activityType={INVITE_ACTIVITY_ID as any}
+                  refetchActivity={refetchActivity}
+                  setErrorMessage={setErrorMessage}
+                  usersSingleActivity={activityStatuses?.[INVITE_ACTIVITY_ID]}
+                  isLoadingActivity={isLoadingActivities}
+                  buttonVariant="primary"
+                  buttonSize="small"
+                  label="Claim"
+                />
               )}
             </Box>
           </Box>
@@ -186,9 +208,7 @@ const BonusQuestsSection = () => {
               display="flex"
               alignItems="center"
               gap="spacing-sm"
-              css={css`
-                  flex-shrink: 0;
-                `}
+              css={css`flex-shrink: 0;`}
             >
               <Box
                 display={{ ml: 'none', initial: 'flex' }}
@@ -222,23 +242,23 @@ const BonusQuestsSection = () => {
                 </Box>
               </Box>
 
-              {canInteract ? (
-                <Button
-                  size="small"
-                  variant="outline"
-                  onClick={() => window.open(TWEET_URL, '_blank', 'noopener,noreferrer')}
-                >
-                  Tweet
-                </Button>
-              ) : (
-                <Button
-                  size="small"
-                  variant="outline"
-                  leadingIcon={<Lock />}
-                  disabled
-                >
+              {!canInteract ? (
+                <Button size="small" variant="outline" leadingIcon={<Lock />} disabled>
                   Locked
                 </Button>
+              ) : (
+                <ActivityButton
+                  userId={userDetails?.userId as string}
+                  activityTypeId={TWEET_ACTIVITY_ID}
+                  activityType={TWEET_ACTIVITY_ID as any}
+                  refetchActivity={refetchActivity}
+                  setErrorMessage={setErrorMessage}
+                  usersSingleActivity={activityStatuses?.[TWEET_ACTIVITY_ID]}
+                  isLoadingActivity={isLoadingActivities}
+                  buttonVariant="primary"
+                  buttonSize="small"
+                  label="Claim"
+                />
               )}
             </Box>
           </Box>

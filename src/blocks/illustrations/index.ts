@@ -118,6 +118,8 @@ export { default as RockstarNFT } from "./components/RockstarNFT";
 
 export { default as Referral } from "./components/Referral";
 
+export { default as ReferralQuestsIcon } from "./components/ReferralQuestsIcon";
+
 export { default as SeasonThreePoints } from "./components/SeasonThreePoints";
 
 export { default as SetupProfilePoints } from "./components/SetupProfilePoints";

@@ -29,3 +29,4 @@ export * from './useGetPCTokenBalance';
 export * from './useClaimPCTokens';
 export * from './useGetUserLevelConfig';
 export * from './useGetQuestActivities';
+export * from './useClaimNonCultRarePass';
