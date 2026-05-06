@@ -36,6 +36,10 @@ const BonusQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showTweetModal, setShowTweetModal] = useState(false);
+  const [tweetStartedAt, setTweetStartedAt] = useState<number | null>(() => {
+    const stored = localStorage.getItem(TWEET_STORAGE_KEY);
+    return stored ? parseInt(stored, 10) : null;
+  });
   const [tweetCountdown, setTweetCountdown] = useState<number | null>(null);
 
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -68,43 +72,37 @@ const BonusQuestsSection = () => {
   claimTweetRef.current = claimTweet;
 
   useEffect(() => {
-    const stored = localStorage.getItem(TWEET_STORAGE_KEY);
-    if (!stored || !userDetails?.userId) return;
-
     if (activityStatuses?.[TWEET_ACTIVITY_ID]?.status === 'COMPLETED') {
       localStorage.removeItem(TWEET_STORAGE_KEY);
-      return;
+      setTweetStartedAt(null);
+      setTweetCountdown(null);
     }
-
-    const elapsed = Date.now() - parseInt(stored, 10);
-    const remaining = TWEET_DELAY_MS - elapsed;
-
-    if (remaining <= 0) {
-      claimTweetRef.current(userDetails.userId);
-      return;
-    }
-
-    setTweetCountdown(Math.ceil(remaining / 1000));
-    const timer = setTimeout(() => {
-      claimTweetRef.current(userDetails.userId);
-    }, remaining);
-    return () => clearTimeout(timer);
-  }, [userDetails?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activityStatuses]);
 
   useEffect(() => {
-    if (tweetCountdown === null || tweetCountdown <= 0) return;
+    if (!tweetStartedAt || !userDetails?.userId) return;
+
     const tick = setInterval(() => {
-      setTweetCountdown(prev => (prev !== null && prev > 1 ? prev - 1 : null));
+      const remaining = TWEET_DELAY_MS - (Date.now() - tweetStartedAt);
+      if (remaining <= 0) {
+        clearInterval(tick);
+        setTweetCountdown(null);
+        claimTweetRef.current(userDetails.userId);
+      } else {
+        setTweetCountdown(Math.ceil(remaining / 1000));
+      }
     }, 1000);
+
     return () => clearInterval(tick);
-  }, [tweetCountdown]);
+  }, [tweetStartedAt, userDetails?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTweetClaim = () => {
     if (!userDetails?.userId) return;
     window.open(TWEET_URL, '_blank', 'noopener,noreferrer');
-    localStorage.setItem(TWEET_STORAGE_KEY, String(Date.now()));
-    setTweetCountdown(90);
-    setTimeout(() => claimTweetRef.current(userDetails.userId), TWEET_DELAY_MS);
+    const now = Date.now();
+    localStorage.setItem(TWEET_STORAGE_KEY, String(now));
+    setTweetStartedAt(now);
+    setTweetCountdown(Math.ceil(TWEET_DELAY_MS / 1000));
   };
 
   const isWalletConnected = Boolean(universalAccount?.address);
