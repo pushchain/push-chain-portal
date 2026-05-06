@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import LevelUpModal, { LevelUpReward } from '../LevelUpModal';
 import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
@@ -10,9 +11,20 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { fadeInCss } from '../utils/FadeIn';
 import { RewardsActivityTitle } from '../RewardsActivity/RewardsActivityTitle';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
+import { useVerifyRewards } from '../hooks/useVerifyRewards';
 
 const INVITE_ACTIVITY_ID = 'bonus_non_cult_invites_rare_pass';
 const TWEET_ACTIVITY_ID = 'bonus_non_cult_share_on_x_xp_boost';
+const TWEET_URL = 'https://x.com/intent/tweet';
+const TWEET_STORAGE_KEY = 'bonus_tweet_opened_at';
+const TWEET_DELAY_MS = 90_000;
+
+const INVITE_REWARDS: LevelUpReward[] = [
+  { id: 1, value: '1', label: 'Rare Pass', type: 'rare_pass' },
+];
+const TWEET_REWARDS: LevelUpReward[] = [
+  { id: 1, value: '25%', label: 'XP Boost', type: 'xp_boost' },
+];
 
 const questRowCss = css`
   box-sizing: border-box;
@@ -22,6 +34,9 @@ const questRowCss = css`
 
 const BonusQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState('');
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showTweetModal, setShowTweetModal] = useState(false);
+  const [tweetCountdown, setTweetCountdown] = useState<number | null>(null);
 
   const { universalAccount } = usePushWalletContext('wallet1');
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
@@ -38,11 +53,95 @@ const BonusQuestsSection = () => {
     { enabled: !!userDetails?.userId },
   );
 
+  const { handleRewardsVerification: claimTweet, verifyingRewards: isClaimingTweet } = useVerifyRewards({
+    activityTypeId: TWEET_ACTIVITY_ID,
+    refetchActivity: () => {
+      refetchActivity();
+      localStorage.removeItem(TWEET_STORAGE_KEY);
+      setTweetCountdown(null);
+      setShowTweetModal(true);
+    },
+    setErrorMessage,
+  });
+
+  const claimTweetRef = useRef(claimTweet);
+  claimTweetRef.current = claimTweet;
+
+  useEffect(() => {
+    const stored = localStorage.getItem(TWEET_STORAGE_KEY);
+    if (!stored || !userDetails?.userId) return;
+
+    if (activityStatuses?.[TWEET_ACTIVITY_ID]?.status === 'COMPLETED') {
+      localStorage.removeItem(TWEET_STORAGE_KEY);
+      return;
+    }
+
+    const elapsed = Date.now() - parseInt(stored, 10);
+    const remaining = TWEET_DELAY_MS - elapsed;
+
+    if (remaining <= 0) {
+      claimTweetRef.current(userDetails.userId);
+      return;
+    }
+
+    setTweetCountdown(Math.ceil(remaining / 1000));
+    const timer = setTimeout(() => {
+      claimTweetRef.current(userDetails.userId);
+    }, remaining);
+    return () => clearTimeout(timer);
+  }, [userDetails?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (tweetCountdown === null || tweetCountdown <= 0) return;
+    const tick = setInterval(() => {
+      setTweetCountdown(prev => (prev !== null && prev > 1 ? prev - 1 : null));
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [tweetCountdown]);
+
+  const handleTweetClaim = () => {
+    if (!userDetails?.userId) return;
+    window.open(TWEET_URL, '_blank', 'noopener,noreferrer');
+    localStorage.setItem(TWEET_STORAGE_KEY, String(Date.now()));
+    setTweetCountdown(90);
+    setTimeout(() => claimTweetRef.current(userDetails.userId), TWEET_DELAY_MS);
+  };
+
   const isWalletConnected = Boolean(universalAccount?.address);
   const rewardsLocked = isLocked && !isLockedStatusLoading;
   const canInteract = isWalletConnected && !rewardsLocked;
 
+  const tweetStatus = activityStatuses?.[TWEET_ACTIVITY_ID]?.status;
+
+  const renderTweetButton = () => {
+    if (!canInteract) {
+      return (
+        <Button size="small" variant="outline" leadingIcon={<Lock />} disabled>
+          Locked
+        </Button>
+      );
+    }
+    if (tweetStatus === 'COMPLETED') {
+      return <Button size="small" variant="outline" disabled>Claimed</Button>;
+    }
+    if (tweetStatus === 'PENDING' && tweetCountdown === null) {
+      return <Button size="small" variant="outline" disabled>Pending</Button>;
+    }
+    if (tweetCountdown !== null) {
+      return <Button size="small" variant="outline" disabled>Verifying</Button>;
+    }
+    if (isClaimingTweet) {
+      return <Button size="small" variant="primary" loading disabled>Claiming</Button>;
+    }
+    return (
+      <Button size="small" variant="primary" onClick={handleTweetClaim}>
+        Claim
+      </Button>
+    );
+  };
+
   return (
+    <>
     <Box width="100%" css={css`${fadeInCss(200)}`}>
       {errorMessage && (
         <Box position="relative" margin="spacing-none spacing-none spacing-md spacing-none">
@@ -115,7 +214,6 @@ const BonusQuestsSection = () => {
 
         <Box display="flex" flexDirection="column" alignSelf="stretch" gap="spacing-xs" width="100%">
 
-          {/* Quest 1: Invite */}
           <Box
             display="flex"
             flexDirection={{ initial: 'row', ml: 'column' }}
@@ -148,10 +246,7 @@ const BonusQuestsSection = () => {
               alignItems="center"
               justifyContent="flex-end"
               gap="spacing-sm"
-              css={css`
-                flex-shrink: 0;
-                align-self: flex-end;
-              `}
+              css={css`flex-shrink: 0; align-self: flex-end;`}
             >
               <RarePass />
               {!canInteract ? (
@@ -163,7 +258,7 @@ const BonusQuestsSection = () => {
                   userId={userDetails?.userId as string}
                   activityTypeId={INVITE_ACTIVITY_ID}
                   activityType={INVITE_ACTIVITY_ID as ActvityType}
-                  refetchActivity={refetchActivity}
+                  refetchActivity={() => { refetchActivity(); setShowInviteModal(true); }}
                   setErrorMessage={setErrorMessage}
                   usersSingleActivity={activityStatuses?.[INVITE_ACTIVITY_ID]}
                   isLoadingActivity={isLoadingActivities}
@@ -175,7 +270,6 @@ const BonusQuestsSection = () => {
             </Box>
           </Box>
 
-          {/* Quest 2: Tweet */}
           <Box
             display="flex"
             flexDirection={{ initial: 'row', ml: 'column' }}
@@ -208,10 +302,7 @@ const BonusQuestsSection = () => {
               alignItems="center"
               justifyContent="flex-end"
               gap="spacing-sm"
-              css={css`
-                flex-shrink: 0;
-                align-self: flex-end;
-              `}
+              css={css`flex-shrink: 0; align-self: flex-end;`}
             >
               <Box
                 display={{ ml: 'none', initial: 'flex' }}
@@ -241,30 +332,34 @@ const BonusQuestsSection = () => {
                 </Box>
               </Box>
 
-              {!canInteract ? (
-                <Button size="small" variant="outline" leadingIcon={<Lock />} disabled>
-                  Locked
-                </Button>
-              ) : (
-                <ActivityButton
-                  userId={userDetails?.userId as string}
-                  activityTypeId={TWEET_ACTIVITY_ID}
-                  activityType={TWEET_ACTIVITY_ID as ActvityType}
-                  refetchActivity={refetchActivity}
-                  setErrorMessage={setErrorMessage}
-                  usersSingleActivity={activityStatuses?.[TWEET_ACTIVITY_ID]}
-                  isLoadingActivity={isLoadingActivities}
-                  buttonVariant="primary"
-                  buttonSize="small"
-                  label="Claim"
-                />
-              )}
+              {renderTweetButton()}
             </Box>
           </Box>
 
         </Box>
       </Box>
     </Box>
+
+    {showInviteModal && (
+      <LevelUpModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        level={0}
+        quest
+        rewards={INVITE_REWARDS}
+      />
+    )}
+
+    {showTweetModal && (
+      <LevelUpModal
+        isOpen={showTweetModal}
+        onClose={() => setShowTweetModal(false)}
+        level={0}
+        quest
+        rewards={TWEET_REWARDS}
+      />
+    )}
+    </>
   );
 };
 

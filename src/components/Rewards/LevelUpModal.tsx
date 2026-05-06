@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import Lottie from "lottie-react";
 
-import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RewardsCoin, SeasonThreePoints, Text, XP } from "../../blocks";
+import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RarePass, RewardsCoin, SeasonThreePoints, Text, XP } from "../../blocks";
 
 import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
 import BoxAnimation from "../../../static/assets/website/rewards/box.json";
@@ -24,12 +24,12 @@ type LevelUpModalProps = {
 };
 
 const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, baseXP }: LevelUpModalProps) => {
-  const allRewards = quest
+  const allRewards = rewards ?? (quest
     ? [
         ...(basePoints ? [{ id: 100, value: String(basePoints), label: 'Points', type: 'points' }] : []),
         ...(baseXP ? [{ id: 101, value: `${baseXP}`, label: 'XP', type: 'xp' }] : []),
       ]
-    : rewards;
+    : []);
 
   return (
     <Modal
@@ -132,6 +132,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
                         {reward.type === 'points' && <SeasonThreePoints width={50} height={50} />}
                         {reward.type === 'xp_boost' && <Multiplier width={50} height={50} />}
                         {reward.type === 'xp' && <XP width={75} height={45} />}
+                        {reward.type === 'rare_pass' && <RarePass />}
               </Box>
 
               <Box
