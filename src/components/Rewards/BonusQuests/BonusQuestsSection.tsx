@@ -5,6 +5,7 @@ import { usePushWalletContext } from '@pushchain/ui-kit';
 import { Alert, BonusQuests, Box, Button, Lock, Multiplier, RarePass, ReferralQuestsIcon, Text, Twitter } from '../../../blocks';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 import { useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { ActvityType } from '../../../queries/types/rewards';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { fadeInCss } from '../utils/FadeIn';
 import { RewardsActivityTitle } from '../RewardsActivity/RewardsActivityTitle';
@@ -161,7 +162,7 @@ const BonusQuestsSection = () => {
                 <ActivityButton
                   userId={userDetails?.userId as string}
                   activityTypeId={INVITE_ACTIVITY_ID}
-                  activityType={INVITE_ACTIVITY_ID as any}
+                  activityType={INVITE_ACTIVITY_ID as ActvityType}
                   refetchActivity={refetchActivity}
                   setErrorMessage={setErrorMessage}
                   usersSingleActivity={activityStatuses?.[INVITE_ACTIVITY_ID]}
@@ -248,7 +249,7 @@ const BonusQuestsSection = () => {
                 <ActivityButton
                   userId={userDetails?.userId as string}
                   activityTypeId={TWEET_ACTIVITY_ID}
-                  activityType={TWEET_ACTIVITY_ID as any}
+                  activityType={TWEET_ACTIVITY_ID as ActvityType}
                   refetchActivity={refetchActivity}
                   setErrorMessage={setErrorMessage}
                   usersSingleActivity={activityStatuses?.[TWEET_ACTIVITY_ID]}

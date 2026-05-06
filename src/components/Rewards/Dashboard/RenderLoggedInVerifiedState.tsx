@@ -4,8 +4,6 @@ import { css } from 'styled-components';
 import { ArrowDown, Box, Text } from '../../../blocks';
 import { StatsCards } from './LoggedInVerified/StatsCards';
 import { ReferralCard } from './LoggedInVerified/ReferralCard';
-import { DashboardHeader } from './LoggedInVerified/DashboardHeader';
-import { DashboardFooter } from './LoggedInVerified/DashboardFooter';
 import { device } from '../../../config/globals';
 import QuestBannerCard from '../HeroBanner/QuestBannerCard';
 import { fadeInCss } from '../utils/FadeIn';
