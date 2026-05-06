@@ -166,10 +166,9 @@ export const RewardsUpdatedDashboard = () => {
         `}
       >
         <Text variant="h5-regular">
-          Explore Season 3
+          Invite Only Access Ends
         </Text>
-        <ArrowDown size={20} color="white" />
-        </Box>
+      </Box>
     </Box>
   );
 

@@ -47,7 +47,7 @@ const BonusQuestsSection = () => {
         flexDirection="column"
         alignItems="flex-start"
         gap="spacing-md"
-        padding="spacing-md"
+        padding={{ initial: 'spacing-md', ml: 'spacing-sm' }}
         position="relative"
         borderRadius="radius-md"
         width="100%"
@@ -117,9 +117,9 @@ const BonusQuestsSection = () => {
             display="flex"
             alignItems="center"
             justifyContent="space-between"
-            padding="spacing-sm spacing-md"
+            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-xs spacing-sm' }}
             borderRadius="radius-md"
-            gap="spacing-sm"
+            gap="spacing-xs"
             css={css`
               box-sizing: border-box;
               border: 1px solid rgba(255, 255, 140, 0.25);
@@ -139,7 +139,7 @@ const BonusQuestsSection = () => {
                   flex-shrink: 0;
                   box-sizing: border-box;
                 `}>
-                <ReferralQuestsIcon width={40} height={40} />
+                <ReferralQuestsIcon width={36} height={36} />
               </Box>
               <RewardsActivityTitle activityTitle="Invite 3 people to Season 3 using your [invite codes](/rewards/squads)" variant="bl-semibold" isLoading={false} color="#fff"
               />
@@ -148,7 +148,7 @@ const BonusQuestsSection = () => {
             <Box
               display="flex"
               alignItems="center"
-              gap="spacing-sm"
+              gap={{ initial: 'spacing-sm', ml: 'spacing-xs' }}
               css={css`flex-shrink: 0;`}
             >
               <RarePass />
@@ -178,9 +178,9 @@ const BonusQuestsSection = () => {
             display="flex"
             alignItems="center"
             justifyContent="space-between"
-            padding="spacing-sm spacing-md"
+            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-xs spacing-sm' }}
             borderRadius="radius-md"
-            gap="spacing-sm"
+            gap="spacing-xs"
             css={css`
               box-sizing: border-box;
               border: 1px solid rgba(255, 255, 140, 0.25);
@@ -198,7 +198,7 @@ const BonusQuestsSection = () => {
                   flex-shrink: 0;
                   box-sizing: border-box;
                 `}>
-                <Twitter width={30} height={30} />
+                <Twitter width={26} height={26} />
               </Box>
               <RewardsActivityTitle activityTitle="Tweet about [@PushChain](https://x.com/PushChain) Season 3 with #pushchainmainnet" variant="bl-semibold" isLoading={false} color="#fff"
               />
@@ -207,7 +207,7 @@ const BonusQuestsSection = () => {
             <Box
               display="flex"
               alignItems="center"
-              gap="spacing-sm"
+              gap={{ initial: 'spacing-sm', ml: 'spacing-xs' }}
               css={css`flex-shrink: 0;`}
             >
               <Box

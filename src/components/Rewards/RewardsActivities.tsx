@@ -81,7 +81,9 @@ const RewardsActivities = () => {
         <DailyRewardsSection />
       </Box>
 
-      <BonusQuestsSection />
+      <Box css={css`margin-top: -16px; margin-bottom: -16px;`}>
+        <BonusQuestsSection />
+      </Box>
 
       <AppQuestSection />
 
