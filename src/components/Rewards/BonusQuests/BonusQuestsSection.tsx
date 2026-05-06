@@ -212,30 +212,34 @@ const BonusQuestsSection = () => {
             >
               <Box
                 display={{ ml: 'none', initial: 'flex' }}
-                flexDirection="column"
+                flexDirection="row"
                 alignItems="center"
-                gap="spacing-none"
+                gap="spacing-xxs"
               >
-                <Text
-                  variant="c-bold"
-                  color="text-secondary"
-                  css={css`
-                      white-space: nowrap;
-                      color: #FBE18C;
-                      font-size: 10px;
-                      font-style: normal;
-                      font-weight: 500;
-                      line-height: 16px;
-                      letter-spacing: 2px;
-                      text-transform: uppercase;
-                `}
-                >
-                  PERMANENT
-                </Text>
-                <Box display="flex" alignItems="center" gap="spacing-xxxs">
-                  <Box css={css`width: 20px; height: 20px;`}>
-                    <Multiplier width={20} height={20} />
-                  </Box>
+                <Box css={css``
+                }>
+                  <Multiplier width={30} height={30} />
+                </Box>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap="spacing-none">
+                  <Text
+                    variant="c-bold"
+                    css={css`
+                        white-space: nowrap;
+                        color: #FBE18C;
+                        font-size: 10px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: 16px;
+                        letter-spacing: 2px;
+                        text-transform: uppercase;
+                  `}
+                  >
+                    PERMANENT
+                  </Text>
                   <Text variant="bm-semibold" color="text-primary">
                     25% XP
                   </Text>

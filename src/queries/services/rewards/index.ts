@@ -30,4 +30,3 @@ export * from './getPCTokenBalance';
 export * from './claimPCTokens';
 export * from './getQuestActivities';
 export * from './getUserLevelConfig';
-export * from './claimNonCultRarePass';
