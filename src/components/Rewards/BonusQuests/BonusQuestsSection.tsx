@@ -13,6 +13,12 @@ import { ActivityButton } from '../RewardsActivity/ActivityButton';
 const INVITE_ACTIVITY_ID = 'bonus_non_cult_invites_rare_pass';
 const TWEET_ACTIVITY_ID = 'bonus_non_cult_share_on_x_xp_boost';
 
+const questRowCss = css`
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 140, 0.25);
+  background: radial-gradient(109.87% 94.08% at 50% 5.92%, #100D0A 20.67%, #392F1D 100%);
+`;
+
 const BonusQuestsSection = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -84,7 +90,7 @@ const BonusQuestsSection = () => {
       >
         <Box display="flex" alignItems="center" gap="spacing-xs">
           <Box width="48px" height="48px">
-            <BonusQuests/>
+            <BonusQuests />
           </Box>
           <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-none">
             <Text
@@ -106,53 +112,47 @@ const BonusQuestsSection = () => {
           </Box>
         </Box>
 
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignSelf="stretch"
-          gap="spacing-xs"
-          width="100%"
-        >
+        <Box display="flex" flexDirection="column" alignSelf="stretch" gap="spacing-xs" width="100%">
+
+          {/* Quest 1: Invite */}
           <Box
             display="flex"
-            alignItems="center"
+            flexDirection={{ initial: 'row', ml: 'column' }}
+            alignItems={{ initial: 'center', ml: 'flex-start' }}
             justifyContent="space-between"
-            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-xs spacing-sm' }}
+            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-sm' }}
             borderRadius="radius-md"
-            gap="spacing-xs"
-            css={css`
-              box-sizing: border-box;
-              border: 1px solid rgba(255, 255, 140, 0.25);
-              background: radial-gradient(109.87% 94.08% at 50% 5.92%, #100D0A 20.67%, #392F1D 100%);
-            `}
+            gap="spacing-sm"
+            css={questRowCss}
           >
             <Box
               display="flex"
               alignItems="center"
               gap="spacing-sm"
-              css={css`
-                  flex: 1;
-                  min-width: 0;
-                `}
+              css={css`flex: 1; min-width: 0;`}
             >
-              <Box css={css`
-                  flex-shrink: 0;
-                  box-sizing: border-box;
-                `}>
+              <Box css={css`flex-shrink: 0;`}>
                 <ReferralQuestsIcon width={36} height={36} />
               </Box>
-              <RewardsActivityTitle activityTitle="Invite 3 people to Season 3 using your [invite codes](/rewards/squads)" variant="bl-semibold" isLoading={false} color="#fff"
+              <RewardsActivityTitle
+                activityTitle="Invite 3 people to Season 3 using your [invite codes](/rewards/squads)"
+                variant="bl-semibold"
+                isLoading={false}
+                color="#fff"
               />
             </Box>
 
             <Box
               display="flex"
               alignItems="center"
-              gap={{ initial: 'spacing-sm', ml: 'spacing-xs' }}
-              css={css`flex-shrink: 0;`}
+              justifyContent="flex-end"
+              gap="spacing-sm"
+              css={css`
+                flex-shrink: 0;
+                align-self: flex-end;
+              `}
             >
               <RarePass />
-
               {!canInteract ? (
                 <Button size="small" variant="outline" leadingIcon={<Lock />} disabled>
                   Locked
@@ -174,18 +174,16 @@ const BonusQuestsSection = () => {
             </Box>
           </Box>
 
+          {/* Quest 2: Tweet */}
           <Box
             display="flex"
-            alignItems="center"
+            flexDirection={{ initial: 'row', ml: 'column' }}
+            alignItems={{ initial: 'center', ml: 'flex-start' }}
             justifyContent="space-between"
-            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-xs spacing-sm' }}
+            padding={{ initial: 'spacing-sm spacing-md', ml: 'spacing-sm' }}
             borderRadius="radius-md"
-            gap="spacing-xs"
-            css={css`
-              box-sizing: border-box;
-              border: 1px solid rgba(255, 255, 140, 0.25);
-              background: radial-gradient(109.87% 94.08% at 50% 5.92%, #100D0A 20.67%, #392F1D 100%);
-            `}
+            gap="spacing-sm"
+            css={questRowCss}
           >
             <Box
               display="flex"
@@ -193,22 +191,26 @@ const BonusQuestsSection = () => {
               gap="spacing-sm"
               css={css`flex: 1; min-width: 0;`}
             >
-              <Box css={css`
-                  padding: 2px;
-                  flex-shrink: 0;
-                  box-sizing: border-box;
-                `}>
-                <Twitter width={26} height={26} />
+              <Box css={css`padding: 2px; flex-shrink: 0;`}>
+                <Twitter width={28} height={28} />
               </Box>
-              <RewardsActivityTitle activityTitle="Tweet about [@PushChain](https://x.com/PushChain) Season 3 with #pushchainmainnet" variant="bl-semibold" isLoading={false} color="#fff"
+              <RewardsActivityTitle
+                activityTitle="Tweet about [@PushChain](https://x.com/PushChain) Season 3 with #pushchainmainnet"
+                variant="bl-semibold"
+                isLoading={false}
+                color="#fff"
               />
             </Box>
 
             <Box
               display="flex"
               alignItems="center"
-              gap={{ initial: 'spacing-sm', ml: 'spacing-xs' }}
-              css={css`flex-shrink: 0;`}
+              justifyContent="flex-end"
+              gap="spacing-sm"
+              css={css`
+                flex-shrink: 0;
+                align-self: flex-end;
+              `}
             >
               <Box
                 display={{ ml: 'none', initial: 'flex' }}
@@ -216,27 +218,19 @@ const BonusQuestsSection = () => {
                 alignItems="center"
                 gap="spacing-xxs"
               >
-                <Box css={css``
-                }>
-                  <Multiplier width={30} height={30} />
-                </Box>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  gap="spacing-none">
+                <Multiplier width={28} height={28} />
+                <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-none">
                   <Text
                     variant="c-bold"
                     css={css`
-                        white-space: nowrap;
-                        color: #FBE18C;
-                        font-size: 10px;
-                        font-style: normal;
-                        font-weight: 500;
-                        line-height: 16px;
-                        letter-spacing: 2px;
-                        text-transform: uppercase;
-                  `}
+                      white-space: nowrap;
+                      color: #FBE18C;
+                      font-size: 10px;
+                      font-weight: 500;
+                      line-height: 16px;
+                      letter-spacing: 2px;
+                      text-transform: uppercase;
+                    `}
                   >
                     PERMANENT
                   </Text>
@@ -266,6 +260,7 @@ const BonusQuestsSection = () => {
               )}
             </Box>
           </Box>
+
         </Box>
       </Box>
     </Box>

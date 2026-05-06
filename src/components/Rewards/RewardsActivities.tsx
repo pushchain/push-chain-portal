@@ -10,9 +10,12 @@ import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
 import { LevelUp } from './LevelUp';
 import { Box, LockFilled, Text } from '../../blocks';
+import { useCountdown } from './hooks/useCountdown';
+import { BONUS_QUEST_DEADLINE } from './RewardsUpdatedDashboard';
 
 const RewardsActivities = () => {
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
+  const { isExpired: isBonusQuestExpired } = useCountdown(BONUS_QUEST_DEADLINE);
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -81,9 +84,11 @@ const RewardsActivities = () => {
         <DailyRewardsSection />
       </Box>
 
-      <Box css={css`margin-top: -16px; margin-bottom: -16px;`}>
-        <BonusQuestsSection />
-      </Box>
+      {!isBonusQuestExpired && (
+        <Box css={css`margin-top: -16px; margin-bottom: -16px;`}>
+          <BonusQuestsSection />
+        </Box>
+      )}
 
       <AppQuestSection />
 

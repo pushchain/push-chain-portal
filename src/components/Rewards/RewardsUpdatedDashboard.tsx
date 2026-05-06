@@ -12,12 +12,19 @@ import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverif
 import { useRewardStatus } from "../../context/rewardStatusContext";
 import { device } from "../../config/globals";
 import useMediaQuery from "../../hooks/useMediaQuery";
+import { useCountdown } from "./hooks/useCountdown";
+
+export const BONUS_QUEST_DEADLINE = "2026-05-19T14:00:00Z";
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isTablet = useMediaQuery(device.tablet)
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
+  const { timeLeft } = useCountdown(BONUS_QUEST_DEADLINE);
+  const countdownString = `${pad(timeLeft.days)}D : ${pad(timeLeft.hours)}H : ${pad(timeLeft.minutes)}M : ${pad(timeLeft.seconds)}S`;
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -157,16 +164,28 @@ export const RewardsUpdatedDashboard = () => {
 
       <Box
         display="flex"
+        flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        gap="spacing-xxxs"
+        gap="spacing-xxs"
         css={css`
-          padding: var(--spacing-xs) var(--spacing-md);
+          padding: 16px 24px;
           cursor: pointer;
         `}
       >
-        <Text variant="h5-regular">
-          Invite Only Access Ends
+        <Text variant="h5-regular" css={css`
+            color: #FFF;
+            font-family: "DM Sans";
+            font-size: 32px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 110%;
+            letter-spacing: -0.64px;
+          `}>
+          Invite Only Access Ends {countdownString}
+        </Text>
+        <Text variant="h5-regular" color="#FFE489">
+          Complete the 2 bonus quests before time runs out.
         </Text>
       </Box>
     </Box>
