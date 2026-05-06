@@ -121,8 +121,8 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
                         left: 50%;
                         transform: translateX(-50%);
                         z-index: 1;
-                        width: ${reward.type === 'rare_pass' ? '128px' : '88px'};
-                        height: ${reward.type === 'rare_pass' ? '128px' : '88px'};
+                        width: ${reward.type === 'rare_pass' ? '108px' : '88px'};
+                        height: ${reward.type === 'rare_pass' ? '108px' : '88px'};
                         display: flex;
                         align-items: center;
                         justify-content: center;

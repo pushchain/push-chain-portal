@@ -120,7 +120,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
       ) : (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" css={css`padding: 16px 24px; cursor: pointer;`}>
           <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
-            Invite Only Access Ends {countdownString}
+            Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
           </Text>
           <Text variant="h5-regular" color="#FFE489">
             Complete the 2 bonus quests before time runs out.
