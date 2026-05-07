@@ -16,6 +16,7 @@ type RewardsActivityTitleProps = {
   isLoading: boolean;
   color?: TextColors | string;
   variant?: TextVariants;
+  target?: '_blank' | '_self' | '_parent' | '_top';
 };
 
 const RewardsActivityTitle: FC<RewardsActivityTitleProps> = ({
@@ -23,6 +24,7 @@ const RewardsActivityTitle: FC<RewardsActivityTitleProps> = ({
   isLoading,
   color,
   variant,
+  target = '_blank',
 }) => {
   const extractedTitle = getRewardsActivityTitle(activityTitle);
 
@@ -50,7 +52,7 @@ const RewardsActivityTitle: FC<RewardsActivityTitleProps> = ({
           <Link
             to={url}
             isText
-            target='_blank'
+            target={target}
             textProps={{
               variant: variant || 'bl-semibold',
               color: 'text-brand-medium',

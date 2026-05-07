@@ -236,6 +236,7 @@ const BonusQuestsSection = () => {
                 variant="bl-semibold"
                 isLoading={false}
                 color="#fff"
+                target="_self"
               />
             </Box>
 
