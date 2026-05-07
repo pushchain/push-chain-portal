@@ -13,6 +13,7 @@ import { useRewardStatus } from "../../context/rewardStatusContext";
 import { device } from "../../config/globals";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { useCountdown } from "./hooks/useCountdown";
+import { AnimatedGradientText } from "./utils/AnimatedGradientText";
 
 export const BONUS_QUEST_DEADLINE = "2026-05-19T14:00:00Z";
 
@@ -187,8 +188,10 @@ export const RewardsUpdatedDashboard = () => {
             `}>
             Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
           </Text>
-          <Text variant="h5-regular" color="#FFE489">
-            Complete the 2 bonus quests before time runs out.
+          <Text variant="h5-regular">
+            <AnimatedGradientText speed={4} colorFrom="#FFF5C2" colorTo="#DBA237">
+              Complete the 2 bonus quests before time runs out.
+            </AnimatedGradientText>
           </Text>
         </Box>
       )}

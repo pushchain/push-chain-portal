@@ -9,6 +9,7 @@ import { useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../q
 import { ActvityType } from '../../../queries/types/rewards';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { fadeInCss } from '../utils/FadeIn';
+import { AnimatedGradientText } from '../utils/AnimatedGradientText';
 import { RewardsActivityTitle } from '../RewardsActivity/RewardsActivityTitle';
 import { ActivityButton } from '../RewardsActivity/ActivityButton';
 import { useVerifyRewards } from '../hooks/useVerifyRewards';
@@ -191,18 +192,10 @@ const BonusQuestsSection = () => {
             <BonusQuests />
           </Box>
           <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-none">
-            <Text
-              variant="h4-semibold"
-              css={css`
-                background: linear-gradient(180deg, #FFF 28.57%, #DBA237 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-                text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-                white-space: nowrap;
-              `}
-            >
-              Bonus Quests
+            <Text variant="h4-semibold" css={css`white-space: nowrap;`}>
+              <AnimatedGradientText speed={3} colorFrom="#FFF" colorTo="#DBA237">
+                Bonus Quests
+              </AnimatedGradientText>
             </Text>
             <Text variant="bs-regular" color="text-secondary">
               Complete the bonus quests before timer runs out

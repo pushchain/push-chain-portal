@@ -23,6 +23,7 @@ import { useActivityContext } from "../../../context/activityContext";
 import { useLinkedWallet } from "../../../context/linkedWalletContext";
 import { useCountdown } from "../hooks/useCountdown";
 import { BONUS_QUEST_DEADLINE } from "../RewardsUpdatedDashboard";
+import { AnimatedGradientText } from "../utils/AnimatedGradientText";
 
 const ACTIVITY_LIST = [
   {
@@ -307,8 +308,10 @@ export const RenderLoggedInUnverifiedState = () => {
           <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
             Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
           </Text>
-          <Text variant="h5-regular" color="#FFE489">
-            Complete the 2 bonus quests before time runs out.
+          <Text variant="h5-regular">
+            <AnimatedGradientText speed={4} colorFrom="#FFF5C2" colorTo="#DBA237">
+              Complete the 2 bonus quests before time runs out.
+            </AnimatedGradientText>
           </Text>
         </Box>
       )}
