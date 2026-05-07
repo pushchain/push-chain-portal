@@ -159,12 +159,12 @@ export const RenderLoggedInUnverifiedState = () => {
       borderRadius="radius-md"
       css={css`
         flex: 1;
-        border: 1px solid rgba(171, 70, 248, 0.4);
-        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(171, 70, 248, 0.40);
+        background: rgba(0, 0, 0, 0.10);
         background-blend-mode: plus-lighter;
-        box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
-          1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        backdrop-filter: blur(3px);
+        box-sizing: border-box;
       `}
     >
       <Box

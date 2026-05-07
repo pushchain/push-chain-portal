@@ -29,12 +29,11 @@ export const RenderLoggedInVerifiedState: FC = () => {
       position="relative"
       css={css`
         background: rgba(0, 0, 0, 0.1);
-        box-shadow:
-          2.8px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
-          1.9px 1.7px 6px 0 rgba(255, 255, 255, 0.15) inset;
-        backdrop-filter: blur(6px);
-        isolation: isolate;
         border: 1px solid rgba(171, 70, 248, 0.40);
+        background: rgba(0, 0, 0, 0.10);
+        background-blend-mode: plus-lighter;
+        box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        backdrop-filter: blur(3px);
         box-sizing: border-box;
         ${fadeInCss(0)}
       `}

@@ -309,7 +309,7 @@ const BonusQuestsSection = () => {
                 gap="spacing-xxs"
               >
                 <Multiplier width={28} height={28} />
-                <Box display="flex" flexDirection="column" alignItems="flex-start" gap="spacing-none">
+                <Box display="flex" flexDirection="column" alignItems="center" gap="spacing-none">
                   <Text
                     variant="c-bold"
                     css={css`
