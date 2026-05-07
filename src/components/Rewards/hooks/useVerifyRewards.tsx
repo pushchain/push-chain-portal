@@ -129,6 +129,9 @@ const useVerifyRewards = ({
         if (activityTypeId === 'lastone_share_bid_or_win_social') {
           return { data: { status: 'success', description: 'User-shared text/reason' } };
         }
+        if (activityTypeId === 'bonus_non_cult_share_on_x_xp_boost') {
+          return { data: { success: true, description: 'Shared Push Chain update on X and tagged @pushchain' }, verificationProof };
+        }
         if (skipVerification) {
           return { data: {} };
         }

@@ -73,7 +73,7 @@ const BossQuestsSection = () => {
     bossCompletedMap[q.questId] = q.completed;
   });
 
-  const targetDate = "2026-05-07T14:00:00Z";
+  const targetDate = "2026-05-14T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const finishFiveQuestDescription = "Earn XP by completing 5 quests on a single app in a week";

@@ -21,6 +21,9 @@ import { useRewardStatus } from "../../../context/rewardStatusContext";
 import { useGetRewardsActivity } from "../../../queries";
 import { useActivityContext } from "../../../context/activityContext";
 import { useLinkedWallet } from "../../../context/linkedWalletContext";
+import { useCountdown } from "../hooks/useCountdown";
+import { BONUS_QUEST_DEADLINE } from "../RewardsUpdatedDashboard";
+import { AnimatedGradientText } from "../utils/AnimatedGradientText";
 
 const ACTIVITY_LIST = [
   {
@@ -115,8 +118,12 @@ if (sybilStatusData?.data?.advanced?.completed) {
   );
 };
 
+const pad = (n: number) => String(n).padStart(2, '0');
+
 export const RenderLoggedInUnverifiedState = () => {
   const { refetch, isLoading, userDetails } = useActivityContext();
+  const { timeLeft, isExpired: isBonusExpired } = useCountdown(BONUS_QUEST_DEADLINE);
+  const countdownString = `${pad(timeLeft.days)}D : ${pad(timeLeft.hours)}H : ${pad(timeLeft.minutes)}M : ${pad(timeLeft.seconds)}S`;
 
   const {
     isPushWalletUser,
@@ -153,12 +160,12 @@ export const RenderLoggedInUnverifiedState = () => {
       borderRadius="radius-md"
       css={css`
         flex: 1;
-        border: 1px solid rgba(171, 70, 248, 0.4);
-        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(171, 70, 248, 0.40);
+        background: rgba(0, 0, 0, 0.10);
         background-blend-mode: plus-lighter;
-        box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
-          1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        backdrop-filter: blur(3px);
+        box-sizing: border-box;
       `}
     >
       <Box
@@ -291,10 +298,23 @@ export const RenderLoggedInUnverifiedState = () => {
         </Box>
       </Box>
 
-      <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
-        <Text variant="h5-regular">Complete verifications to unlock Season 3</Text>
-        <ArrowDown size={20} color="white" />
-      </Box>
+      {isBonusExpired ? (
+        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+          <Text variant="h5-regular">Explore Season 3</Text>
+          <ArrowDown size={20} color="white" />
+        </Box>
+      ) : (
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" css={css`padding: 16px 24px; cursor: pointer;`}>
+          <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
+            Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+          </Text>
+          <Text variant="h5-regular">
+            <AnimatedGradientText speed={4} colorFrom="#FFF5C2" colorTo="#DBA237">
+              Complete the 2 bonus quests before time runs out.
+            </AnimatedGradientText>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

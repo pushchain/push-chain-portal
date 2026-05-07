@@ -18,6 +18,8 @@ export { default as BlueBonusActivitySubscribers } from "./components/BlueBonusA
 
 export { default as BNB } from "./components/BNB";
 
+export { default as BonusQuests } from "./components/BonusQuests";
+
 export { default as ChatIllustration } from "./components/Chat";
 
 export { default as ChatDark } from "./components/ChatDark";
@@ -115,6 +117,8 @@ export { default as Rockstar } from "./components/Rockstar";
 export { default as RockstarNFT } from "./components/RockstarNFT";
 
 export { default as Referral } from "./components/Referral";
+
+export { default as ReferralQuestsIcon } from "./components/ReferralQuestsIcon";
 
 export { default as SeasonThreePoints } from "./components/SeasonThreePoints";
 

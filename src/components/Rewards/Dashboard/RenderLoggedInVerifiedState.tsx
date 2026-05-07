@@ -1,16 +1,22 @@
 import { FC } from 'react';
 import { css } from 'styled-components';
 
-import { Box } from '../../../blocks';
+import { ArrowDown, Box, Text } from '../../../blocks';
 import { StatsCards } from './LoggedInVerified/StatsCards';
 import { ReferralCard } from './LoggedInVerified/ReferralCard';
-import { DashboardHeader } from './LoggedInVerified/DashboardHeader';
-import { DashboardFooter } from './LoggedInVerified/DashboardFooter';
 import { device } from '../../../config/globals';
 import QuestBannerCard from '../HeroBanner/QuestBannerCard';
 import { fadeInCss } from '../utils/FadeIn';
+import { useCountdown } from '../hooks/useCountdown';
+import { BONUS_QUEST_DEADLINE } from '../RewardsUpdatedDashboard';
+import { AnimatedGradientText } from '../utils/AnimatedGradientText';
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export const RenderLoggedInVerifiedState: FC = () => {
+  const { timeLeft, isExpired: isBonusExpired } = useCountdown(BONUS_QUEST_DEADLINE);
+  const countdownString = `${pad(timeLeft.days)}D : ${pad(timeLeft.hours)}H : ${pad(timeLeft.minutes)}M : ${pad(timeLeft.seconds)}S`;
+
   return (
     <Box
       width="100%"
@@ -24,12 +30,11 @@ export const RenderLoggedInVerifiedState: FC = () => {
       position="relative"
       css={css`
         background: rgba(0, 0, 0, 0.1);
-        box-shadow:
-          2.8px -8px 12px 0 rgba(255, 255, 255, 0.15) inset,
-          1.9px 1.7px 6px 0 rgba(255, 255, 255, 0.15) inset;
-        backdrop-filter: blur(6px);
-        isolation: isolate;
         border: 1px solid rgba(171, 70, 248, 0.40);
+        background: rgba(0, 0, 0, 0.10);
+        background-blend-mode: plus-lighter;
+        box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        backdrop-filter: blur(3px);
         box-sizing: border-box;
         ${fadeInCss(0)}
       `}
@@ -44,8 +49,6 @@ export const RenderLoggedInVerifiedState: FC = () => {
           z-index: 1;
         `}
       >
-        {/*<DashboardHeader />*/}
-
         <Box
           display="flex"
           alignItems="flex-start"
@@ -109,7 +112,23 @@ export const RenderLoggedInVerifiedState: FC = () => {
         </Box>
       </Box>
 
-      <DashboardFooter />
+      {isBonusExpired ? (
+        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+          <Text variant="h5-regular">Explore Season 3</Text>
+          <ArrowDown size={20} color="white" />
+        </Box>
+      ) : (
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" css={css`padding: 16px 24px; cursor: pointer;`}>
+          <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
+            Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+          </Text>
+          <Text variant="h5-regular">
+            <AnimatedGradientText speed={4} colorFrom="#FFF5C2" colorTo="#DBA237">
+              Complete the 2 bonus quests before time runs out.
+            </AnimatedGradientText>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

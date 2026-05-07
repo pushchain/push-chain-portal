@@ -18,6 +18,7 @@ export type ActvityType =
   | `push_ninja_${string}`
   | `moleswap_${string}`
   | `boss_${string}`
+  | `bonus_${string}`
 
 
 export type Activity = {
