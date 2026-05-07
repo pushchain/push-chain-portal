@@ -289,7 +289,7 @@ const BonusQuestsSection = () => {
                 <Twitter width={28} height={28} />
               </Box>
               <RewardsActivityTitle
-                activityTitle="Tweet about [@PushChain](https://x.com/PushChain) Season 3 with #pushchainmainnet"
+                activityTitle="Tweet about [@PushChain](https://x.com/PushChain) Season 3 with #universalapps"
                 variant="bl-semibold"
                 isLoading={false}
                 color="#fff"
