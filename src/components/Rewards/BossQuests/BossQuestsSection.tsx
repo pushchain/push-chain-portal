@@ -3,7 +3,7 @@ import { css } from 'styled-components';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 
 import BossQuestCard from './BossQuestCard';
-import { useGetQuests, useGetQuestsProgress, useGetRarePassHistory, useGetRewardActivityStatus, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
+import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet } from '../../../queries';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
 
@@ -50,27 +50,12 @@ const BossQuestsSection = () => {
     userId: userDetails?.userId,
   });
 
-  const { data: unichessQuestsProgress } = useGetQuestsProgress({
-    appId: "unichess",
-    userId: userDetails?.userId
-  });
-
-  const { data: pushNinjaQuestsProgress } = useGetQuestsProgress({
-    appId: "push-ninja",
-    userId: userDetails?.userId
-  });
-
-  const { data: rarePassHistory, isLoading: isLoadingHistory } = useGetRarePassHistory({
-    userId: userDetails?.userId ?? '',
-  });
-
-  const rarePassesProgress = (rarePassHistory?.summary?.currentBalance?.rareActiveCount + rarePassHistory?.summary?.currentBalance?.rareDormantCount);
-
-  const questsProgress = Math.max(unichessQuestsProgress?.data?.progressPercentage ?? 0, pushNinjaQuestsProgress?.data?.progressPercentage ?? 0);
 
   const bossCompletedMap: Record<string, boolean> = {};
+  const bossProgressMap: Record<string, number> = {};
   bossQuestsProgress?.data?.quests?.forEach((q) => {
     bossCompletedMap[q.questId] = q.completed;
+    bossProgressMap[q.questId] = q?.progressPercentage ?? 0;
   });
 
   const targetDate = "2026-05-14T14:00:00Z";
@@ -208,8 +193,8 @@ const BossQuestsSection = () => {
                 title={item?.title}
                 description={isRarePass ? holdFiveDescription :  finishFiveQuestDescription}
                 resetTime={!isRarePass && timeLeft}
-                progress={isRarePass ? rarePassesProgress : questsProgress}
-                maxProgress={isRarePass ? 5 : 100}
+                progress={bossProgressMap[item.id] ?? 0}
+                maxProgress={100}
                 unlocks={{ rarePass: isRarePass, xp: (item.baseXP > 0 && item?.baseXP) }}
                 isLocked={rewardsLocked}
                 isLockedStatusLoading={isLockedStatusLoading}
