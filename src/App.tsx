@@ -164,7 +164,7 @@ const AppContent = () => {
   }, [connectionStatus]);
 
   useEffect(() => {
-    if (connectionStatus !== "connected") return;
+    if (connectionStatus !== "connected" || !resolvedInviteCode) return;
     if (isLoading) return;
     if (seasonThreeDetails) return;
     if (hasTriggeredCreate.current) return;

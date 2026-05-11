@@ -77,28 +77,28 @@ export const useAutoCreateUser = () => {
 
     console.log(caip10WalletAddress, ueaAccount, signature)
 
-    // createUser(
-    //   {
-    //     userWallet: caip10WalletAddress,
-    //     userUEAWallet: `eip155:42101:${ueaAccount}`,
-    //     phase: 'HYPE',
-    //     data: dataPayload,
-    //     inviteCodeUsed: inviteCode,
-    //     verificationProof: signature,
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       setIsCreating(false);
-    //       callbacks?.onSuccess?.();
-    //     },
-    //     onError: (err: any) => {
-    //       const msg = err?.response?.data?.error || 'Failed to create user';
-    //       setError(msg);
-    //       setIsCreating(false);
-    //       callbacks?.onError?.(msg);
-    //     },
-    //   },
-    // );
+    createUser(
+      {
+        userWallet: caip10WalletAddress,
+        userUEAWallet: `eip155:42101:${ueaAccount}`,
+        phase: 'HYPE',
+        data: dataPayload,
+        inviteCodeUsed: inviteCode,
+        verificationProof: signature,
+      },
+      {
+        onSuccess: () => {
+          setIsCreating(false);
+          callbacks?.onSuccess?.();
+        },
+        onError: (err: any) => {
+          const msg = err?.response?.data?.error || 'Failed to create user';
+          setError(msg);
+          setIsCreating(false);
+          callbacks?.onError?.(msg);
+        },
+      },
+    );
   }, [isPushSocialWalletUser, isSolana, signMessage, signMessageWithSolana, signMessageWithPush, caip10WalletAddress, ueaAccount, createUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { create, isCreating, error };
