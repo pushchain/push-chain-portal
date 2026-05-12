@@ -23,7 +23,6 @@ const StatCard = ({ value, label, variant }: StatCardProps) => {
       position="relative"
       css={css`
         flex: 1;
-        min-height: 120px;
         background: ${gradientBg};
         overflow: hidden;
 
@@ -81,16 +80,16 @@ export const ReferralStats = ({ totalActiveReferrals, pointsEarned }: ReferralSt
       display="flex"
       flexDirection={{ initial: "column", ml: "column" }}
       gap="spacing-md"
-      width="100%"
+      css={css`flex: 35; min-width: 0;`}
     >
       <StatCard
         value={totalActiveReferrals}
-        label={"Total Active\nReferrals"}
+        label={"Total Active Referrals"}
         variant="purple"
       />
       <StatCard
         value={pointsEarned.toLocaleString()}
-        label={"Points\nEarned"}
+        label={"Points Earned"}
         variant="gold"
       />
     </Box>

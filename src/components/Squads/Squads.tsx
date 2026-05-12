@@ -7,7 +7,7 @@ import { walletToFullCAIP10 } from "../../helpers/web3helper"
 import { useAuthHeaders } from "../../context/authHeadersContext"
 
 import { device } from "../../config/globals"
-import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
+import { ReferralStats, ReferralProgram} from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
 import { trackEvent } from "../../helpers/analytics"
