@@ -144,8 +144,8 @@ const AppContent = () => {
 
   const { create: autoCreateUser } = useAutoCreateUser();
 
-  const inviteLinkUserId = searchParams.get('ref');
-  const { data: resolvedInvite } = useResolveInviteLink(inviteLinkUserId);
+  const refUserId = searchParams.get('ref');
+  const { data: resolvedInvite } = useResolveInviteLink(refUserId);
   const resolvedInviteCode = resolvedInvite?.data?.code;
 
   const prevConnectionStatus = React.useRef(connectionStatus);
@@ -189,7 +189,7 @@ const AppContent = () => {
         setHasAttemptedRegistration(false);
       },
     });
-  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, inviteLinkUserId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const el = scrollContainerRef.current;
