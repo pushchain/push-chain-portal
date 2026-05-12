@@ -79,7 +79,7 @@ export const ReferralStats = ({ totalActiveReferrals, pointsEarned }: ReferralSt
   return (
     <Box
       display="flex"
-      flexDirection={{ initial: "row", ml: "column" }}
+      flexDirection={{ initial: "column", ml: "column" }}
       gap="spacing-md"
       width="100%"
     >

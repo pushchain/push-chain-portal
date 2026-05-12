@@ -128,7 +128,7 @@ const AppContent = () => {
   const { connectionStatus, universalAccount } =
     usePushWalletContext("wallet1");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const hasTriggeredCreate = useRef(false);
+  const [hasAttemptedRegistration, setHasAttemptedRegistration] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -164,23 +164,32 @@ const AppContent = () => {
   }, [connectionStatus]);
 
   useEffect(() => {
-    if (connectionStatus !== "connected" || !resolvedInviteCode) return;
+    if (connectionStatus !== 'connected') {
+      setHasAttemptedRegistration(false);
+    }
+  }, [connectionStatus]);
+
+  useEffect(() => {
+    if (connectionStatus !== 'connected') return;
     if (isLoading) return;
     if (seasonThreeDetails) return;
-    if (hasTriggeredCreate.current) return;
+    if (hasAttemptedRegistration) return;
+    if (!resolvedInviteCode) return;
 
-    hasTriggeredCreate.current = true;
+    setHasAttemptedRegistration(true);
     trackEvent('season3_signup_submitted', { event_category: 'auth' });
 
-    console.log('create create', resolvedInviteCode)
     autoCreateUser(resolvedInviteCode, {
       onSuccess: () => {
         trackEvent('season3_signup_completed', { event_category: 'auth' });
         refetchSeasonThreeDetails();
         refetchCultStatus();
       },
+      onError: () => {
+        setHasAttemptedRegistration(false);
+      },
     });
-  }, [connectionStatus, seasonThreeDetails, isLoading, resolvedInviteCode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, inviteLinkUserId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const el = scrollContainerRef.current;

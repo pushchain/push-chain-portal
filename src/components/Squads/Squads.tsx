@@ -80,7 +80,7 @@ export const Squads = () => {
         >
           <Box
             display="flex"
-            flexDirection="column"
+            flexDirection="row"
             gap="spacing-md"
             css={css`
               flex: 1;
@@ -98,23 +98,6 @@ export const Squads = () => {
             <ReferralProgram />
           </Box>
 
-          <Box
-            minHeight="100%"
-            css={css`
-              flex: 1;
-              min-width: 0;
-
-              @media ${device.tablet} {
-                width: 100%;
-              }
-            `}
-          >
-            <InviteCodes
-              requestInvitesCode={ requestInvitesCode }
-              isFetchingInviteCode={ isFetchingInviteCode }
-              isSigning={ isSigning }
-            />
-          </Box>
         </Box>
       </Box>
 
