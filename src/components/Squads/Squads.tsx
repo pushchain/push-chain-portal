@@ -80,7 +80,7 @@ export const Squads = () => {
         >
           <Box
             display="flex"
-            flexDirection="row"
+            flexDirection={{ initial: "row", tb: "column" }}
             gap="spacing-md"
             css={css`
               flex: 1;

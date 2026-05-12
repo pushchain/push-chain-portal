@@ -7,6 +7,7 @@ import { useGetSeasonThreeUserByWallet } from "../../../queries"
 import { walletToFullCAIP10 } from "../../../helpers/web3helper"
 import { Image } from "../../../css/SharedStyling"
 import ReferralImage from "../../../../static/assets/website/rewards/ReferralCard.webp"
+import { device } from "../../../config/globals"
 
 type ReferralBenefitProps = {
   text: string;
@@ -174,6 +175,10 @@ export const ReferralProgram = () => {
           flex-shrink: 0;
           align-self: stretch;
           overflow: hidden;
+
+          @media ${device.tablet} {
+            display: none;
+          }
         `}
       >
         <Image
