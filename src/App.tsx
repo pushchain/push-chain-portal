@@ -144,7 +144,7 @@ const AppContent = () => {
 
   const { create: autoCreateUser } = useAutoCreateUser();
 
-  const inviteLinkUserId = searchParams.get('inviteLink');
+  const inviteLinkUserId = searchParams.get('ref');
   const { data: resolvedInvite } = useResolveInviteLink(inviteLinkUserId);
   const resolvedInviteCode = resolvedInvite?.data?.code;
 
