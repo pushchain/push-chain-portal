@@ -106,24 +106,6 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="Ramen Swap"
-          appUrl="ramenfi.xyz"
-          bgImage={ramenBg}
-          description=""
-          resetTime={timeLeft}
-          quests={enabledRamenSwapQuests}
-          activityStatus={activityStatuses}
-          isLoading={isLoadingActivities}
-          refetchActivities={refetchAll}
-          userId={userDetails?.userId}
-          completedMap={ramenSwapCompletedMap}
-          questProgressMap={questProgressMap}
-          setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%);"
-          linkColor="#DB2D33"
-        />
-
-        <AppQuestCard
           appName="PUSD Stablecoin"
           appUrl="pusd.push.org"
           bgImage={pusdBg}
@@ -139,6 +121,24 @@ const AppQuestSection = () => {
           setErrorMessage={setErrorMessage}
           titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
           linkColor="#4D2783"
+        />
+
+        <AppQuestCard
+          appName="Ramen Swap"
+          appUrl="ramenfi.xyz"
+          bgImage={ramenBg}
+          description=""
+          resetTime={timeLeft}
+          quests={enabledRamenSwapQuests}
+          activityStatus={activityStatuses}
+          isLoading={isLoadingActivities}
+          refetchActivities={refetchAll}
+          userId={userDetails?.userId}
+          completedMap={ramenSwapCompletedMap}
+          questProgressMap={questProgressMap}
+          setErrorMessage={setErrorMessage}
+          titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%);"
+          linkColor="#DB2D33"
         />
       </Box>
     </Box>
