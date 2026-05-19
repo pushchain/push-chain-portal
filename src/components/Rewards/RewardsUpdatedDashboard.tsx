@@ -15,7 +15,7 @@ import useMediaQuery from "../../hooks/useMediaQuery";
 import { useCountdown } from "./hooks/useCountdown";
 import { AnimatedGradientText } from "./utils/AnimatedGradientText";
 
-export const BONUS_QUEST_DEADLINE = "2026-05-19T14:00:00Z";
+export const BONUS_QUEST_DEADLINE = "2026-05-21T14:00:00Z";
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
