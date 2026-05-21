@@ -185,9 +185,6 @@ const AppContent = () => {
         refetchSeasonThreeDetails();
         refetchCultStatus();
       },
-      onError: () => {
-        setHasAttemptedRegistration(false);
-      },
     });
   }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId, isResolvingInvite]); // eslint-disable-line react-hooks/exhaustive-deps
 
