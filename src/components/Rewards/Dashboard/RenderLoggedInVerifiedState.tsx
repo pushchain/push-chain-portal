@@ -113,7 +113,7 @@ export const RenderLoggedInVerifiedState: FC = () => {
       </Box>
 
       {isBonusExpired ? (
-        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xxxs) var(--spacing-md); cursor: pointer;`}>
           <Text variant="h5-regular">Explore Season 3</Text>
           <ArrowDown size={20} color="white" />
         </Box>

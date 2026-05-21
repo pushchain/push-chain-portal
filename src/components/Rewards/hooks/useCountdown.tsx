@@ -24,7 +24,9 @@ export const useCountdown = (targetDate: string | Date) => {
   };
 
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft());
-  const [isExpired, setIsExpired] = useState<boolean>(false);
+  const [isExpired, setIsExpired] = useState<boolean>(
+    () => new Date(targetDate).getTime() <= Date.now()
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
