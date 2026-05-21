@@ -52,6 +52,13 @@ export interface SquadInvite {
   updatedAt: string;
 }
 
+export interface ResolveInviteLinkResponse {
+  success: boolean;
+  data: {
+    code: string;
+  };
+}
+
 export interface PendingSquadInvite extends SquadInvite {
   squad: {
     id: string;

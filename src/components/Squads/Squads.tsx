@@ -7,7 +7,7 @@ import { walletToFullCAIP10 } from "../../helpers/web3helper"
 import { useAuthHeaders } from "../../context/authHeadersContext"
 
 import { device } from "../../config/globals"
-import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
+import { ReferralStats, ReferralProgram} from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
 import { trackEvent } from "../../helpers/analytics"
@@ -80,7 +80,7 @@ export const Squads = () => {
         >
           <Box
             display="flex"
-            flexDirection="column"
+            flexDirection={{ initial: "row", tb: "column" }}
             gap="spacing-md"
             css={css`
               flex: 1;
@@ -98,23 +98,6 @@ export const Squads = () => {
             <ReferralProgram />
           </Box>
 
-          <Box
-            minHeight="100%"
-            css={css`
-              flex: 1;
-              min-width: 0;
-
-              @media ${device.tablet} {
-                width: 100%;
-              }
-            `}
-          >
-            <InviteCodes
-              requestInvitesCode={ requestInvitesCode }
-              isFetchingInviteCode={ isFetchingInviteCode }
-              isSigning={ isSigning }
-            />
-          </Box>
         </Box>
       </Box>
 

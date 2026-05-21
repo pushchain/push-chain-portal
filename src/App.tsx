@@ -8,6 +8,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -39,9 +40,9 @@ import PreLaunchPage from "./pages/PreLaunchPage";
 import AdminPage from "./pages/AdminPage";
 import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
-import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
-import { useGetSeasonThreeUserByWallet } from "./queries";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
+import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
 import { AuthHeadersProvider } from "./context/authHeadersContext";
 import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
@@ -123,10 +124,11 @@ const queryClient = new QueryClient({});
 
 const AppContent = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { connectionStatus, universalAccount } =
     usePushWalletContext("wallet1");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isInviteCodeModalOpen, setIsInviteCodeModalOpen] = useState(false);
+  const [hasAttemptedRegistration, setHasAttemptedRegistration] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const caip10WalletAddress = walletToFullCAIP10(
@@ -134,11 +136,17 @@ const AppContent = () => {
     universalAccount?.chain,
   );
 
-  const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet(
-    {
-      walletAddress: caip10WalletAddress,
-    },
+  const { data: seasonThreeDetails, isLoading, refetch: refetchSeasonThreeDetails } = useGetSeasonThreeUserByWallet(
+    { walletAddress: caip10WalletAddress },
   );
+
+  const { refetch: refetchCultStatus } = useGetUserCultStatus({ wallet: caip10WalletAddress });
+
+  const { create: autoCreateUser } = useAutoCreateUser();
+
+  const refUserId = searchParams.get('ref');
+  const { data: resolvedInvite } = useResolveInviteLink(refUserId);
+  const resolvedInviteCode = resolvedInvite?.data?.code;
 
   const prevConnectionStatus = React.useRef(connectionStatus);
 
@@ -156,16 +164,32 @@ const AppContent = () => {
   }, [connectionStatus]);
 
   useEffect(() => {
-    if (connectionStatus !== "connected") return;
-
-    if (isLoading) return;
-
-    if (seasonThreeDetails) {
-      setIsInviteCodeModalOpen(false);
-    } else {
-      setIsInviteCodeModalOpen(true);
+    if (connectionStatus !== 'connected') {
+      setHasAttemptedRegistration(false);
     }
-  }, [connectionStatus, seasonThreeDetails, isLoading]);
+  }, [connectionStatus]);
+
+  useEffect(() => {
+    if (connectionStatus !== 'connected') return;
+    if (isLoading) return;
+    if (seasonThreeDetails) return;
+    if (hasAttemptedRegistration) return;
+    if (!resolvedInviteCode) return;
+
+    setHasAttemptedRegistration(true);
+    trackEvent('season3_signup_submitted', { event_category: 'auth' });
+
+    autoCreateUser(resolvedInviteCode, {
+      onSuccess: () => {
+        trackEvent('season3_signup_completed', { event_category: 'auth' });
+        refetchSeasonThreeDetails();
+        refetchCultStatus();
+      },
+      onError: () => {
+        setHasAttemptedRegistration(false);
+      },
+    });
+  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -297,10 +321,6 @@ const AppContent = () => {
         </Box>
       </Box>
 
-      <InviteCodeModal
-        isOpen={isInviteCodeModalOpen}
-        onClose={() => setIsInviteCodeModalOpen(false)}
-      />
     </Box>
   );
 };

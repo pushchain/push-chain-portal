@@ -1,15 +1,37 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { css } from 'styled-components';
 import { NavLink } from 'react-router-dom';
+import { usePushWalletContext } from '@pushchain/ui-kit';
 
-import { Box, Text } from '../../../../blocks';
+import { Box, Copy, Text } from '../../../../blocks';
 import ReferralImage from '../../../../../static/assets/website/rewards/ReferralCard.webp';
 import { Image } from '../../../../css/SharedStyling';
 import { fadeInCss } from '../../utils/FadeIn';
-
+import { useGetSeasonThreeUserByWallet } from '../../../../queries';
+import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 
 
 export const ReferralCard: FC = () => {
+  const [copied, setCopied] = useState(false);
+
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+
+  const referralUrl = userDetails?.userId
+    ? `portal.push.org/rewards?ref=${userDetails.userId}`
+    : null;
+
+  const handleCopy = () => {
+    if (!referralUrl) return;
+    navigator.clipboard.writeText(`https://${referralUrl}`).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <Box
@@ -50,13 +72,42 @@ export const ReferralCard: FC = () => {
           </Text>
         </Box>
 
-        <NavLink
-          to='/rewards/squads'
-          target='_self'
-          style={{ textDecoration: 'none ', color: '#C742DD'}}
-         >
-          Get Invite Codes
-        </NavLink>
+        {referralUrl && (
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="spacing-xxs"
+            onClick={handleCopy}
+            css={css`
+              cursor: pointer;
+              padding: 12px;
+              border-radius: 16px;
+              border: 1px solid rgba(255, 255, 255, 0.25);
+              transition: background 0.15s ease;
+              max-width: 100%;
+              &:hover {
+                background: rgba(255, 255, 255, 0.05);
+              }
+            `}
+          >
+            <Text
+              variant="bs-regular"
+              color="#ffff"
+              css={css`
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                flex: 1;
+                min-width: 0;
+              `}
+            >
+              {referralUrl}
+            </Text>
+            <Text variant="c-regular" color={copied ? '#68FFB4' : 'text-tertiary'} css={css`flex-shrink: 0; font-size: 11px;`}>
+              {copied ? 'Copied!' : <Copy color='white' size={15} />}
+            </Text>
+          </Box>
+        )}
       </Box>
       <Box
         position="relative"
