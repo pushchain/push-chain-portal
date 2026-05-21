@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
-import moleSwapBg from '../../../../static/assets/website/rewards/moleswap-bg.webp';
+import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
+import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -28,30 +28,30 @@ const AppQuestSection = () => {
     walletAddress: caip10WalletAddress,
   })
 
-  const { data: unichessQuests } = useGetQuests({
-    appId: "unichess"
+  const { data: ramenSwapQuests } = useGetQuests({
+    appId: "ramen-swap"
   });
 
-  const { data: moleSwapQuests } = useGetQuests({
-    appId: "moleswap"
+  const { data: pusdQuests } = useGetQuests({
+    appId: "pusd"
   });
 
-  const { data: unichessQuestsProgress, refetch: refetchUnichessProgress } = useGetQuestsProgress({
-    appId: "unichess",
+  const { data: ramenSwapQuestsProgress, refetch: refetchRamenProgress } = useGetQuestsProgress({
+    appId: "ramen-swap",
     userId: userDetails?.userId
   });
 
-  const { data: moleSwapQuestsProgress, refetch: refetchMoleProgress } = useGetQuestsProgress({
-    appId: "moleswap",
+  const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
+    appId: "pusd",
     userId: userDetails?.userId
   });
 
-  const unichessQuestIds = unichessQuests?.data?.quests?.map((q) => q.id) || [];
-  const moleSwapQuestIds = moleSwapQuests?.data?.quests?.map((q) => q.id) || [];
+  const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
+  const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
-    ...unichessQuestIds,
-    ...moleSwapQuestIds,
+    ...ramenSwapQuestIds,
+    ...pusdQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -64,7 +64,6 @@ const AppQuestSection = () => {
 
   const { data: questActivitiesData, refetch: refetchQuestActivities } = useGetQuestActivities(userDetails?.userId);
 
-  // Build a flat map: activityTypeId -> { progress, status }
   const questProgressMap: Record<string, { progress: number; status: string }> = {};
   questActivitiesData?.activities?.forEach((app) => {
     app.quests.forEach((q) => {
@@ -74,8 +73,8 @@ const AppQuestSection = () => {
 
   const refetchAll = () => {
     refetchActivities();
-    refetchUnichessProgress();
-    refetchMoleProgress();
+    refetchRamenProgress();
+    refetchPusdProgress();
     refetchQuestActivities();
   };
 
@@ -87,11 +86,11 @@ const AppQuestSection = () => {
     return map;
   };
 
-  const unichessCompletedMap = buildCompletedMap(unichessQuestsProgress?.data?.quests);
-  const moleSwapCompletedMap = buildCompletedMap(moleSwapQuestsProgress?.data?.quests);
+  const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
+  const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
 
-  const enabledUnichessQuests = unichessQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledMoleSwapQuests = moleSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -102,42 +101,44 @@ const AppQuestSection = () => {
         gap="spacing-md"
         width="100%"
         flexDirection={{ initial: 'row', tb: 'column' }}
-        css={css`box-sizing: border-box;`}
+        css={css`
+            box-sizing: border-box;
+        `}
       >
         <AppQuestCard
-          appName="Degen Chess"
-          appUrl="degenchess.fun"
-          bgImage={unichessBg}
+          appName="PUSD Stablecoin"
+          appUrl="pusd.push.org"
+          bgImage={pusdBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledUnichessQuests}
+          quests={enabledPusdQuests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={unichessCompletedMap}
+          completedMap={pusdCompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          linkColor="#40278D"
-          titleGradient="linear-gradient(180deg, #000 16.15%, #40278D 89.06%)"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
+          linkColor="#4D2783"
         />
 
         <AppQuestCard
-          appName="MoleSwap"
-          appUrl="moleswap.com"
-          bgImage={moleSwapBg}
+          appName="Ramen Swap"
+          appUrl="ramenfi.xyz"
+          bgImage={ramenBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledMoleSwapQuests}
+          quests={enabledRamenSwapQuests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={moleSwapCompletedMap}
+          completedMap={ramenSwapCompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #5562F3 89.06%)"
-          linkColor="#184581"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%);"
+          linkColor="#DB2D33"
         />
       </Box>
     </Box>
