@@ -25,8 +25,7 @@ export const getSeasonThreeBaseURL = () => {
     case "staging":
       return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
     case "dev":
-      // NOTE: testing purposes, only
-      return `https://us-east1-push-prod-apps.cloudfunctions.net/pushpointsrewardsystem`;
+      return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
     default:
       return `https://us-east1-push-dev-apps.cloudfunctions.net/helloWorld`;
 
