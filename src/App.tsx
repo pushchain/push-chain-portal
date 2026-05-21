@@ -145,7 +145,7 @@ const AppContent = () => {
   const { create: autoCreateUser } = useAutoCreateUser();
 
   const refUserId = searchParams.get('ref');
-  const { data: resolvedInvite } = useResolveInviteLink(refUserId);
+  const { data: resolvedInvite, isLoading: isResolvingInvite } = useResolveInviteLink(refUserId);
   const resolvedInviteCode = resolvedInvite?.data?.code;
 
   const prevConnectionStatus = React.useRef(connectionStatus);
@@ -174,7 +174,7 @@ const AppContent = () => {
     if (isLoading) return;
     if (seasonThreeDetails) return;
     if (hasAttemptedRegistration) return;
-    if (!resolvedInviteCode) return;
+    if (refUserId && isResolvingInvite) return;
 
     setHasAttemptedRegistration(true);
     trackEvent('season3_signup_submitted', { event_category: 'auth' });
@@ -189,7 +189,7 @@ const AppContent = () => {
         setHasAttemptedRegistration(false);
       },
     });
-  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId, isResolvingInvite]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const el = scrollContainerRef.current;

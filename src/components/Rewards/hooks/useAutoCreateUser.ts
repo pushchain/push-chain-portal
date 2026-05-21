@@ -75,7 +75,7 @@ export const useAutoCreateUser = () => {
       return;
     }
 
-    console.log(caip10WalletAddress, ueaAccount, signature)
+    console.log('create create')
 
     createUser(
       {
