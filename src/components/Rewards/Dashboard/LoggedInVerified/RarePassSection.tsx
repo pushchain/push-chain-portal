@@ -60,7 +60,7 @@ export const RarePassSection: FC = () => {
 
 
     // Placeholder: "Unlock at Level 10" — hidden once user has dormant passes
-    ...(rareDormantCount === 0
+    ...(rareDormantCount === 0 && userLevel < 10
       ? [{
           id: rareActiveCount + 1,
           isLocked: true,
