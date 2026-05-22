@@ -1,10 +1,13 @@
 import { css } from "styled-components";
 import Lottie from "lottie-react";
 
-import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RarePass, RewardsCoin, SeasonThreePoints, Text, XP } from "../../blocks";
+import { getLevelBadge } from "../../helpers/getLevelBadge";
 
 import ModalBg from "../../../static/assets/website/shared/modal-bg.webp";
 import BoxAnimation from "../../../static/assets/website/rewards/box.json";
+
+import { Box, Button, LevelUpCart, LevelUpIcon, Modal, Multiplier, RarePass, RewardsCoin, SeasonThreePoints, Text, XP } from "../../blocks";
+
 
 export type LevelUpReward = {
   id: number;
@@ -30,6 +33,9 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
         ...(baseXP ? [{ id: 101, value: `${baseXP}`, label: 'XP', type: 'xp' }] : []),
       ]
     : []);
+
+  const { name: badgeName, Icon: BadgeIcon } = getLevelBadge(level);
+
 
   return (
     <Modal
@@ -84,7 +90,7 @@ const LevelUpModal = ({ isOpen, onClose, level, rewards, quest, basePoints, base
 
           {!quest &&
             <Box display="flex" alignItems="center" gap="spacing-xxs">
-            <LevelUpIcon />
+            <BadgeIcon width={35} height={35} />
             <Text variant="h3-bold">Lv.{level}</Text>
           </Box>}
         </Box>
