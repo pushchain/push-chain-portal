@@ -5,7 +5,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import svgr from "vite-plugin-svgr";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import path from "path";
-
+import { buildoptimize} from "ts-build-optimize";
 import { getPreviewBasePath } from "./basePath";
 
 export default defineConfig({
@@ -14,6 +14,7 @@ export default defineConfig({
     svgr(),
     viteTsconfigPaths({ root: "./" }),
     nodePolyfills(),
+    buildoptimize(),
   ],
 
   define: {
