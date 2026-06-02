@@ -48,6 +48,7 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   const textColor = highlighted ? '#D548EC' : 'text-primary';
   const chainLogo = getChainLogo(chainId);
 
+
   return (
     <Box
       height="56px"

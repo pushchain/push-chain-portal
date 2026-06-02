@@ -47,6 +47,7 @@ const LeaderboardListS3: FC = () => {
 
   const totalCurrentUserRarePass = currentUser?.rareActiveCount + currentUser?.rareDormantCount;
 
+
   return !leaderboardList.length ? (
     <LeaderBoardNullState
       refetchLeaderboard={isError ? refetch : undefined}
@@ -94,7 +95,7 @@ const LeaderboardListS3: FC = () => {
                   rank={item.rank}
                   address={fullCAIP10ToWallet(item.userWallet)}
                   points={item.lifetimePointsEarned}
-                  rarePass={item.totalRarePass}
+                  rarePass={item.mintedCount}
                   isLoading={isLoading}
                   userWallet={item.userWallet}
                 />
