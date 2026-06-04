@@ -329,6 +329,7 @@ export type SeasonThreeUserByWalletResponse = {
   lastUpdated: string;
   isSeasonOneUser: boolean;
   isSeasonTwoUser: boolean;
+  mintedCount?: number
 };
 
 export type AdvancedSybilCheckParams = {
