@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
 import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
+import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -28,17 +28,12 @@ const AppQuestSection = () => {
     walletAddress: caip10WalletAddress,
   })
 
-  const { data: ramenSwapQuests } = useGetQuests({
-    appId: "ramen-swap"
-  });
-
   const { data: pusdQuests } = useGetQuests({
     appId: "pusd"
   });
 
-  const { data: ramenSwapQuestsProgress, refetch: refetchRamenProgress } = useGetQuestsProgress({
-    appId: "ramen-swap",
-    userId: userDetails?.userId
+  const { data: zappiQuests } = useGetQuests({
+    appId: "zappi"
   });
 
   const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
@@ -46,12 +41,17 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const ramenSwapQuestIds = ramenSwapQuests?.data?.quests?.map((q) => q.id) || [];
+  const { data: zappiQuestsProgress, refetch: refetchZappiProgress } = useGetQuestsProgress({
+    appId: "zappi",
+    userId: userDetails?.userId
+  });
+
   const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
+  const zappiQuestIds = zappiQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
-    ...ramenSwapQuestIds,
     ...pusdQuestIds,
+    ...zappiQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -73,12 +73,12 @@ const AppQuestSection = () => {
 
   const refetchAll = () => {
     refetchActivities();
-    refetchRamenProgress();
     refetchPusdProgress();
+    refetchZappiProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-06-09T14:00:00Z";
+  const targetDate = "2026-06-11T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -86,11 +86,11 @@ const AppQuestSection = () => {
     return map;
   };
 
-  const ramenSwapCompletedMap = buildCompletedMap(ramenSwapQuestsProgress?.data?.quests);
   const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
+  const zappiCompletedMap = buildCompletedMap(zappiQuestsProgress?.data?.quests);
 
-  const enabledRamenSwapQuests = ramenSwapQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
   const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledZappiQuests = zappiQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -124,21 +124,21 @@ const AppQuestSection = () => {
         />
 
         <AppQuestCard
-          appName="Ramen Swap"
-          appUrl="ramenfi.xyz"
-          bgImage={ramenBg}
+          appName="Zappi.to"
+          appUrl="zappi.to"
+          bgImage={zappiBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledRamenSwapQuests}
+          quests={enabledZappiQuests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={ramenSwapCompletedMap}
+          completedMap={zappiCompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%);"
-          linkColor="#DB2D33"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
+          linkColor="#551798"
         />
       </Box>
     </Box>
