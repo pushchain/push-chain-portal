@@ -45,7 +45,7 @@ const LeaderboardListS3: FC = () => {
 
   const hasMoreData = !isFetchingNextPage && hasNextPage;
 
-  const totalCurrentUserRarePass = currentUser?.rareActiveCount + currentUser?.rareDormantCount;
+  const totalCurrentUserRarePass = currentUser?.mintedCount;
 
 
   return !leaderboardList.length ? (
