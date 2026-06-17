@@ -6,7 +6,7 @@ import { getUserCultStatus } from '../../services';
 
 export const useGetUserCultStatus = (options?: GetUserCultStatusParams) => {
   const identifier = options && ('userId' in options ? options.userId : options.wallet);
-  const isEnabled = !!identifier;
+  const isEnabled = !!identifier && !identifier.includes('undefined');
 
   return useQuery({
     queryKey: isEnabled ? [userCultStatus, identifier] : undefined,

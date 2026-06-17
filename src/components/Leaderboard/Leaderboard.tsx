@@ -8,7 +8,6 @@ import { LeaderBoardSection } from "./LeaderBoardSection";
 import { LeaderboardHeader } from "./Header/LeaderboardHeader";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Footer from "../../structure/Footer";
 import { device } from "../../config/globals";
 
 const Leaderboard: FC = () => {
@@ -95,7 +94,6 @@ const Leaderboard: FC = () => {
           onChange={(activeKey) => handleSetActiveTab(activeKey)}
         />
       </Box>
-      <Footer />
     </Box>
   );
 };

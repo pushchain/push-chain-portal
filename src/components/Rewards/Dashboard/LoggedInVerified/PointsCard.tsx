@@ -5,6 +5,8 @@ import { useGetSeasonThreeUserByWallet } from '../../../../queries';
 import { walletToFullCAIP10 } from '../../../../helpers/web3helper';
 import { usePushWalletContext } from '@pushchain/ui-kit';
 import TotalPointsBg from '../../../../../static/assets/website/rewards/total-points-bg.webp';
+import { device } from '../../../../config/globals';
+import { fadeInCss } from '../../utils/FadeIn';
 
 export const PointsCard: FC = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
@@ -34,6 +36,7 @@ export const PointsCard: FC = () => {
         background: radial-gradient(109.87% 94.08% at 50% 5.92%, #131220 51.7%, #44350D 100%);
         box-sizing: border-box;
         position: relative;
+        ${fadeInCss(80)}
 
         &::before {
           content: '';
@@ -65,7 +68,11 @@ export const PointsCard: FC = () => {
 
           <Skeleton isLoading={ isLoading }>
             <Box display="flex" flexDirection="column" alignItems="flex-start" position="relative" css={css`z-index: 1;`}>
-              <Text variant="h1-bold" color="text-primary">
+                  <Text variant="h1-bold" color="text-primary" css={css`
+                    @media ${device.mobileL} {
+                        font-size: 30px;
+                    }
+                  `}>
                 {userDetails?.totalPoints?.toLocaleString() || '-'}
               </Text>
               <Text variant="h5-semibold" color="text-tertiary">

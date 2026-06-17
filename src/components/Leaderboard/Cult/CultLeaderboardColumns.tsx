@@ -29,7 +29,7 @@ const CultLeaderboardColumns: FC = () => {
             margin-left: 30px;
           `}
         >
-          TOTAL POINTS
+          TOTAL SCORE
         </Text>
       </Box>
     </Box>

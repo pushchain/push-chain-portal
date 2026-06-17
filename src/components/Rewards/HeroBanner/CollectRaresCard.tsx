@@ -1,22 +1,28 @@
 import { css } from 'styled-components';
 import { Box, Text } from '../../../blocks';
 
+import CollectRaresCardImage from '../../../../static/assets/website/rewards/CollectRareCard.webp'
+import { Image } from '../../../css/SharedStyling';
+import { fadeInCss } from '../utils/FadeIn';
+
+
 const CollectRaresCard = () => {
   return (
     <Box
       display="flex"
       flexDirection="column"
-      width={{ initial: '280px', tb: '100%' }}
+      width={{ initial: '320px', tb: '100%' }}
       height={{ initial: '374px', tb: 'auto' }}
       minHeight={{ tb: '300px' }}
       padding="spacing-md"
-      borderRadius="radius-xl"
+      borderRadius="radius-lg"
       border="border-xs solid stroke-tertiary"
       position="relative"
       overflow="hidden"
       css={css`
         background: linear-gradient(241deg, rgba(253, 253, 218, 1) 0%, rgba(254, 223, 170, 1) 100%);
         box-sizing: border-box;
+        ${fadeInCss(100)}
       `}
     >
       <Box
@@ -27,9 +33,16 @@ const CollectRaresCard = () => {
         css={css`
           background: #f0c968;
           filter: blur(50px);
-          top: 127px;
-          left: 103px;
+          top: 180px;
+          left: -100px;
         `}
+      />
+
+
+      <Image
+        src={CollectRaresCardImage}
+        alt=""
+        style={{ width: '100%',zIndex: 7 }}
       />
 
       <Box
@@ -43,7 +56,7 @@ const CollectRaresCard = () => {
           z-index: 1;
         `}
       >
-        <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xs" flex="1">
+        <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xs">
           <Box display="flex" flexDirection="column" justifyContent="flex-end" gap="spacing-xxs">
             <Text
               variant="h3-semibold"
@@ -54,7 +67,7 @@ const CollectRaresCard = () => {
                 -webkit-text-fill-color: transparent;
               `}
             >
-              Collect Rares, Burn &amp; Mint Legendary Shiny
+              Collect Rares, <br />Burn &amp; Mint Legendary Shiny
             </Text>
 
             <Text

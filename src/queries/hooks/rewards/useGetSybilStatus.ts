@@ -1,24 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { sybilStatus } from "../../queryKeys";
 import { getSybilStatus } from "../../services";
-import { AuthHeaders } from "../../types";
 
 export const useGetSybilStatus = ({
   walletAddress,
-  authHeaders,
+  userId
 }: {
-  walletAddress?: string;
-  authHeaders?: AuthHeaders;
+    walletAddress?: string;
+    userId?: string
 } = {}) => {
   const isValid =
-    walletAddress &&
-    authHeaders?.message &&
-    authHeaders?.signature &&
-    authHeaders?.walletAddress;
+    walletAddress || userId
 
   return useQuery({
     queryKey: [sybilStatus, walletAddress],
-    queryFn: () => getSybilStatus({ walletAddress: walletAddress!, authHeaders: authHeaders! }),
+    queryFn: () => getSybilStatus({ walletAddress: walletAddress, userId: userId }),
     retry: false,
     enabled: !!isValid,
   });

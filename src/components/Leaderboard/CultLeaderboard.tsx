@@ -2,33 +2,44 @@
 // @ts-nocheck
 import { FC } from "react";
 import { css } from "styled-components";
-import InfiniteScroll from "react-infinite-scroller";
+import { usePushWalletContext } from "@pushchain/ui-kit";
 
-import { Box, Spinner } from "../../blocks";
+import { Box } from "../../blocks";
 import { LeaderboardHeader } from "./Header/LeaderboardHeader";
 import { LeaderBoardNullState } from "./List/LeaderboardNullState";
 import { CultLeaderboardColumns } from "./Cult/CultLeaderboardColumns";
 import { CultLeaderboardItem } from "./Cult/CultLeaderboardItem";
 import { useGetCultLeaderboard, CultLeaderboardUser } from "../../queries";
+import { walletToFullCAIP10, fullCAIP10ToWallet } from "../../helpers/web3helper";
 import Footer from "../../structure/Footer";
 import { device } from "../../config/globals";
 
 const CultLeaderboard: FC = () => {
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+
   const {
     data,
     isError,
     refetch,
-    fetchNextPage,
-    hasNextPage,
     isLoading,
-    isFetchingNextPage,
-  } = useGetCultLeaderboard({ pageSize: 20 });
+  } = useGetCultLeaderboard({ pageSize: 100 });
 
   const leaderboardList = isLoading
     ? Array(10).fill(0)
-    : data?.pages.flatMap((page) => page.users) || [];
+    : (data?.pages.flatMap((page) => page.users) || []).slice(0, 100);
 
-  const hasMoreData = !isFetchingNextPage && hasNextPage;
+  // Find current user in loaded leaderboard data
+  const currentUserEntry = !isLoading
+    ? leaderboardList.find(
+        (item: CultLeaderboardUser) =>
+          item.userWallet && fullCAIP10ToWallet(item.userWallet)?.toLowerCase() === fullCAIP10ToWallet(caip10WalletAddress)?.toLowerCase()
+      )
+    : null;
 
   return (
     <Box
@@ -47,7 +58,7 @@ const CultLeaderboard: FC = () => {
       `}
     >
       <Box css={css`position: relative; z-index: 2;`}>
-        <LeaderboardHeader title="Cult Leaderboard" />
+        <LeaderboardHeader title="Top Cult Leaderboard" />
       </Box>
 
       <Box
@@ -59,6 +70,10 @@ const CultLeaderboard: FC = () => {
           margin-top: -20px;
           position: relative;
           z-index: 1;
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
           border-radius: 0 0 32px 32px;
           border: 1px solid rgba(171, 70, 248, 0.40);
           background: rgba(0, 0, 0, 0.10);
@@ -75,45 +90,68 @@ const CultLeaderboard: FC = () => {
             subHeading={isError ? "Please refresh to view the Leaderboard" : ""}
           />
         ) : (
-          <Box margin="spacing-sm spacing-none spacing-none spacing-none" gap="spacing-sm" display="flex" flexDirection="column">
-            <CultLeaderboardColumns />
             <Box
-              height="calc(100vh - 356px)"
+              margin="spacing-sm spacing-none spacing-none spacing-none"
+              display="flex"
+              flexDirection="column"
+              css={css`
+                flex: 1;
+                min-height: 0;
+              `}>
+            <CultLeaderboardColumns />
+
+            {currentUserEntry && (
+              <Box>
+                <CultLeaderboardItem
+                  rank={currentUserEntry.rank}
+                  userId={currentUserEntry.userId}
+                  userWallet={currentUserEntry.userWallet}
+                  totalPoints={currentUserEntry.totalScore}
+                  isLoading={false}
+                  highlighted
+                />
+              </Box>
+            )}
+
+            <Box
               customScrollbar={true}
               css={css`
+                flex: 1;
+                min-height: 0;
                 overflow: scroll;
                 overflow-x: hidden;
               `}
             >
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={() => fetchNextPage()}
-                hasMore={hasMoreData}
-                useWindow={false}
-                threshold={150}
-              >
-                {leaderboardList.map((item: CultLeaderboardUser, index: number) => (
-                  <CultLeaderboardItem
-                    key={`${index}`}
-                    rank={item.rank}
-                    userWallet={item.userWallet}
-                    totalPoints={item.totalScore}
-                    isLoading={isLoading}
-                  />
-                ))}
+              {leaderboardList.map((item: CultLeaderboardUser, index: number) => {
+                const showSeparator = !isLoading && index === 49 && leaderboardList.length > 50;
 
-                {isFetchingNextPage && (
-                  <Box
-                    width="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    margin="spacing-sm spacing-none"
-                  >
-                    <Spinner size="medium" variant="primary" />
+                return (
+                  <Box key={`${index}`}>
+                    <CultLeaderboardItem
+                      rank={item.rank}
+                      userId={item.userId}
+                      userWallet={item.userWallet}
+                      totalPoints={item.totalScore}
+                      isLoading={isLoading}
+                    />
+                    {showSeparator && (
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap="spacing-xs"
+                      >
+                        <Box
+                          css={css`
+                            flex: 1;
+                            height: 2px;
+                            background: #D548EC;
+                          `}
+                        />
+                      </Box>
+                    )}
                   </Box>
-                )}
-              </InfiniteScroll>
+                );
+              })}
             </Box>
           </Box>
         )}

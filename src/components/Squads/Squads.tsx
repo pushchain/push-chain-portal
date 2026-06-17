@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { css } from "styled-components"
 import { usePushWalletContext } from "@pushchain/ui-kit"
 
@@ -6,14 +7,16 @@ import { walletToFullCAIP10 } from "../../helpers/web3helper"
 import { useAuthHeaders } from "../../context/authHeadersContext"
 
 import { device } from "../../config/globals"
-import { ReferralStats, ReferralProgram, InviteCodes } from "./Referral"
+import { ReferralStats, ReferralProgram} from "./Referral"
 import { SquadSection } from "./SquadDetails"
 import { Box, Link, Text } from "../../blocks"
+import { trackEvent } from "../../helpers/analytics"
 
 
 export const Squads = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -23,30 +26,24 @@ export const Squads = () => {
     walletAddress: caip10WalletAddress
   });
 
-  const { data: squadsDetails, refetch: refetchSquadsDetails } = useGetSquadsDetails(authHeaders);
-  const { data: inviteCodeDetails, refetch } = useGetAllInvites(authHeaders);
+  const { data: squadsDetails, refetch: refetchSquadsDetails } = useGetSquadsDetails(seasonThreeDetails?.userId);
+  const { data: inviteCodeDetails, refetch } = useGetAllInvites(seasonThreeDetails?.userId);
   const { mutate: requestForInviteCode, isPending: isFetchingInviteCode } = useRequestInviteCode();
 
-  const requestInvitesCode = () => {
+  const requestInvitesCode = async () => {
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
+    trackEvent('invite_code_generated', { event_category: 'invites' });
     requestForInviteCode(
+      { payload: { count: 3 }, authHeaders: headers },
       {
-        payload: {
-          count: 5
-        },
-        authHeaders
-      },
-      {
-        onSuccess: (response) => {
-          console.log(response)
-          refetch();
-
-        },
-        onError: (error: Error) => {
-          console.log("Error in creating activity", error);
-        },
+        onSuccess: () => { refetch(); },
+        onError: (error: Error) => { console.log("Error in creating activity", error); },
       },
     );
-  }
+  };
 
 
   return (
@@ -83,7 +80,7 @@ export const Squads = () => {
         >
           <Box
             display="flex"
-            flexDirection="column"
+            flexDirection={{ initial: "row", tb: "column" }}
             gap="spacing-md"
             css={css`
               flex: 1;
@@ -101,22 +98,6 @@ export const Squads = () => {
             <ReferralProgram />
           </Box>
 
-          <Box
-            minHeight="100%"
-            css={css`
-              flex: 1;
-              min-width: 0;
-
-              @media ${device.tablet} {
-                width: 100%;
-              }
-            `}
-          >
-            <InviteCodes
-              requestInvitesCode={ requestInvitesCode }
-              isFetchingInviteCode={ isFetchingInviteCode }
-            />
-          </Box>
         </Box>
       </Box>
 

@@ -1,12 +1,9 @@
 import { css } from "styled-components";
-import { Box, Text } from "../../blocks"
-import { useCountdown } from "../Rewards/hooks/useCountdown";
+import { Box } from "../../blocks"
 import { CultFooter } from "./CultFooter"
 import { CultHeader } from "./CultHeader"
 
 export const Cult = () => {
-	const targetDate = "2026-03-17T13:59:59";
-	const { timeLeft } = useCountdown(targetDate);
 
   return (
 		<Box
@@ -28,13 +25,6 @@ export const Cult = () => {
 					z-index: 1;
 				`}
 			>
-				<Text variant="h4-bold" color="#FFFFFF">
-					Season 3 dropping soon!
-				</Text>
-        <Text variant="h1-regular" color="#FFFFFF">
-          {/*{timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M : {timeLeft.seconds}S*/}
-          S3 Coming March 2026
-        </Text>
 			</Box>
 		</Box>
   )

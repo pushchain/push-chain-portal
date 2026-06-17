@@ -1,15 +1,21 @@
+import { css } from 'styled-components';
+
+import { useRewardStatus } from '../../context/rewardStatusContext';
+
 import HeroBannerCards from './HeroBanner/HeroBannerCards';
-import ActivityStatsCards from './ActivityStats/ActivityStatsCards';
+import AppQuestSection from './AppQuests/AppQuestSection';
+import BonusQuestsSection from './BonusQuests/BonusQuestsSection';
 import BossQuestsSection from './BossQuests/BossQuestsSection';
-import { Box, LockFilled, Text } from '../../blocks';
 import { DailyRewardsSection } from './DailyRewards/DailyRewardsSection';
 import { StreakDays } from './StreakDays';
-import { css } from 'styled-components';
 import { LevelUp } from './LevelUp';
-import { useRewardStatus } from '../../context/rewardStatusContext';
+import { Box, LockFilled, Text } from '../../blocks';
+import { useCountdown } from './hooks/useCountdown';
+import { BONUS_QUEST_DEADLINE } from './RewardsUpdatedDashboard';
 
 const RewardsActivities = () => {
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
+  const { isExpired: isBonusQuestExpired } = useCountdown(BONUS_QUEST_DEADLINE);
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
 
@@ -64,13 +70,27 @@ const RewardsActivities = () => {
         & > * {
           min-width: 0;
         }
+        @media (max-width: 1200px) and (min-width: 769px) {
+          flex-wrap: wrap;
+          height: auto;
+          & > * {
+            flex: 1 1 calc(50% - var(--spacing-md));
+            min-width: 0;
+          }
+        }
         `}>
         <LevelUp />
         <StreakDays />
         <DailyRewardsSection />
       </Box>
 
-      <ActivityStatsCards />
+      {!isBonusQuestExpired && (
+        <Box css={css`margin-top: -16px; margin-bottom: -16px;`}>
+          <BonusQuestsSection />
+        </Box>
+      )}
+
+      <AppQuestSection />
 
       <BossQuestsSection />
     </Box>

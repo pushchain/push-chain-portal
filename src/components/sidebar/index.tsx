@@ -16,12 +16,16 @@ import {
   Cross,
   SquadsIcon,
   Cult,
+  Twitter,
+  Discord,
+  DiscordWhite,
+  Link,
 } from '../../blocks';
 import type { IconProps } from '../../blocks/icons/Icons.types';
 import { device } from '../../config/globals';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { usePushWalletContext } from '@pushchain/ui-kit';
+import { PushUniversalAccountButton, usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../helpers/web3helper';
 import { useGetUserCultStatus } from '../../queries';
 import { useActivityContext } from '../../context/activityContext';
@@ -65,7 +69,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
 
   const isCultUser = userCultStatus?.data?.isCultMember;
 
-  const showCultDashboard = isWalletConnected && isCultUser && isVerified;
+  const showCultDashboard = isWalletConnected && isCultUser;
 
   const getActiveItemId = (): string => {
     const path = location.pathname;
@@ -125,6 +129,18 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         label: 'Leaderboards',
         route: '/rewards/leaderboard'
       },
+      ...(showCultDashboard ? [{
+        id: 'cult',
+        icon: Cult,
+        label: 'Cult',
+        route: '/cult'
+      },
+      {
+        id: 'cult-leaderboard',
+        icon: Ranking,
+        label: 'Cult Leaderboards',
+        route: '/cult/leaderboard',
+      }] : []),
     ] : []),
 
     ...(FLAGS.CULT ? [
@@ -134,12 +150,7 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         label: 'Season 3',
         route: '/'
       },
-      {
-        id: 'cult',
-        icon: Cult,
-        label: 'Cult',
-        route: '/cult'
-      },
+
       // ...(showCultDashboard ? [{
       //   id: 'cult-leaderboard',
       //   icon: Ranking,
@@ -184,9 +195,9 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         `}
   `;
 
+
   const handleItemClick = (itemId: string, onClick?: () => void, route?: string) => {
     if (route) {
-      // Check if it's an external URL
       if (route.startsWith('http')) {
         window.open(route, '_blank');
       } else {
@@ -243,12 +254,14 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
         {isLaptop && (
           <Box
             display="flex"
-            justifyContent="flex-end"
+            justifyContent="space-between"
+            alignItems="center"
             padding="spacing-none spacing-none spacing-xs spacing-none"
-            cursor="pointer"
-            onClick={onClose}
           >
-            <Cross size={24} color="icon-primary" />
+            <PushUniversalAccountButton uid='wallet1' />
+            <Box cursor="pointer" onClick={onClose}>
+              <Cross size={24} color="icon-primary" />
+            </Box>
           </Box>
         )}
 
@@ -325,39 +338,29 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
             </Box>
           ))}
 
-          {/*<Box
+
+          <Box
             display="flex"
             alignItems="center"
-            justifyContent="space-between"
-            gap="spacing-xxs"
-            padding="spacing-xxs spacing-sm"
-            borderRadius="radius-xs"
-            css={getItemStyles(activeItemId === 'more')}
-            onClick={() => handleItemClick('more')}
+            gap="spacing-md"
           >
-            <Box display="flex" alignItems="center" gap="spacing-xxs">
-              <DotsThree size={24} color="icon-brand-medium" />
-              <Text
-                variant={activeItemId === 'more' ? 'h5-semibold' : 'h5-regular'}
-                color="text-primary"
-              >
-                More
-              </Text>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              width="21px"
-              height="21px"
-              borderRadius="radius-xxxs"
-              css={css`
-                background-color: #4f4072;
-              `}
-            >
-              <CaretLeftCircle size={21} color="text-primary" />
-            </Box>
-          </Box>*/}
+            <a href="https://x.com/PushChain" target="_blank" rel="noopener noreferrer">
+              <Twitter width={30} height={30} />
+            </a>
+            <a href="https://discord.com/invite/pushchain" target="_blank" rel="noopener noreferrer">
+              <DiscordWhite width={38} />
+            </a>
+          </Box>
+
+          <Box display='flex' flexDirection='row' gap='spacing-sm'>
+            <Link to='https://push.org/tos' title='Terms of Service' target='_blank'>
+              Terms of Service
+            </Link>
+
+            <Link to='https://push.org/privacy' title='Privacy Policy' target='_blank'>
+              Privacy Policy
+            </Link>
+          </Box>
         </Box>
       </Box>
     </>

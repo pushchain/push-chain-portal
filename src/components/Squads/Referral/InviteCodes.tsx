@@ -2,12 +2,13 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 
-import { useGetAllInvites } from "../../../queries";
-import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { useGetAllInvites, useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../../../queries";
 import { device } from "../../../config/globals";
+import { useRewardStatus } from "../../../context/rewardStatusContext";
 
-import { Box, Text, Copy, Button, Spinner } from "../../../blocks"
-
+import { Box, Text, Copy, Button, Skeleton } from "../../../blocks"
+import { trackEvent } from "../../../helpers/analytics"
+import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 type InviteCodeRowProps = {
   code: string;
@@ -21,12 +22,7 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
   const isCopied = copiedCode === code;
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      gap="spacing-xs"
-      width="100%"
-    >
+    <Box display="flex" alignItems="center" gap="spacing-xs" width="100%">
       <Box
         display="flex"
         alignItems="center"
@@ -74,14 +70,7 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
         )}
       </Box>
 
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        css={css`
-          min-width: 85px;
-        `}
-      >
+      <Box display="flex" alignItems="center" justifyContent="center" css={css`min-width: 85px;`}>
         <Box
           display="flex"
           alignItems="center"
@@ -111,14 +100,65 @@ const InviteCodeRow = ({ code, isUsed, copiedCode, onCopy }: InviteCodeRowProps)
 type InviteCodesProps = {
   requestInvitesCode: () => void;
   isFetchingInviteCode: boolean;
+  isSigning?: boolean;
 }
 
-export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: InviteCodesProps) => {
+export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode, isSigning }: InviteCodesProps) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const { authHeaders } = useAuthHeaders();
-  const { connectionStatus } = usePushWalletContext('wallet1');
-  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(authHeaders);
+  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
+
+  const caip10WalletAddress = walletToFullCAIP10(
+    universalAccount?.address as string,
+    universalAccount?.chain,
+  );
+
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { data: inviteCodeDetails, isLoading, isSuccess } = useGetAllInvites(userDetails?.userId);
+
+  const { data: userCultStatus } = useGetUserCultStatus({
+    wallet: caip10WalletAddress
+  });
+
+  const { isLocked, isLockedStatusLoading } = useRewardStatus();
+
+  const rewardsLocked = isLocked && !isLockedStatusLoading;
+  const isWalletConnected = Boolean(universalAccount?.address);
+  const isCultUser = userCultStatus?.data?.isCultMember;
+
+  const hasInvites = Boolean(inviteCodeDetails?.data?.invites?.length);
+
+  const isInitialLoading =
+    isLoading ||
+    !isSuccess ||
+    isLockedStatusLoading;
+
+  const shouldShowSkeleton =
+    isWalletConnected && isInitialLoading;
+
+  const shouldShowSybilLock =
+    isWalletConnected &&
+    !isInitialLoading &&
+    rewardsLocked;
+
+  const shouldShowGetInviteButton =
+    !isInitialLoading &&
+    !rewardsLocked &&
+    isWalletConnected &&
+    connectionStatus === "connected" &&
+    !isCultUser &&
+    !hasInvites;
+
+  const shouldShowGenerateButton =
+    !isInitialLoading &&
+    !rewardsLocked &&
+    isWalletConnected &&
+    isCultUser;
+
+  const shouldShowInvites =
+    !isInitialLoading &&
+    !rewardsLocked &&
+    hasInvites;
 
   const handleCopy = async (code: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -126,6 +166,8 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
 
     await navigator.clipboard.writeText(code);
     setCopiedCode(code);
+    trackEvent('invite_code_copied', { event_category: 'invites', event_label: code });
+
     setTimeout(() => {
       setCopiedCode(null);
     }, 2000);
@@ -148,7 +190,6 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
         @media ${device.mobileL} {
           min-height: 300px;
         }
-
 
         &::before {
           content: '';
@@ -176,71 +217,95 @@ export const InviteCodes = ({ requestInvitesCode, isFetchingInviteCode }: Invite
         `}
       >
         <Box css={css`flex: 1;`}>
-          <Text
-            variant="h5-semibold"
-            css={css`color: rgba(255, 255, 255, 0.75);`}
-          >
+          <Text variant="h5-semibold" css={css`color: rgba(255, 255, 255, 0.75);`}>
             Invite Code
           </Text>
         </Box>
         <Box css={css`min-width: 85px; text-align: center;`}>
-          <Text
-            variant="h5-semibold"
-            css={css`color: rgba(255, 255, 255, 0.75);`}
-          >
+          <Text variant="h5-semibold" css={css`color: rgba(255, 255, 255, 0.75);`}>
             Status
           </Text>
         </Box>
       </Box>
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        gap="spacing-xs"
-        css={css`
-            flex: 1;
-            width: 100%;
-          `}
-      >
-        {(isLoading || !isSuccess) &&
-            <Box
-              width="100%"
-              height="100%"
-              alignItems="center"
-              justifyContent="center"
-              css={css`
-                  margin: auto auto;
-                  flex: 1;
-              `}>
-                <Spinner variant="primary" size="extraLarge" css={css`margin: auto auto;`} />
-          </Box>
-          }
+      <Box display="flex" flexDirection="column" css={css`flex: 1; width: 100%;`}>
 
-        {isSuccess && !inviteCodeDetails?.data?.invites?.length && connectionStatus === "connected" && (
+        {!isWalletConnected && (
+          <Box display="flex" justifyContent="center" css={css`width: 100%; height: 100%;`}>
+            <Text variant="h1-bold" color="text-primary">-</Text>
+          </Box>
+        )}
+
+        {shouldShowSkeleton && (
+          <Box display="flex" flexDirection="column" gap="spacing-xs" width="100%">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} isLoading>
+                <Box css={css`width: 100%; height: 40px;`} />
+              </Skeleton>
+            ))}
+          </Box>
+        )}
+
+        {shouldShowSybilLock && (
+          <Box display="flex" justifyContent="center" alignItems="center" css={css`flex: 1;`}>
+            <Text variant="bs-semibold" color="text-secondary" textAlign="center">
+              Complete Sybil check to unlock Invite codes
+            </Text>
+          </Box>
+        )}
+
+        {shouldShowGetInviteButton && (
           <Button
             variant="outline"
             size="extraSmall"
             onClick={() => requestInvitesCode()}
-            loading={isFetchingInviteCode}
-            disabled={isFetchingInviteCode}
-            css={css`
-              margin: auto auto;
-              cursor: pointer;
-            `}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
+            css={css`margin: auto; cursor: pointer;`}
           >
             Get Invite Codes
           </Button>
         )}
 
-        {isSuccess && inviteCodeDetails?.data?.invites?.map((invite, index) => (
-          <InviteCodeRow
-            key={index}
-            code={invite.code}
-            isUsed={invite.isUsed}
-            copiedCode={copiedCode}
-            onCopy={handleCopy}
-          />
-        ))}
+        {shouldShowGenerateButton && (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={() => requestInvitesCode()}
+            loading={isFetchingInviteCode || isSigning}
+            disabled={isFetchingInviteCode || isSigning}
+            css={css`margin: 0 auto auto auto; cursor: pointer; width: 100%;`}
+          >
+            Generate Invite Code
+          </Button>
+        )}
+
+        {shouldShowInvites && (
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="spacing-xs"
+            customScrollbar
+            css={css`
+              overflow-y: auto;
+              max-height: ${isCultUser ? '200px' : '260px'};
+            `}
+          >
+            {(isCultUser
+              ? inviteCodeDetails?.data?.invites
+              : inviteCodeDetails?.data?.invites?.slice(0, userDetails?.level >= 10 ? 5 : 3)
+            )?.map((invite, index) => (
+              <InviteCodeRow
+                key={index}
+                code={invite.code}
+                isUsed={invite.isUsed}
+                copiedCode={copiedCode}
+                onCopy={handleCopy}
+              />
+            ))}
+          </Box>
+        )}
+
       </Box>
     </Box>
   );

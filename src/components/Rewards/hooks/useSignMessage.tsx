@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { SiweMessage, generateNonce } from "siwe";
 import { usePushWalletContext } from "@pushchain/ui-kit";
+
 import { useRewardsContext } from "../../../context/rewardsContext";
 import { parseCAIP } from "../../../helpers/web3helper";
 
@@ -21,6 +22,7 @@ interface SiweMessageData {
 
 interface SignMessageResult {
   signature?: string;
+  messageObject?: SiweMessageData;
   messageToSend?: SiweMessageData | string;
   error?: string;
   isLoading: boolean;
@@ -69,7 +71,11 @@ export const useSignMessageWithEthereum = () => {
         const messageBytes = encoder.encode(messageToSign);
 
         const signedMessageBytes = await handleSignMessage(messageBytes);
+        if (!signedMessageBytes?.length) {
+          throw new Error("Signature request failed or was rejected. Please try again.");
+        }
         const signature = ethers.utils.hexlify(signedMessageBytes);
+
 
         setSignature(signature);
 

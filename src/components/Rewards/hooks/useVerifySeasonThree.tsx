@@ -15,6 +15,7 @@ import {
 import { parseCAIP } from "../../../helpers/web3helper";
 import { useSignMessageWithEthereum } from "./useSignMessage";
 import { useSignMessageWithSolana } from "./useSignMessageWithSolana";
+import { useSignPushMessage } from "./useSignPushMessage";
 import { WalletChainType } from "../utils/wallet";
 
 type UseDiscordActivityVerificationProps = {
@@ -31,9 +32,12 @@ const useVerifySeasonThree = ({
   const [verifyingSeasonThree, setVerifyingSeasonThree] = useState(false);
   const [verificationSuccess, setVerificationSuccess] = useState(false);
 
-  const { universalAccount } = usePushWalletContext('wallet1');
+  const { universalAccount, connectionType } = usePushWalletContext('wallet1');
   const { signMessage } = useSignMessageWithEthereum();
   const { signMessage: signMessageWithSolana } = useSignMessageWithSolana();
+  const { signMessage: signMessageWithPush } = useSignPushMessage();
+
+  const isPushSocialWallet = connectionType === 'social';
 
   const account = universalAccount?.address;
   const { chainId } = parseCAIP(universalAccount?.chain);
@@ -102,44 +106,28 @@ const useVerifySeasonThree = ({
 
       const isSolana = chainId == WalletChainType.SOLANA;
 
-      if (isSolana) {
-        const {
-          signature,
-          messageToSend: signedMessage,
-          error,
-        } = await signMessageWithSolana({
-          discord: username,
-          discord_token: token,
-        });
+      const signFn = isPushSocialWallet
+        ? signMessageWithPush
+        : isSolana
+          ? signMessageWithSolana
+          : signMessage;
 
-        if (error || !signature) {
-          setErrorMessage(error);
-          setVerifyingSeasonThree(false);
-          return;
-        }
+      const extraData = { discord: username, discord_token: token };
 
-        verificationProof = signature;
-        messageToSend = signedMessage;
-      } else {
+      const {
+        signature,
+        messageToSend: signedMessage,
+        error,
+      } = await signFn(extraData);
 
-          const {
-            signature,
-            messageToSend: signedMessage,
-            error,
-          } = await signMessage({
-            discord: username,
-            discord_token: token,
-          });
-
-          if (error || !signature) {
-            setErrorMessage(error);
-            setVerifyingSeasonThree(false);
-            return;
-          }
-
-          verificationProof = signature;
-          messageToSend = signedMessage;
+      if (error || !signature) {
+        setErrorMessage(error);
+        setVerifyingSeasonThree(false);
+        return;
       }
+
+      verificationProof = signature;
+      messageToSend = signedMessage;
 
         if (!verificationProof) {
             setErrorMessage('Invalid Verification Proof');
@@ -183,7 +171,7 @@ const useVerifySeasonThree = ({
         },
       );
     },
-    [account, chainId, signMessage, signMessageWithSolana, claimSeasonThree, universalAccount],
+    [account, chainId, signMessage, signMessageWithSolana, signMessageWithPush, isPushSocialWallet, claimSeasonThree, universalAccount],
   );
 
   return {

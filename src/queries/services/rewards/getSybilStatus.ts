@@ -1,24 +1,20 @@
 import axios from "axios";
 
 import { getSybilStatusModel } from "../../models";
-import { AuthHeaders } from "../../types";
 import { getSeasonThreeBaseURL } from "../../baseURL";
 
 export const getSybilStatus = ({
   walletAddress,
-  authHeaders,
+  userId
 }: {
-  walletAddress: string;
-  authHeaders: AuthHeaders;
+    walletAddress: string;
+    userId: string
 }) =>
   axios({
     method: "GET",
     url: `${getSeasonThreeBaseURL()}/v3/users/sybil/status`,
-    params: { walletAddress },
+    params: { walletAddress, userId },
     headers: {
       "Content-Type": "application/json",
-      "x-message": JSON.stringify(authHeaders.message),
-      "x-signature": authHeaders.signature,
-      "x-wallet-address": authHeaders.walletAddress,
     },
   }).then((response) => getSybilStatusModel(response.data));

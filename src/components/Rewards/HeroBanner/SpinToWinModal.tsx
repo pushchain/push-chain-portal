@@ -1,5 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { css } from 'styled-components';
+import Lottie from 'lottie-react';
+import { usePushWalletContext } from '@pushchain/ui-kit';
+
 
 import Spinboard, { SpinboardHandle } from './Spinboard';
 import { useSpinStatus } from '../hooks/useSpinStatus';
@@ -7,10 +10,19 @@ import { useGetSeasonThreeUserByWallet, useSpinTheWheel } from '../../../queries
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import OpenPassImage from "../../../../static/assets/website/pushpass/OpenPass.webp";
-import { Box, Button, Modal, Multiplier, PCTokens, SeasonThreePoints, Text } from '../../../blocks';
+import { Box, Button, Modal, SeasonThreePoints, SpinGlow, Text } from '../../../blocks';
 import { Image } from '../../../css/SharedStyling';
-import { usePushWalletContext } from '@pushchain/ui-kit';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
+import useMediaQuery from '../../../hooks/useMediaQuery';
+import { device } from '../../../config/globals';
+import { useAuthHeaders } from '../../../context/authHeadersContext';
+import { trackEvent } from '../../../helpers/analytics';
+import { useSpinSounds } from '../hooks/useSpinSounds';
+
+import BurstBgAnimation from "../../../../static/assets/website/rewards/Burst-Ray-bg.json";
+import PCTokenAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-1.json";
+import MultiplierAnimation from "../../../../static/assets/website/rewards/Burst-Ray-Icon-2.json";
+
 
 type SpinToWinModalProps = {
   isOpen: boolean;
@@ -25,14 +37,14 @@ type SpinPrize = {
 };
 
 type ButtonConfig = {
-  label: string;
+  label: ReactNode;
   onClick?: () => void;
   disabled: boolean;
   variant?: string;
 };
 
 const spinConfig: SpinPrize[] = [
-  { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "RARE PASS" },
+  { slotId: 10, rewardType: "RARE_PASS", rewardValue: 1, label: "Rare Pass" },
   { slotId: 1, rewardType: "POINTS", rewardValue: 50, label: "50 Points" },
   { slotId: 2, rewardType: "POINTS", rewardValue: 100, label: "100 Points" },
   { slotId: 3, rewardType: "POINTS", rewardValue: 150, label: "150 Points" },
@@ -48,11 +60,15 @@ const getPrizeBySlotId = (slotId: number): SpinPrize | undefined =>
   spinConfig.find(item => item.slotId === slotId);
 
 const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
+  const isTablet = useMediaQuery(device.tablet);
   const [isSpinning, setIsSpinning] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [wonPrize, setWonPrize] = useState<SpinPrize | null>(null);
   const { universalAccount } = usePushWalletContext('wallet1');
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
+  const { playSpinSound, startDeceleration, stopSpinSound, playWinSound } = useSpinSounds();
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
@@ -61,8 +77,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
 
   const spinboardRef = useRef<SpinboardHandle>(null);
 
-  const { spinStatus, authHeaders, refetch } = useSpinStatus();
-  const { refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
+  const { spinStatus, refetch } = useSpinStatus();
+  const { data: userSeasonThreeDetails, refetch: refetchUserDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress
   })
   const { mutate: spin } = useSpinTheWheel();
@@ -77,6 +93,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
+      stopSpinSound();
       setShowResult(false);
       setWonPrize(null);
       setIsSpinning(false);
@@ -108,22 +125,31 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     return () => clearInterval(interval);
   }, [spinStatus?.resetsAt]);
 
-  const handleSpinClick = () => {
-    if (isSpinning || !canSpin || !authHeaders) return;
+  const handleSpinClick = async () => {
+    if (isSpinning || !canSpin) return;
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
 
     setShowResult(false);
     setIsSpinning(true);
     spinboardRef.current?.startSpin();
+    playSpinSound();
+    trackEvent('spin_wheel_clicked', { event_category: 'rewards', event_label: isFirstSpin ? 'free_spin' : 'paid_spin', value: nextSpinCost });
 
-    spin(authHeaders, {
+    spin(headers, {
       onSuccess: (data) => {
         const slotId = data?.slotId ?? 1;
+        startDeceleration();
         spinboardRef.current?.landOn(slotId);
         setWonPrize(getPrizeBySlotId(slotId) ?? null);
+        trackEvent('spin_wheel_completed', { event_category: 'rewards', event_label: getPrizeBySlotId(slotId)?.label ?? 'unknown', reward_type: getPrizeBySlotId(slotId)?.rewardType });
         refetch();
         refetchUserDetails();
       },
       onError: () => {
+        stopSpinSound();
         spinboardRef.current?.stopSpin();
         setIsSpinning(false);
       },
@@ -131,6 +157,8 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   };
 
   const handleSpinComplete = () => {
+    stopSpinSound();
+    playWinSound();
     setIsSpinning(false);
     setShowResult(true);
   };
@@ -145,6 +173,12 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
   };
 
   const getButtonConfig = (): ButtonConfig => {
+    if (isSigning) {
+      return {
+        label: 'Spinning...',
+        disabled: true };
+    }
+
     if (isSpinning) {
       return {
         label: 'Spinning...',
@@ -161,24 +195,52 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
       }
 
       if (remainingSpins > 0) {
-        const cost = nextSpinCost > 0 ? ` (${nextSpinCost} Points)` : '';
+        const cost = nextSpinCost > 0 ? <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          margin="spacing-none spacing-none spacing-none spacing-xxxs"
+          gap="spacing-xxxs">
+            <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+        </Box> : '';
         return {
-          label: `Spin Again${cost}`,
+          label: <>Spin Again {cost}</>,
           onClick: handleSpinAgain,
           disabled: false };
       }
 
       return {
-        label: 'Close',
-        onClick: handleClose,
-        disabled: false };
+        label: `More spins unlock in ${countdown}`,
+        disabled: true,
+        variant: 'outline',
+      };
     }
 
     if (!canSpin) {
+      if (currentSpinCount >= 5) {
+        return {
+          label: `More spins unlock in ${countdown}`,
+          disabled: true,
+          variant: 'outline',
+        };
+      }
       if (!hasEnoughPoints) {
         return {
-          label: `Spin The Wheel ${nextSpinCost} Points`,
-          disabled: true };
+          label:
+            <>
+              Not enough Points to Spin
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                margin="spacing-none spacing-none spacing-none spacing-xxs"
+                gap="spacing-xxxs">
+                  <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> <Text color='#FE5454'>{nextSpinCost}</Text>
+              </Box>
+            </>,
+          disabled: true,
+          variant: 'outline'
+        };
       }
       return {
         label: 'No Spins Available',
@@ -194,7 +256,18 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     }
 
     return {
-      label: `Spin The Wheel (${nextSpinCost} Points)`,
+      label:
+        <>
+          Spin The Wheel
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            margin="spacing-none spacing-none spacing-none spacing-xxs"
+            gap="spacing-xxxs">
+              <Box width='30px' height='30px'><SeasonThreePoints width={30} height={30} /></Box> {nextSpinCost}
+          </Box>
+        </>,
       onClick: handleSpinClick,
       disabled: false
     };
@@ -210,12 +283,13 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="small"
+      size={isTablet ? "small" : "large"}
       css={css`
-        border-radius: var(--radius-lg, 32px);
+        border-radius: var(--radius-lg, 37px);
         outline: none;
         background: url(${ModalBg}) no-repeat center center;
-        background-size: cover;
+        background-size: auto;
+
 
         & > div:last-child:empty {
           display: none;
@@ -256,14 +330,7 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
             css={css`
               width: 226px;
               height: 127px;
-              border-radius: 20.239px;
-              border: 0.843px solid rgba(255, 255, 255, 0.40);
-              background: radial-gradient(79.77% 79.77% at 31.11% 22.5%, #C35FF5 0%, #635CC8 100%);
               margin: 125px 0px 25px 0px;
-              display: flex;
-              align-items: flex-end;
-              padding: 24px;
-              box-sizing: border-box;
             `}
           >
             <Box css={css`
@@ -271,15 +338,80 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
               top: -15%;
               left: 50%;
               transform: translate(-50%, -50%);
+              z-index: 0;
+              pointer-events: none;
             `}>
-              {isRarePass && <Image src={OpenPassImage} alt="Open Pass" width={120} />}
+                <Lottie
+                  animationData={BurstBgAnimation}
+                  loop
+                  style={{ width: '240px', margin: "40px 0 0 0"}}
+                />
+                <Box
+                  css={css`
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -30%);
+                    pointer-events: none;
+                    mix-blend-mode: plus-lighter;
+                  `}
+                >
+                  <SpinGlow width={300} height={230} />
+                </Box>
+            </Box>
+
+            <Box
+              css={css`
+                width: 226px;
+                height: 127px;
+                border-radius: 20.239px;
+                border: 0.843px solid rgba(255, 255, 255, 0.40);
+                background: radial-gradient(79.77% 79.77% at 31.11% 22.5%, #C35FF5 0%, #635CC8 100%);
+                display: flex;
+                align-items: flex-end;
+                padding: 24px;
+                box-sizing: border-box;
+                position: relative;
+                pointer-events: none;
+                z-index: 1;
+              `}
+            >
+
+            <Box css={css`
+              position: absolute;
+              top: -5%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+
+            `}>
+              {(isXPBoostWinning || isPCTokenWinning) && <Lottie
+                animationData={isPCTokenWinning ? PCTokenAnimation : MultiplierAnimation}
+                loop
+                style={{ width: '340px', margin: "60px 0 0 0" }}
+              />}
+              {isRarePass && <Image src={OpenPassImage} alt="Open Pass" style={{ marginBottom: '40px', filter: 'drop-shadow(0 12px 16px rgba(0,0,0,0.6))' }} width={120} />}
               {isPointsWinning && <SeasonThreePoints width={80} height={80} />}
-              {isXPBoostWinning && <Multiplier width={80} height={80} />}
-              {isPCTokenWinning && <PCTokens width={80} height={80} />}
             </Box>
 
             <Box css={css`width: 100%;`}>
+              <Text variant="h4-semibold" textAlign="center">
+                {/points|pc tokens/i.test(wonPrize?.label || "")
+                  ? wonPrize?.label?.split(/(\d+)/).map((part, i) =>
+                      /\d+/.test(part) ? (
+                        <Text key={i} variant="h2-semibold" textAlign="center" css={css`line-height: 100%;`}>
+                          {part}
+                        </Text>
+                      ) : (
+                        part
+                      )
+                    )
+                  : wonPrize?.label}
+              </Text>
+            </Box>
+
+            {/*<Box css={css`width: 100%;`}>
               <Text variant='h4-semibold' textAlign='center'>{wonPrize?.label}</Text>
+            </Box>*/}
             </Box>
           </Box>
         )}
@@ -298,21 +430,16 @@ const SpinToWinModal = ({ isOpen, onClose }: SpinToWinModalProps) => {
           {buttonConfig.label}
         </Button>
 
-        {isFirstSpin && (
-          <Text variant='bes-semibold'>Come back daily for a free spin</Text>
-        )}
-
-        {!isFirstSpin && currentSpinCount < 5 && wonPrize?.rewardType !== "RARE_PASS" && (
-          <Text variant='bes-semibold'>
-            Spin again for better rewards {currentSpinCount}/5
-          </Text>
-        )}
-
-        {!isFirstSpin && (currentSpinCount >= 5 || wonPrize?.rewardType === "RARE_PASS") && (
-          <Text variant='bes-semibold'>
-            Check back tomorrow for new spins
-          </Text>
-        )}
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          gap="spacing-xxs"
+        >
+          <SeasonThreePoints width={35} />
+          <Text variant='h6-regular'>
+            Balance: {userSeasonThreeDetails?.totalPoints.toLocaleString()}</Text>
+        </Box>
 
       </Box>
     </Modal>

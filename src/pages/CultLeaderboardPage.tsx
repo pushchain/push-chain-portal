@@ -9,7 +9,7 @@ const CultLeaderboardPage: React.FC = () => {
       <Helmet>
         <title>Push Cult Leaderboard</title>
         <meta property="og:title" content="Push Cult Leaderboard" />
-        <meta property="og:description" content="Earn rewards on Push Protocol" />
+        <meta property="og:description" content="Earn rewards on Push Chain" />
         <meta
           property="og:image"
           content="https://portal.push.org/static/assets/previews/og-preview.webp"
@@ -21,7 +21,7 @@ const CultLeaderboardPage: React.FC = () => {
           content="https://portal.push.org/static/assets/previews/twitter-preview.webp"
         />
         <meta name="twitter:title" />
-        <meta name="twitter:description" content="Earn rewards on Push Protocol" />
+        <meta name="twitter:description" content="Earn rewards on Push Chain" />
       </Helmet>
 
       <LeaderBoardWrapper>

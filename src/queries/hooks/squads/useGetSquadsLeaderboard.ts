@@ -9,6 +9,8 @@ export const useGetSquadsLeaderboard = ({
 }: SquadsLeaderboardParams) =>
   useInfiniteQuery<SquadsLeaderboardResponse>({
     queryKey: [squadsLeaderboard],
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
       getSquadsLeaderboard({

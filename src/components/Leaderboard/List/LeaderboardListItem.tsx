@@ -6,32 +6,48 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 
 import { useResolveWeb3Name } from "../../../hooks/useResolveWeb3Name";
-import { shortenText } from "../../../helpers/web3helper";
+import { getChainIdFromFullCaip, shortenText } from "../../../helpers/web3helper";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { device } from "../../../config/globals";
 
-import { Box, Skeleton, Text } from "../../../blocks";
+import {
+  Box,
+  Skeleton,
+  Text,
+} from "../../../blocks";
+import { getChainLogo } from "../utils/getChainLogo";
 
 export type LeaderboardListItemProps = {
   rank: number;
   address: string;
   points: number;
+  rarePass?: number;
   isLoading: boolean;
+  userWallet: string;
+  highlighted?: boolean;
 };
 
 const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
   rank,
   address,
   points,
+  rarePass,
   isLoading,
+  userWallet,
+  highlighted,
 }) => {
   const web3NameList = useResolveWeb3Name(address);
   const isMobile = useMediaQuery(device.mobileL);
+  const chainId = getChainIdFromFullCaip(userWallet);
 
   const web3Name = web3NameList?.[address];
   const displayName = web3Name
     ? web3Name
     : shortenText(address, isMobile ? 4 : 10, isMobile ? 4 : 10);
+
+  const textColor = highlighted ? '#D548EC' : 'text-primary';
+  const chainLogo = getChainLogo(chainId);
+
 
   return (
     <Box
@@ -46,30 +62,43 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
       <Skeleton isLoading={isLoading} width={{ initial: "250px", tb: "auto" }}>
         <Box display="flex" gap="spacing-xs" alignItems="center">
           <Box minWidth="48px" justifyContent="center" display="flex">
-            <Text variant="bm-bold" color="text-primary">
+            <Text variant="bm-bold" color={textColor}>
               {rank > 0 && rank?.toLocaleString()}
             </Text>
           </Box>
           <Box display="flex" gap="spacing-xs" alignItems="center">
+            {chainLogo ? <Box
+              width="24px"
+              height="24px"
+              overflow="hidden"
+              css={css`
+                background: #EAEBF2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 4px;
+            `}
+            >
+              {chainLogo}
+            </Box> :
             <Box
               width="32px"
               height="32px"
               borderRadius="radius-xl"
-              overflow="hidden"
-            >
-              <BlockiesSvg address={address} size={8} scale={4} />
-            </Box>
+              overflow="hidden">
+                <BlockiesSvg address={address} size={8} scale={4} />
+            </Box>}
             <Text
               variant="bm-bold"
               display={{ ml: "none", initial: "block" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
             <Text
               variant="bs-bold"
               display={{ ml: "block", initial: "none" }}
-              color="text-primary"
+              color={textColor}
             >
               {displayName}
             </Text>
@@ -78,27 +107,42 @@ const LeaderboardListItem: FC<LeaderboardListItemProps> = ({
       </Skeleton>
 
       <Skeleton isLoading={isLoading}>
-        <Box
-          width="88px"
-          minWidth="88px"
-          minHeight="22px"
-          display="flex"
-          justifyContent="center"
-        >
-          <Text
-            variant="bm-bold"
-            display={{ ml: "none", initial: "block" }}
-            color="text-primary"
+        <Box display="flex" gap="spacing-md" alignItems="center">
+          {rarePass !== undefined && (
+            <Box
+              width="88px"
+              minWidth="88px"
+              minHeight="22px"
+              display={{ ml: "none", initial: "flex" }}
+              justifyContent="center"
+            >
+              <Text variant="bm-bold" color={textColor}>
+                {rarePass?.toLocaleString()}
+              </Text>
+            </Box>
+          )}
+          <Box
+            width="88px"
+            minWidth="88px"
+            minHeight="22px"
+            display="flex"
+            justifyContent="center"
           >
-            {points?.toLocaleString()}
-          </Text>
-          <Text
-            variant="bs-bold"
-            display={{ ml: "block", initial: "none" }}
-            color="text-primary"
-          >
-            {points?.toLocaleString()}
-          </Text>
+            <Text
+              variant="bm-bold"
+              display={{ ml: "none", initial: "block" }}
+              color={textColor}
+            >
+              {points?.toLocaleString()}
+            </Text>
+            <Text
+              variant="bs-bold"
+              display={{ ml: "block", initial: "none" }}
+              color={textColor}
+            >
+              {points?.toLocaleString()}
+            </Text>
+          </Box>
         </Box>
       </Skeleton>
     </Box>

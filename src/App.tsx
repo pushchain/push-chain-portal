@@ -1,5 +1,5 @@
 // React + Web3 Essentials
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // External Packages
 import {
@@ -8,16 +8,17 @@ import {
   Route,
   Navigate,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createGlobalStyle, css } from "styled-components";
 import {
-   PushUI,
-   PushUniversalWalletProvider,
-   ProviderConfigProps,
-   usePushWalletContext,
-} from '@pushchain/ui-kit';
+  PushUI,
+  PushUniversalWalletProvider,
+  ProviderConfigProps,
+  usePushWalletContext,
+} from "@pushchain/ui-kit";
 
 import { getPreviewBasePath } from "../basePath";
 import { FLAGS } from "./config/flags";
@@ -40,15 +41,16 @@ import PreMigratePage from "./pages/PreMigratePage";
 import AdminPage from "./pages/AdminPage";
 import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
-import { InviteCodeModal } from "./components/InviteCodeModal";
 import { walletToFullCAIP10 } from "./helpers/web3helper";
-import { useGetSeasonThreeUserByWallet } from "./queries";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
+import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
 import { AuthHeadersProvider } from "./context/authHeadersContext";
 import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
 import { ActivityContextProvider } from "./context/activityContext";
-
+import { trackEvent } from "./helpers/analytics";
+import { LinkedWalletProvider } from "./context/linkedWalletContext";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -123,30 +125,75 @@ const queryClient = new QueryClient({});
 
 const AppContent = () => {
   const location = useLocation();
-  const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
+  const [searchParams] = useSearchParams();
+  const { connectionStatus, universalAccount } =
+    usePushWalletContext("wallet1");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isInviteCodeModalOpen, setIsInviteCodeModalOpen] = useState(false);
+  const [hasAttemptedRegistration, setHasAttemptedRegistration] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const caip10WalletAddress = walletToFullCAIP10(
     universalAccount?.address as string,
     universalAccount?.chain,
   );
 
-  const { data: seasonThreeDetails, isLoading } = useGetSeasonThreeUserByWallet({
-    walletAddress: caip10WalletAddress,
-  });
+  const { data: seasonThreeDetails, isLoading, refetch: refetchSeasonThreeDetails } = useGetSeasonThreeUserByWallet(
+    { walletAddress: caip10WalletAddress },
+  );
+
+  const { refetch: refetchCultStatus } = useGetUserCultStatus({ wallet: caip10WalletAddress });
+
+  const { create: autoCreateUser } = useAutoCreateUser();
+
+  const refUserId = searchParams.get('ref');
+  const { data: resolvedInvite, isLoading: isResolvingInvite } = useResolveInviteLink(refUserId);
+  const resolvedInviteCode = resolvedInvite?.data?.code;
+
+  const prevConnectionStatus = React.useRef(connectionStatus);
+
+  useEffect(() => {
+    if (
+      prevConnectionStatus.current !== "connected" &&
+      connectionStatus === "connected"
+    ) {
+      trackEvent("wallet_connected", {
+        event_category: "auth",
+        event_label: "login_success",
+      });
+    }
+    prevConnectionStatus.current = connectionStatus;
+  }, [connectionStatus]);
+
+  useEffect(() => {
+    if (connectionStatus !== 'connected') {
+      setHasAttemptedRegistration(false);
+    }
+  }, [connectionStatus]);
 
   useEffect(() => {
     if (connectionStatus !== 'connected') return;
-
     if (isLoading) return;
+    if (seasonThreeDetails) return;
+    if (hasAttemptedRegistration) return;
+    if (refUserId && isResolvingInvite) return;
 
-    if (seasonThreeDetails) {
-      setIsInviteCodeModalOpen(false);
-    } else {
-      setIsInviteCodeModalOpen(true);
-    }
-  }, [connectionStatus, seasonThreeDetails, isLoading]);
+    setHasAttemptedRegistration(true);
+    trackEvent('season3_signup_submitted', { event_category: 'auth' });
+
+    autoCreateUser(resolvedInviteCode, {
+      onSuccess: () => {
+        trackEvent('season3_signup_completed', { event_category: 'auth' });
+        refetchSeasonThreeDetails();
+        refetchCultStatus();
+      },
+    });
+  }, [connectionStatus, seasonThreeDetails, isLoading, hasAttemptedRegistration, resolvedInviteCode, refUserId, isResolvingInvite]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [location.pathname]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -200,7 +247,9 @@ const AppContent = () => {
         )}
         <Box
           width="100%"
-          maxWidth={hideSideBar ? "100%" : "1200px"}
+          // maxWidth={hideSideBar ? "100%" : "100%"}
+          customScrollbar
+          ref={scrollContainerRef}
           padding={{
             initial: "spacing-none spacing-md",
             tb: "spacing-none spacing-xs",
@@ -241,54 +290,26 @@ const AppContent = () => {
         </Box>
       </Box>
 
-      <InviteCodeModal
-        isOpen={isInviteCodeModalOpen}
-        onClose={() => setIsInviteCodeModalOpen(false)}
-      />
     </Box>
   );
 };
 
 function App() {
-
   const walletConfig: ProviderConfigProps = {
-    uid: 'wallet1',
+    uid: "wallet1",
     network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
     login: {
-      email: false,
-      google: false,
-      phone: false,
+      email: true,
+      google: true,
+      phone: true,
       wallet: {
         enabled: true,
       },
       socials: {
-        discord: false,
-        github: false,
-        x: false,
-        bluesky: false,
-    },
-      appPreview: true,
-    },
-    modal: {
-      loginLayout: PushUI.CONSTANTS.LOGIN.LAYOUT.SPLIT,
-      connectedLayout: PushUI.CONSTANTS.CONNECTED.LAYOUT.HOVER,
-      appPreview: true,
-      connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
-    },
-    chainConfig: {
-      rpcUrls: {
-      },
-    },
-  };
-
-  const linkedWalletConfig: ProviderConfigProps = {
-    uid: 'wallet2',
-    network: PushUI.CONSTANTS.PUSH_NETWORK.TESTNET,
-    login: {
-      email: false,
-      google: false,
-      wallet: {
-        enabled: true,
+        discord: true,
+        github: true,
+        x: true,
+        bluesky: true,
       },
       appPreview: true,
     },
@@ -299,8 +320,7 @@ function App() {
       connectedInteraction: PushUI.CONSTANTS.CONNECTED.INTERACTION.BLUR,
     },
     chainConfig: {
-      rpcUrls: {
-      },
+      rpcUrls: {},
     },
   };
 
@@ -309,35 +329,28 @@ function App() {
       {/* Global style */}
       <GlobalStyle />
       <Router basename={basename}>
-      <PushUniversalWalletProvider
-             config={walletConfig}
-             themeMode={PushUI.CONSTANTS.THEME.DARK}
-             themeOverrides={{
-               '--pw-core-font-family': "'DM Sans', sans-serif",
-               '--pwauth-btn-connected-bg-color': '#D548EC'
-             }}
-        >
-        {/*<PushUniversalWalletProvider
-          config={linkedWalletConfig}
+        <PushUniversalWalletProvider
+          config={walletConfig}
           themeMode={PushUI.CONSTANTS.THEME.DARK}
           themeOverrides={{
-            '--pw-core-font-family': "'DM Sans', sans-serif",
-            '--pwauth-btn-connected-bg-color': '#D548EC'
+            "--pw-core-font-family": "'DM Sans', sans-serif",
+            "--pwauth-btn-connected-bg-color": "#D548EC",
           }}
-        >*/}
-          <QueryClientProvider client={queryClient}>
-            <RewardsContextProvider>
-              <AuthHeadersProvider>
-                <RewardStatusContextProvider>
-                  <ActivityContextProvider>
-                    <AppContent />
-                    <ReactQueryDevtools initialIsOpen={false} />
-                  </ActivityContextProvider>
-                </RewardStatusContextProvider>
-              </AuthHeadersProvider>
-            </RewardsContextProvider>
-          </QueryClientProvider>
-        {/*</PushUniversalWalletProvider>*/}
+        >
+            <LinkedWalletProvider>
+              <QueryClientProvider client={queryClient}>
+                <RewardsContextProvider>
+                  <AuthHeadersProvider>
+                    <RewardStatusContextProvider>
+                      <ActivityContextProvider>
+                        <AppContent />
+                        <ReactQueryDevtools initialIsOpen={false} />
+                      </ActivityContextProvider>
+                    </RewardStatusContextProvider>
+                  </AuthHeadersProvider>
+                </RewardsContextProvider>
+              </QueryClientProvider>
+            </LinkedWalletProvider>
         </PushUniversalWalletProvider>
       </Router>
     </ThemeProviderWrapper>

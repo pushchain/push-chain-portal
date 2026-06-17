@@ -14,17 +14,11 @@ export type RewardsAcitivitesResponse = {
 export type ActvityType =
   | "follow_push_on_discord"
   | "follow_push_on_twitter"
-  | "lastone_place_bid"
-  | "lastone_win_50pc_claim"
-  | "lastone_win_3_rounds_claim"
-  | "lastone_bid_10_single_round"
-  | "lastone_participate_25_rounds"
-  | "ramen_swap_one_swap"
-  | "ramen_swap_stablecoin_to_push"
-  | "ramen_swap_five_swaps"
-  | "ramen_swap_hold_three_chain_tokens"
-  | "boss_complete_all_5_app_quests"
-  | "boss_hold_5_rare_passes"
+  | `pusd_${string}`
+  | `zappi_${string}`
+  | `moleswap_${string}`
+  | `boss_${string}`
+  | `bonus_${string}`
 
 
 export type Activity = {
@@ -245,6 +239,9 @@ type LeaderBoardUser = {
   activityPoints: number;
   referralPoints: number;
   totalPoints: number;
+  totalRarePass?: number;
+  mintedCount?: number;
+  lifetimePointsEarned?: number;
   multiplier: number;
   lastUpdated: string;
   pgpPublicKey: string;
@@ -255,6 +252,9 @@ export type ModelledLeaderBoardUser = {
   userId: string;
   userWallet: string;
   totalPoints: number;
+  totalRarePass?: number;
+  mintedCount?: number;
+  lifetimePointsEarned: number;
   rank: number;
 };
 
@@ -300,6 +300,7 @@ export type SeasonThreeUserByWalletResponse = {
   referralPoints: number;
   frozenPoints: number;
   totalPoints: number;
+  lifetimePointsEarned?: number;
   cachePCTokens: number;
   xp: number;
   level: number;
@@ -314,7 +315,9 @@ export type SeasonThreeUserByWalletResponse = {
   spinDate: string | null;
   totalSpins: number;
   permaMultiplier: number;
+  permaXPMultiplier: number;
   previousPermaMultiplier: number;
+  xpTempBoosts: number;
   tempMultiplier: number;
   hasEternalTorch: boolean;
   inviteCodes: number;
@@ -325,11 +328,15 @@ export type SeasonThreeUserByWalletResponse = {
   lastUpdated: string;
   isSeasonOneUser: boolean;
   isSeasonTwoUser: boolean;
+  mintedCount?: number
 };
 
 export type AdvancedSybilCheckParams = {
   address: string;
-  chainId: number;
+  authHeaders?: AuthHeaders;
+  chainId?: number | string;
+  verificationProof?: string;
+  message?: string;
 };
 
 export type WalletAgeCheck = {
@@ -513,6 +520,22 @@ export type LevelProgressResponse = {
   currentLevelConfig: LevelConfigItem;
   nextLevelConfig: LevelConfigItem;
   paragonModeEnabled: boolean;
+};
+
+export type VerifySybilWalletParams = {
+  userId: string;
+  verificationProof: string;
+};
+
+export type VerifySybilWalletResponse = {
+  // success: boolean;
+  // data?: {
+  //   activityId?: string;
+  //   status?: string;
+  //   points?: number;
+  //   multiplier?: number;
+  //   createdAt?: string;
+  // };
 };
 
 export type SybilStatusResponse = {

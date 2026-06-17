@@ -2,10 +2,14 @@ import { useState } from "react";
 import { css } from "styled-components";
 import { AxiosError } from "axios";
 import { useCreateSquad, useGetSquadsDetails } from "../../../queries/hooks";
+import { useGetSeasonThreeUserByWallet } from "../../../queries";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+import { walletToFullCAIP10 } from "../../../helpers/web3helper";
 
 import ModalBg from "../../../../static/assets/website/shared/modal-bg.webp";
 import { Box, Modal, Text, TextInput } from "../../../blocks";
 import { useAuthHeaders } from "../../../context/authHeadersContext";
+import { trackEvent } from "../../../helpers/analytics";
 
 
 
@@ -17,28 +21,31 @@ type CreateSquadModalProps = {
 export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => {
   const [squadName, setSquadName] = useState("");
   const [error, setError] = useState("");
-  const { authHeaders } = useAuthHeaders();
+  const { authHeaders, getAuthHeaders } = useAuthHeaders();
+  const [isSigning, setIsSigning] = useState(false);
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
 
   const { mutate: createSquad, isPending } = useCreateSquad();
-  const { refetch } = useGetSquadsDetails(authHeaders);
+  const { refetch } = useGetSquadsDetails(userDetails?.userId);
 
-
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!squadName.trim()) {
       setError("Squad name is required");
       return;
     }
 
     setError("");
+    if (!authHeaders) setIsSigning(true);
+    const headers = authHeaders ?? await getAuthHeaders();
+    setIsSigning(false);
+    if (!headers) return;
     createSquad(
-      {
-        params: {
-          name: squadName
-        },
-        authHeaders: authHeaders
-      },
+      { params: { name: squadName }, authHeaders: headers },
       {
         onSuccess: () => {
+          trackEvent('squad_created', { event_category: 'squads', event_label: squadName });
           setSquadName("");
           refetch();
           onClose();
@@ -75,8 +82,8 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
       acceptButtonProps={{
         children: isPending ? "Creating..." : "Create Squad",
         onClick: handleCreate,
-        disabled: isPending,
-        loading: isPending,
+        disabled: isPending || isSigning,
+        loading: isPending || isSigning,
         block: true,
       }}
       cancelButtonProps={null}
@@ -107,6 +114,7 @@ export const CreateSquadModal = ({ isOpen, onClose }: CreateSquadModalProps) => 
           error={!!error}
           errorMessage={error}
           backgroundColor={"rgba(0, 0, 0, 0.25)"}
+          totalCount={24}
         />
 
         <Text

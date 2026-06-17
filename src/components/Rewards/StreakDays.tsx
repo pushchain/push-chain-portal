@@ -1,23 +1,26 @@
 import { css } from "styled-components"
 import Lottie from "lottie-react"
 
-import { useGetDailyCheckInDetails } from "../../queries";
-import { useAuthHeaders } from "../../context/authHeadersContext";
+import { useGetDailyCheckInDetails, useGetSeasonThreeUserByWallet } from "../../queries";
+import { usePushWalletContext } from "@pushchain/ui-kit";
+import { walletToFullCAIP10 } from "../../helpers/web3helper";
 
 import { Box, Text } from "../../blocks"
 import StreakBg from "../../../static/assets/website/rewards/streak-bg.webp"
-import ActiveStreakBg from "../../../static/assets/website/rewards/active-streak.webp"
 import StreakFireAnimation from "../../../static/assets/website/rewards/streak-fire.json"
+import { fadeInCss } from "./utils/FadeIn"
 
 export const StreakDays = () => {
-  const { authHeaders } = useAuthHeaders();
-  const { data: getDailyCheckInDetails } = useGetDailyCheckInDetails(authHeaders);
+  const { universalAccount } = usePushWalletContext('wallet1');
+  const caip10WalletAddress = walletToFullCAIP10(universalAccount?.address as string, universalAccount?.chain);
+  const { data: userDetails } = useGetSeasonThreeUserByWallet({ walletAddress: caip10WalletAddress });
+  const { data: getDailyCheckInDetails } = useGetDailyCheckInDetails(userDetails?.userId);
 
   return(
     <Box
       borderRadius="radius-md"
       padding="spacing-md"
-      height={{ initial: '100%', tb: 'auto' }}
+      // height={{ initial: '100%', tb: 'auto' }}
       minHeight={{ tb: '200px' }}
       position="relative"
       overflow="hidden"
@@ -31,6 +34,7 @@ export const StreakDays = () => {
             backdrop-filter: blur(10px);
             box-sizing: border-box;
             z-index: 3;
+            ${fadeInCss(100)}
 
 
             &::before {

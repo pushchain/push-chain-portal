@@ -41,4 +41,4 @@ jobs:
         if: github.event.action == 'closed' && !github.event.pull_request.merged
         with:
           source-dir: ./build/
-          action: remove
+          action: removec

@@ -6,31 +6,28 @@ import {
 } from "@pushchain/ui-kit";
 
 import { Box, Text, ArrowDown, GlowStreaks, Spinner } from "../../blocks";
+import { trackEvent } from "../../helpers/analytics";
 import { RenderLoggedInVerifiedState } from "./Dashboard/RenderLoggedInVerifiedState";
 import { RenderLoggedInUnverifiedState } from "./Dashboard/RenderLoggedInUnverifiedState";
 import { useRewardStatus } from "../../context/rewardStatusContext";
-import { useGetUserCultStatus } from "../../queries";
-import { walletToFullCAIP10 } from "../../helpers/web3helper";
-import { RenderLoggedInCultUser } from "./Dashboard/RenderLoggedInCultUser";
+import { device } from "../../config/globals";
+import useMediaQuery from "../../hooks/useMediaQuery";
+import { useCountdown } from "./hooks/useCountdown";
+import { AnimatedGradientText } from "./utils/AnimatedGradientText";
+
+export const BONUS_QUEST_DEADLINE = "2026-05-21T14:00:00Z";
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export const RewardsUpdatedDashboard = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
+  const isTablet = useMediaQuery(device.tablet)
   const isWalletConnected = Boolean(universalAccount?.address);
   const { isLocked, isLockedStatusLoading } = useRewardStatus();
-
-  const caip10WalletAddress = walletToFullCAIP10(
-    universalAccount?.address as string,
-    universalAccount?.chain,
-  );
-
-  const { data: userCultStatus } = useGetUserCultStatus({
-    wallet: caip10WalletAddress
-  });
-
+  const { timeLeft, isExpired: isBonusExpired } = useCountdown(BONUS_QUEST_DEADLINE);
+  const countdownString = `${pad(timeLeft.days)}D : ${pad(timeLeft.hours)}H : ${pad(timeLeft.minutes)}M : ${pad(timeLeft.seconds)}S`;
 
   const rewardsLocked = isLocked && !isLockedStatusLoading;
-
-  const isCultUser = userCultStatus?.data?.isCultMember;
 
   const renderLoggedOutState = () => (
     <Box
@@ -45,8 +42,8 @@ export const RewardsUpdatedDashboard = () => {
         border: 1px solid rgba(171, 70, 248, 0.40);
         background: rgba(0, 0, 0, 0.10);
         background-blend-mode: plus-lighter;
-        box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+        backdrop-filter: blur(3px);
       `}
       >
     <Box
@@ -64,6 +61,11 @@ export const RewardsUpdatedDashboard = () => {
         max-height: 333px;
         background: #F1D5FF;
         box-sizing: border-box;
+
+        @media ${device.tablet}{
+            min-height: fit-content;
+            max-height: fit-content;
+        }
       `}
     >
 
@@ -83,19 +85,23 @@ export const RewardsUpdatedDashboard = () => {
         >
         </Box>
 
-      <Box
-          css={css`
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          `}
-        >
-          <GlowStreaks />
-        </Box>
+
+
+        {!isTablet &&
+        <>
+          <Box
+              css={css`
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 0;
+              `}
+            >
+              <GlowStreaks />
+          </Box>
 
         <Box
             css={css`
@@ -124,7 +130,7 @@ export const RewardsUpdatedDashboard = () => {
             >
               <GlowStreaks />
          </Box>
-
+        </>}
 
         <Box
         display="flex"
@@ -134,7 +140,7 @@ export const RewardsUpdatedDashboard = () => {
         css={css`
           position: relative;
           z-index: 1;
-          max-width: 900px;
+          max-width: 680px;
         `}
       >
         <Box
@@ -144,34 +150,51 @@ export const RewardsUpdatedDashboard = () => {
           textAlign="center"
         >
           <Text variant="h1-bold" color="#000000">
-            Build, Test, & Earn Rare Rewards
+              Crush quests. Claim XP, Points & Rare Passes.
           </Text>
           <Text variant="h5-regular" color="#000000">
-            Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
+              Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
           </Text>
         </Box>
 
-        <Box>
+        <Box onClick={() => trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'dashboard' })}>
           <PushUniversalAccountButton uid='wallet1' />
         </Box>
       </Box>
       </Box>
 
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        gap="spacing-xxxs"
-        css={css`
-          padding: var(--spacing-xs) var(--spacing-md);
-          cursor: pointer;
-        `}
-      >
-        <Text variant="h5-regular">
-          Explore Season 3
-        </Text>
-        <ArrowDown size={20} color="white" />
+      {isBonusExpired ? (
+        <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-sm) var(--spacing-md); cursor: pointer;`}>
+          <Text variant="h5-regular">Explore Season 3</Text>
+          <ArrowDown size={20} color="white" />
         </Box>
+      ) : (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          gap="spacing-xxs"
+          css={css`padding: 16px 24px; cursor: pointer;`}
+        >
+          <Text variant="h5-regular" css={css`
+              color: #FFF;
+              font-family: "DM Sans";
+              font-size: 32px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 110%;
+              letter-spacing: -0.64px;
+            `}>
+            Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+          </Text>
+          <Text variant="h5-regular">
+            <AnimatedGradientText speed={4} colorFrom="#FFF5C2" colorTo="#DBA237">
+              Complete the 2 bonus quests before time runs out.
+            </AnimatedGradientText>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 
@@ -181,10 +204,6 @@ export const RewardsUpdatedDashboard = () => {
 
   const renderLoggedInVerifiedState = () => (
     <RenderLoggedInVerifiedState />
-  );
-
-  const renderLoggedInCultUser = () => (
-    <RenderLoggedInCultUser />
   );
 
   if (isWalletConnected && isLockedStatusLoading) {
@@ -202,8 +221,9 @@ export const RewardsUpdatedDashboard = () => {
           border: 1px solid rgba(171, 70, 248, 0.40);
           background: rgba(0, 0, 0, 0.10);
           background-blend-mode: plus-lighter;
-          box-shadow: 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
-          backdrop-filter: blur(10px);
+          box-shadow: 0 13px 39px 0 rgba(247, 101, 255, 0.25), 2.788px -8px 12px 0 rgba(255, 255, 255, 0.15) inset, 1.858px 1.732px 6px 0 rgba(255, 255, 255, 0.15) inset;
+          backdrop-filter: blur(3px);
+          box-sizing: border-box;
         `}
         >
       <Box
@@ -213,6 +233,7 @@ export const RewardsUpdatedDashboard = () => {
         justifyContent="center"
         position="relative"
         borderRadius="radius-md"
+        padding="spacing-xxxl spacing-md"
         overflow="hidden"
         width="100%"
         css={css`
@@ -220,6 +241,11 @@ export const RewardsUpdatedDashboard = () => {
           max-height: 333px;
           background: #F1D5FF;
           box-sizing: border-box;
+
+          @media ${device.tablet}{
+              min-height: fit-content;
+              max-height: fit-content;
+          }
         `}
       >
 
@@ -239,39 +265,13 @@ export const RewardsUpdatedDashboard = () => {
           >
           </Box>
 
-        <Box
-            css={css`
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              pointer-events: none;
-              z-index: 0;
-            `}
-          >
-            <GlowStreaks />
-          </Box>
-
-          <Box
-              css={css`
-                position: absolute;
-                top: 0px;
-                left: 150px;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 0;
-              `}
-            >
-              <GlowStreaks />
-            </Box>
-
+          {!isTablet &&
+          <>
             <Box
                 css={css`
                   position: absolute;
-                  top: 0px;
-                  left: 300px;
+                  top: 0;
+                  left: 0;
                   width: 100%;
                   height: 100%;
                   pointer-events: none;
@@ -279,8 +279,37 @@ export const RewardsUpdatedDashboard = () => {
                 `}
               >
                 <GlowStreaks />
-           </Box>
+              </Box>
 
+              <Box
+                  css={css`
+                    position: absolute;
+                    top: 0px;
+                    left: 150px;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 0;
+                  `}
+                >
+                  <GlowStreaks />
+                </Box>
+
+                <Box
+                    css={css`
+                      position: absolute;
+                      top: 0px;
+                      left: 300px;
+                      width: 100%;
+                      height: 100%;
+                      pointer-events: none;
+                      z-index: 0;
+                    `}
+                  >
+                    <GlowStreaks />
+                </Box>
+              </>
+            }
 
           <Box
           display="flex"
@@ -300,7 +329,7 @@ export const RewardsUpdatedDashboard = () => {
             textAlign="center"
           >
             <Text variant="h1-bold" color="#000000">
-              Build, Test, & Earn Rare Rewards
+               Crush quests. Claim XP, Points & Rare Passes.
             </Text>
             <Text variant="h5-regular" color="#000000">
               Explore Universal Apps. Gain XP. Unlock Spins & Earn Rewards!
@@ -313,28 +342,25 @@ export const RewardsUpdatedDashboard = () => {
         </Box>
         </Box>
 
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          gap="spacing-xxxs"
-          css={css`
-            padding: var(--spacing-xs) var(--spacing-md);
-            cursor: pointer;
-          `}
-        >
-          <Text variant="h5-regular">
-            Explore Season 3
-          </Text>
-          <ArrowDown size={20} color="white" />
+        {isBonusExpired ? (
+          <Box display="flex" alignItems="center" justifyContent="center" gap="spacing-xxxs" css={css`padding: var(--spacing-xs) var(--spacing-md); cursor: pointer;`}>
+            <Text variant="h5-regular">Explore Season 3</Text>
+            <ArrowDown size={20} color="white" />
           </Box>
+        ) : (
+          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap="spacing-xxs" css={css`padding: 16px 24px; cursor: pointer;`}>
+            <Text variant="h5-regular" css={css`color: #FFF; font-family: "DM Sans"; font-size: 32px; font-style: normal; font-weight: 500; line-height: 110%; letter-spacing: -0.64px;`}>
+              Invite Only Access Ends <span style={{ color: '#D548EC' }}>{countdownString}</span>
+            </Text>
+            <Text variant="h5-regular" color="#FFE489">
+              Complete the 2 bonus quests before time runs out.
+            </Text>
+          </Box>
+        )}
       </Box>
 
     );
   }
-
-  // if (isWalletConnected && isCultUser)
-  //   return renderLoggedInCultUser();
 
   if(isWalletConnected && !rewardsLocked) return renderLoggedInVerifiedState();
 

@@ -5,9 +5,10 @@ import { usePushWalletContext } from "@pushchain/ui-kit";
 import { useVerifyTwitter } from "../hooks/useVerifyTwitter";
 import { useVerifyDiscord } from "../hooks/useVerifyDiscord";
 import { useVerifyRewards } from "../hooks/useVerifyRewards";
-import { otherRewardActivities } from "../utils/activityTypeArray";
+import { isOtherRewardActivity } from "../utils/activityTypeArray";
 import { ActvityType } from "../../../queries/types";
 import { Button } from "../../../blocks";
+import { trackEvent } from "../../../helpers/analytics";
 
 type ActivityVerificationButtonProps = {
   userId: string;
@@ -83,7 +84,7 @@ export const ActivityVerificationButton = ({
       };
     }
 
-    if (otherRewardActivities.includes(activityType)) {
+    if (isOtherRewardActivity(activityType)) {
       return {
         isLoading: verifyingRewards,
         label: "Claim",
@@ -105,6 +106,7 @@ export const ActivityVerificationButton = ({
 
   const handleClick = () => {
     if (!isWalletConnected) {
+      trackEvent('wallet_connect_clicked', { event_category: 'auth', event_label: 'activity_verification' });
       handleConnectToPushWallet();
       return;
     }

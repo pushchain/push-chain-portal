@@ -22,3 +22,4 @@ export * from './claimDailyRewardsSeasonThreeModel';
 export * from './getLevelProgressModel';
 export * from './pushWalletSybilCheckModel';
 export * from './getSybilStatusModel';
+export * from './verifySybilWalletModel';

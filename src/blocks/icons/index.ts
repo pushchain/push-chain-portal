@@ -6,6 +6,10 @@ export { default as Add } from "./components/Add";
 
 export { default as AddEmoji } from "./components/AddEmoji";
 
+export { default as AptosLogo } from "./components/AptosLogo";
+
+export { default as ArbitrumLogo } from "./components/ArbitrumLogo";
+
 export { default as ArbitrumMonotone } from "./components/ArbitrumMonotone";
 
 export { default as ArrowUpRight } from "./components/ArrowUpRight";
@@ -16,13 +20,19 @@ export { default as ArrowDown } from "./components/ArrowDown";
 
 export { default as Asterisk } from "./components/Asterisk";
 
+export { default as AvalancheLogo } from "./components/AvalancheLogo";
+
 export { default as Back } from "./components/Back";
+
+export { default as BaseLogo } from "./components/BaseLogo";
 
 export { default as BellRingFilled } from "./components/BellRingFilled";
 
 export { default as BellSimple } from "./components/BellSimple";
 
 export { default as BellSimpleSlash } from "./components/BellSimpleSlash";
+
+export { default as BnbLogo } from "./components/BnbLogo";
 
 export { default as BnbMonotone } from "./components/BnbMonotone";
 
@@ -83,6 +93,8 @@ export { default as DotsThree } from "./components/DotsThree";
 export { default as EditProfile } from "./components/EditProfile";
 
 export { default as EtheriumMonotone } from "./components/EtheriumMonotone";
+
+export { default as EthereumLogo} from "./components/EthereumLogo";
 
 export { default as Ellipse } from "./components/Ellipse";
 
@@ -156,6 +168,8 @@ export { default as NextIconSlider } from "./components/NextIconSlider";
 
 export { default as NotificationMobile } from "./components/NotificationMobile";
 
+export { default as OptimismLogo } from "./components/OptimismLogo";
+
 export { default as OptOut } from "./components/OptOut";
 
 export { default as OptimismMonotone } from "./components/OptimismMonotone";
@@ -178,9 +192,13 @@ export { default as PrevIconSlider } from "./components/PrevIconSlider";
 
 export { default as Pin } from "./components/Pin";
 
+export { default as PolygonLogo } from "./components/PolygonLogo";
+
 export { default as PolygonMonotone } from "./components/PolygonMonotone";
 
 export { default as PushMonotone } from "./components/PushMonotone";
+
+export { default as PushChainLogo } from "./components/PushChainLogo";
 
 export { default as PublicChat } from "./components/PublicChat";
 
@@ -217,6 +235,10 @@ export { default as SendFilled } from "./components/SendFilled";
 export { default as SendNotification } from "./components/SendNotification";
 
 export { default as SendNotificationFilled } from "./components/SendNotificationFilled";
+
+export { default as SolanaLogo } from "./components/SolanaLogo";
+
+export { default as SuiLogo } from "./components/SuiLogo";
 
 export { default as Smiley } from "./components/Smiley";
 
@@ -263,3 +285,5 @@ export { default as WaveformFilled } from "./components/WaveformFilled";
 export { default as YieldFarming } from "./components/YieldFarming";
 
 export { default as YieldFarmingFilled } from "./components/YieldFarmingFilled";
+
+export { default as zKsyncLogo } from "./components/zKsyncLogo";

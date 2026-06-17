@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import styled from "styled-components";
 
 import RewardsActivities from "./RewardsActivities";
-import Footer from "../../structure/Footer";
 import { RewardsUpdatedDashboard } from "./RewardsUpdatedDashboard";
 
 const Rewards: FC = () => {
@@ -12,8 +11,6 @@ const Rewards: FC = () => {
       <RewardsUpdatedDashboard />
 
       <RewardsActivities />
-
-      <Footer />
 
     </RewardsWrapper>
   );
