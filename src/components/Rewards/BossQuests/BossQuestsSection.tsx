@@ -184,7 +184,7 @@ const BossQuestsSection = () => {
             image={contentBossQuestImg}
             />
 
-          {bossQuests?.data.quests.filter((q) => q.status === 'ENABLED').map((item) => {
+          {bossQuests?.data.quests.slice(0,3).filter((q) => q.status === 'ENABLED').map((item) => {
             const isRarePass = item.baseXP == 0 && item.basePoints == 0;
             return (
               <BossQuestCard

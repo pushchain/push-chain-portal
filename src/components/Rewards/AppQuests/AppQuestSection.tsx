@@ -124,7 +124,7 @@ const AppQuestSection = () => {
           box-sizing: border-box;
         `}
       >
-        {activeApps?.map((app) => (
+        {activeApps?.slice(0,2).map((app) => (
           <DynamicAppQuestCard
             key={app.appId}
             appId={app.appId}
