@@ -1,19 +1,69 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { usePushWalletContext } from '@pushchain/ui-kit';
+import { css } from 'styled-components';
 
 import { useGetQuests, useGetQuestsProgress, useGetRewardsActivity, useGetSeasonThreeUserByWallet, useGetQuestActivities } from '../../../queries';
-import { QuestProgress } from '../../../queries/types/quests';
 import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 
 import AppQuestCard from './AppQuestCard';
+import { APP_QUEST_METADATA, AppQuestMetadata } from './appQuestConfig';
 import { fadeInCss } from '../utils/FadeIn';
-import { css } from 'styled-components';
-import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
-import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
-
 import { Box } from '../../../blocks';
 
+type DynamicAppQuestCardProps = {
+  appId: string;
+  userId?: string;
+  activityStatuses?: any;
+  isLoadingActivities?: boolean;
+  questProgressMap: Record<string, { progress: number; status: string }>;
+  refetchParent: () => void;
+  resetTime: any;
+  setErrorMessage: (msg: string) => void;
+  metadata: AppQuestMetadata;
+};
+
+const DynamicAppQuestCard: FC<DynamicAppQuestCardProps> = ({
+  appId,
+  userId,
+  activityStatuses,
+  isLoadingActivities,
+  questProgressMap,
+  refetchParent,
+  resetTime,
+  setErrorMessage,
+  metadata,
+}) => {
+  const { data: quests } = useGetQuests({ appId });
+  const { refetch: refetchProgress } = useGetQuestsProgress({ appId, userId });
+
+  const enabledQuests = quests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+
+  const refetchAll = () => {
+    refetchParent();
+    refetchProgress();
+  };
+
+  return (
+    <AppQuestCard
+      appName={metadata.appName}
+      appUrl={metadata.appUrl}
+      bgImage={metadata.bgImage}
+      description=""
+      resetTime={resetTime}
+      quests={enabledQuests}
+      activityStatus={activityStatuses}
+      isLoading={isLoadingActivities}
+      refetchActivities={refetchAll}
+      userId={userId}
+      completedMap={{}}
+      questProgressMap={questProgressMap}
+      setErrorMessage={setErrorMessage}
+      titleGradient={metadata.titleGradient}
+      linkColor={metadata.linkColor}
+    />
+  );
+};
 
 const AppQuestSection = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,41 +76,7 @@ const AppQuestSection = () => {
 
   const { data: userDetails } = useGetSeasonThreeUserByWallet({
     walletAddress: caip10WalletAddress,
-  })
-
-  const { data: pusdQuests } = useGetQuests({
-    appId: "pusd"
   });
-
-  const { data: zappiQuests } = useGetQuests({
-    appId: "zappi"
-  });
-
-  const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
-    appId: "pusd",
-    userId: userDetails?.userId
-  });
-
-  const { data: zappiQuestsProgress, refetch: refetchZappiProgress } = useGetQuestsProgress({
-    appId: "zappi",
-    userId: userDetails?.userId
-  });
-
-  const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
-  const zappiQuestIds = zappiQuests?.data?.quests?.map((q) => q.id) || [];
-
-  const allActivityIds = [
-    ...pusdQuestIds,
-    ...zappiQuestIds,
-  ];
-
-  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
-    {
-      userId: userDetails?.userId as string,
-      activityTypes: allActivityIds,
-    },
-    { enabled: !!userDetails?.userId && allActivityIds.length > 0 }
-  );
 
   const { data: questActivitiesData, refetch: refetchQuestActivities } = useGetQuestActivities(userDetails?.userId);
 
@@ -71,75 +87,57 @@ const AppQuestSection = () => {
     });
   });
 
-  const refetchAll = () => {
+  const allActivityIds = questActivitiesData?.activities?.flatMap(
+    (app) => app.quests.map((q) => q.activityTypeId)
+  ) ?? [];
+
+  const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
+    {
+      userId: userDetails?.userId as string,
+      activityTypes: allActivityIds,
+    },
+    { enabled: !!userDetails?.userId && allActivityIds.length > 0 }
+  );
+
+  const { timeLeft } = useCountdown("2026-06-23T14:00:00Z");
+
+  const activeApps = questActivitiesData?.activities?.filter(
+    (app) => !!APP_QUEST_METADATA[app.appId]
+  ) ?? [];
+
+  const handleRefetchAll = () => {
     refetchActivities();
-    refetchPusdProgress();
-    refetchZappiProgress();
     refetchQuestActivities();
   };
-
-  const targetDate = "2026-06-23T14:00:00Z";
-  const { timeLeft } = useCountdown(targetDate);
-
-  const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
-    const map: Record<string, boolean> = {};
-    return map;
-  };
-
-  const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
-  const zappiCompletedMap = buildCompletedMap(zappiQuestsProgress?.data?.quests);
-
-  const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledZappiQuests = zappiQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
       width="100%"
-      css={css`${fadeInCss(100)}`}>
+      css={css`${fadeInCss(100)}`}
+    >
       <Box
         display="flex"
         gap="spacing-md"
         width="100%"
         flexDirection={{ initial: 'row', tb: 'column' }}
         css={css`
-            box-sizing: border-box;
+          box-sizing: border-box;
         `}
       >
-        <AppQuestCard
-          appName="PUSD Stablecoin"
-          appUrl="pusd.push.org"
-          bgImage={pusdBg}
-          description=""
-          resetTime={timeLeft}
-          quests={enabledPusdQuests}
-          activityStatus={activityStatuses}
-          isLoading={isLoadingActivities}
-          refetchActivities={refetchAll}
-          userId={userDetails?.userId}
-          completedMap={pusdCompletedMap}
-          questProgressMap={questProgressMap}
-          setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
-          linkColor="#4D2783"
-        />
-
-        <AppQuestCard
-          appName="Zappi.to"
-          appUrl="zappi.to"
-          bgImage={zappiBg}
-          description=""
-          resetTime={timeLeft}
-          quests={enabledZappiQuests}
-          activityStatus={activityStatuses}
-          isLoading={isLoadingActivities}
-          refetchActivities={refetchAll}
-          userId={userDetails?.userId}
-          completedMap={zappiCompletedMap}
-          questProgressMap={questProgressMap}
-          setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
-          linkColor="#551798"
-        />
+        {activeApps?.slice(0,2).map((app) => (
+          <DynamicAppQuestCard
+            key={app.appId}
+            appId={app.appId}
+            userId={userDetails?.userId}
+            activityStatuses={activityStatuses}
+            isLoadingActivities={isLoadingActivities}
+            questProgressMap={questProgressMap}
+            refetchParent={handleRefetchAll}
+            resetTime={timeLeft}
+            setErrorMessage={setErrorMessage}
+            metadata={APP_QUEST_METADATA[app.appId]}
+          />
+        ))}
       </Box>
     </Box>
   );
