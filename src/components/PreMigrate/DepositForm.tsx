@@ -20,12 +20,34 @@ const AmountInput = styled.input`
   }
 `;
 
+const WithdrawAddressInput = styled.input`
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font-family: "DM Sans";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 21px;
+
+  color: #fff;
+  width: auto;
+  min-width: 1ch;
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+`;
+
 type DepositFormProps = {
   isWalletConnected: boolean;
 };
 
 export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
   const [amount, setAmount] = useState("");
+  const [withdrawAddress, setWithdrawAddress] = useState("");
 
   return (
   <Box
@@ -34,7 +56,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
     gap="spacing-md"
     alignItems="flex-start"
     css={css`
-      width: 376px;
+      width: 400px;
     `}
   >
     <Box
@@ -84,13 +106,36 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
       </Box>
     </Box>
 
-      <Box display="flex" width="100%" backgroundColor="red"
-        css={css`
-            flex: 1;
-            min-width: 400px;
+    {!isWalletConnected && (
+      <Box display="flex" width="100%">
+        <PushUniversalAccountButton uid="wallet1" />
+      </Box>
+    )}
+
+      <Box width="100%">
+        <Text>Address for receiving $PC Tokens</Text>
+      {isWalletConnected && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          gap="spacing-xxs"
+          width="100%"
+          padding="spacing-xs"
+          css={css`
+            background: #313338;
+            border-radius: 12px;
+            box-sizing: border-box;
           `}
-      >
-      <PushUniversalAccountButton uid="wallet1" />
+        >
+          <PushIcon size={24} />
+          <WithdrawAddressInput
+            placeholder=""
+            value={withdrawAddress}
+            onChange={(e) => setWithdrawAddress(e.target.value)}
+          />
+        </Box>
+        )}
     </Box>
 
     <Box display="flex" flexDirection="column" gap="spacing-lg" width="100%">
