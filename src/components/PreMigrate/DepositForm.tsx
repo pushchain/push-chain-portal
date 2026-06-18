@@ -60,7 +60,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
       >
         <Box display="flex" flexDirection="column" gap="spacing-xxs">
           <Text variant="c-semibold" color="text-tertiary">
-            PUSH to be deposited
+              Enter PUSH tokens to deposit
           </Text>
           <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
             <PushIcon size={24} />
@@ -78,13 +78,20 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
         </Box>
         <Box display="flex" flexDirection="row" justifyContent="flex-end" width="100%">
           <Text variant="bes-semibold" color="text-tertiary">
-            Current Holdings: 0
+            Balance: 0
           </Text>
         </Box>
       </Box>
     </Box>
 
-    <PushUniversalAccountButton uid="wallet1" />
+      <Box display="flex" width="100%" backgroundColor="red"
+        css={css`
+            flex: 1;
+            min-width: 400px;
+          `}
+      >
+      <PushUniversalAccountButton uid="wallet1" />
+    </Box>
 
     <Box display="flex" flexDirection="column" gap="spacing-lg" width="100%">
       <Box

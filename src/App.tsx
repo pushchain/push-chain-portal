@@ -1,7 +1,6 @@
 // React + Web3 Essentials
 import React, { useState, useEffect, useRef } from "react";
 
-// External Packages
 import {
   BrowserRouter as Router,
   Routes,
@@ -22,35 +21,40 @@ import {
 
 import { getPreviewBasePath } from "../basePath";
 import { FLAGS } from "./config/flags";
+
 import { ThemeProviderWrapper } from "./context/themeContext";
 import { RewardsContextProvider } from "./context/rewardsContext";
+import { AuthHeadersProvider } from "./context/authHeadersContext";
+import { RewardStatusContextProvider } from "./context/rewardStatusContext";
+import { ActivityContextProvider } from "./context/activityContext";
+import { LinkedWalletProvider } from "./context/linkedWalletContext";
+
+import { walletToFullCAIP10 } from "./helpers/web3helper";
+import { trackEvent } from "./helpers/analytics";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
+import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
 
 import { blocksColors, Box, getBlocksCSSVariables } from "../src/blocks";
 import NotFound from "./components/NotFound";
+import { Sidebar } from "./components/sidebar";
+import Header from "./structure/Header";
+
 import RewardsPage from "./pages/RewardsPage";
 import LeaderBoardPage from "./pages/LeaderBoardPage";
 import { DiscordVerificationPage } from "./pages/DiscordVerificationPage";
 import PushPassPage from "./pages/PushPassPage";
 import PushPassItemPage from "./pages/PushPassItemPage";
-
-import { Sidebar } from "./components/sidebar";
-import Header from "./structure/Header";
-import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
-import PreMigratePage from "./pages/PreMigratePage";
 import AdminPage from "./pages/AdminPage";
 import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
-import { walletToFullCAIP10 } from "./helpers/web3helper";
-import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
-import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
-import { AuthHeadersProvider } from "./context/authHeadersContext";
-import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
-import { ActivityContextProvider } from "./context/activityContext";
-import { trackEvent } from "./helpers/analytics";
-import { LinkedWalletProvider } from "./context/linkedWalletContext";
+import PreMigratePage from "./pages/PreMigratePage";
+import MigratePage from "./pages/MigratePage";
+
+import SeasonBg from "../static/assets/website/shared/season-bg.webp";
+import OtherBg from "../static/assets/website/shared/other-bg.webp";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -201,35 +205,34 @@ const AppContent = () => {
 
   const hideSideBar =
     location.pathname === "/discord/verification" ||
-    location.pathname === "/admin/controls" ||
-    location.pathname === "/pre-migrate";
-  const hideBackgroundOnThesePages =
-    location.pathname === "/admin/controls" ||
-    location.pathname === "/pre-migrate";
+    location.pathname === "/pre-migrate" ||
+    location.pathname === "/migrate" ||
+    location.pathname === "/admin/controls";
+
+  const isAdminPage = location.pathname === "/admin/controls";
+  const isMigratePage =
+    location.pathname === "/pre-migrate" ||
+    location.pathname === "/migrate";
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100vh"
-      css={css``}
-    >
-      {!hideBackgroundOnThesePages &&
-        (<Box
-        css={css`
-          position: fixed;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          background: url(${SeasonBg}) no-repeat center center fixed;
-          background-size: cover;
-          pointer-events: none;
-          z-index: 0;
-        `}
-      />)}
+    <Box display="flex" flexDirection="column" height="100vh" css={css``}>
+      {!isAdminPage && (
+        <Box
+          css={css`
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url(${isMigratePage ? OtherBg : SeasonBg}) no-repeat center center fixed;
+            background-size: cover;
+            pointer-events: none;
+            z-index: -1;
+          `}
+        />
+      )}
 
       <Header toggleSidebar={toggleSidebar} />
       <Box
@@ -260,33 +263,71 @@ const AppContent = () => {
             margin: ${hideSideBar ? "0" : "0 auto"};
           `}
         >
-          <Routes>
-            {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
-             <Route path="/admin/controls" element={<AdminPage />} />
-             <Route path="/pre-migrate" element={<PreMigratePage />} />
-            {FLAGS.SEASON_THREE && <>
-              <Route path="/" element={<Navigate to="/rewards" replace />} />
-              <Route path="/rewards" element={<RewardsPage />} />
-              <Route path="/rewards/pushpass" element={<PushPassPage />} />
-              <Route path="/rewards/squads" element={<SquadsPage />} />
-              <Route path="/rewards/pre-launch" element={<PreLaunchPage />} />
-              <Route path="/rewards/pushpass/:id" element={<PushPassItemPage />} />
-              <Route path="/rewards/leaderboard" element={<LeaderBoardPage />} />
-              <Route path="/rewards/leaderboard-s2" element={<LeaderBoardPage />} />
-              <Route path="/rewards/leaderboard-s1" element={<LeaderBoardPage />} />
-            </>}
-            {FLAGS.CULT && <>
-              <Route path="/" element={<S3CountdownPage />} />
-              <Route path="/cult" element={<CultPage />} />
-              {/*TODO: comment out for now */}
-              {/*<Route path="/cult/leaderboard" element={<CultLeaderboardPage />} />*/}
-            </>}
-            <Route
-              path="/discord/verification"
-              element={<DiscordVerificationPage />}
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Box
+            css={css`
+              max-width: 1200px;
+              margin: 0 auto;
+              min-height: 100%;
+              display: flex;
+              flex-direction: column;
+            `}
+          >
+            <Routes>
+              {/*<Route path="/" element={FLAGS.SEASON_THREE ? <Navigate to="/rewards" replace /> : <S3CountdownPage />} />*/}
+              <Route path="/admin/controls" element={<AdminPage />} />
+              <Route
+                path="/discord/verification"
+                element={<DiscordVerificationPage />}
+              />
+              <Route path="/pre-migrate" element={<PreMigratePage />} />
+              <Route path="/migrate" element={<MigratePage />} />
+
+              {FLAGS.SEASON_THREE && (
+                <>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/rewards" replace />}
+                  />
+                  <Route path="/rewards" element={<RewardsPage />} />
+                  <Route path="/rewards/pushpass" element={<PushPassPage />} />
+                  <Route path="/rewards/squads" element={<SquadsPage />} />
+                  <Route
+                    path="/rewards/pre-launch"
+                    element={<PreLaunchPage />}
+                  />
+                  <Route
+                    path="/rewards/pushpass/:id"
+                    element={<PushPassItemPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard"
+                    element={<LeaderBoardPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard-s2"
+                    element={<LeaderBoardPage />}
+                  />
+                  <Route
+                    path="/rewards/leaderboard-s1"
+                    element={<LeaderBoardPage />}
+                  />
+                  <Route path="/cult" element={<CultPage />} />
+                  <Route
+                    path="/cult/leaderboard"
+                    element={<CultLeaderboardPage />}
+                  />
+                </>
+
+              )}
+              {FLAGS.CULT && (
+                <>
+                  <Route path="/" element={<S3CountdownPage />} />
+
+                </>
+              )}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Box>
         </Box>
       </Box>
 

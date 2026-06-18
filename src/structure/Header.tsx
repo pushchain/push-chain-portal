@@ -10,7 +10,7 @@ import { device } from "../config/globals";
 
 import { Box, Multiplier, SeasonThreePoints, Text } from "../../src/blocks";
 import ChainLogoDark from "/static/assets/website/chain/ChainLogoDark.svg";
-import { useGetSeasonThreeUserByWallet, useGetUserCultStatus } from "../queries";
+import { useGetSeasonThreeUserByWallet } from "../queries";
 import { walletToFullCAIP10 } from "../helpers/web3helper";
 import { getLevelBadge } from "../helpers/getLevelBadge";
 import { trackEvent } from "../helpers/analytics";
