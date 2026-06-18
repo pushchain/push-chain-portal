@@ -32,8 +32,8 @@ const WithdrawAddressInput = styled.input`
   line-height: 21px;
 
   color: #fff;
-  width: auto;
-  min-width: 1ch;
+  width: 100%;
+
   field-sizing: content;
 
   &::placeholder {
@@ -112,31 +112,42 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
       </Box>
     )}
 
-      <Box width="100%">
-        <Text>Address for receiving $PC Tokens</Text>
-      {isWalletConnected && (
-        <Box
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          gap="spacing-xxs"
-          width="100%"
-          padding="spacing-xs"
-          css={css`
-            background: #313338;
-            border-radius: 12px;
-            box-sizing: border-box;
-          `}
-        >
-          <PushIcon size={24} />
-          <WithdrawAddressInput
-            placeholder=""
-            value={withdrawAddress}
-            onChange={(e) => setWithdrawAddress(e.target.value)}
-          />
-        </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-start"
+        gap="spacing-xxxs"
+        width="100%">
+        <Text variant="h6-semibold">Address for receiving $PC Tokens*</Text>
+
+        {isWalletConnected && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap="spacing-xxs"
+              width="100%"
+              padding="spacing-xs"
+              cursor="text"
+              css={css`
+                background: #313338;
+                border-radius: 12px;
+                box-sizing: border-box;
+              `}
+            >
+              <PushIcon size={24} />
+              <WithdrawAddressInput
+                placeholder=""
+                value={withdrawAddress}
+                onChange={(e) => setWithdrawAddress(e.target.value)}
+              />
+            </Box>
         )}
-    </Box>
+
+        <Text variant="c-regular" color="text-tertiary">
+          This is the address you will receive $PC tokens on Mainnet. Please ensure this address is a valid Push Chain address or funds will be lost.
+        </Text>
+      </Box>
 
     <Box display="flex" flexDirection="column" gap="spacing-lg" width="100%">
       <Box

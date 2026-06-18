@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaBars } from 'react-icons/fa';
 
 import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-kit";
@@ -23,6 +23,8 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
   const baseURL = "/";
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMigratePage = location.pathname === "/pre-migrate" || location.pathname === "/migrate";
   const { connectionStatus, universalAccount } = usePushWalletContext('wallet1');
 
   const isTablet = useMediaQuery(device.tablet);
@@ -42,7 +44,7 @@ const Header: FC<HeaderProps> = ({ toggleSidebar }) => {
   });
 
   const isLoadingUserData = isLoadingSeasonThree;
-  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails;
+  const showStats = !isTablet && connectionStatus === 'connected' && !isLoadingUserData && !!userSeasonThreeDetails && !isMigratePage;
 
   const { Icon: BadgeIcon } = getLevelBadge(userSeasonThreeDetails?.level);
 
