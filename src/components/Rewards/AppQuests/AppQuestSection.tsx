@@ -99,7 +99,7 @@ const AppQuestSection = () => {
     { enabled: !!userDetails?.userId && allActivityIds.length > 0 }
   );
 
-  const { timeLeft } = useCountdown("2026-06-24T14:00:00Z");
+  const { timeLeft } = useCountdown("2026-06-23T14:00:00Z");
 
   const activeApps = questActivitiesData?.activities?.filter(
     (app) => !!APP_QUEST_METADATA[app.appId]
