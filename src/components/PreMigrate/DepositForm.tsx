@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import styled, { css } from "styled-components";
+import { ethers } from "ethers";
+
 import { Box, PushIcon, Text } from "../../blocks";
-import { PushUniversalAccountButton } from "@pushchain/ui-kit";
+import { PushUniversalAccountButton, usePushWalletContext } from "@pushchain/ui-kit";
+import appConfig from "../../config";
+import { PUSH_TOKEN_ADDRESS, LOCKER_ABI, PUSH_TOKEN_ABI, MIGRATION_CHAIN_ID } from "../../config/migration";
 
 const AmountInput = styled.input`
   background: transparent;
@@ -43,11 +47,129 @@ const WithdrawAddressInput = styled.input`
 
 type DepositFormProps = {
   isWalletConnected: boolean;
+  userAddress?: string;
+  lockerAddress: string;
 };
 
-export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
+export const DepositForm = ({ isWalletConnected, userAddress, lockerAddress }: DepositFormProps) => {
+  const { handleSignAndSendTransaction } = usePushWalletContext('wallet1');
+
   const [amount, setAmount] = useState("");
   const [withdrawAddress, setWithdrawAddress] = useState("");
+
+  const [balance, setBalance] = useState("0");
+  const [totalDeposited, setTotalDeposited] = useState("0");
+  const [isPaused, setIsPaused] = useState(false);
+
+  const [isApproving, setIsApproving] = useState(false);
+  const [isLocking, setIsLocking] = useState(false);
+  const [txError, setTxError] = useState("");
+  const [txSuccess, setTxSuccess] = useState(false);
+
+  const readProvider = useMemo(
+    () => new ethers.providers.JsonRpcProvider(appConfig.coreRPC),
+    []
+  );
+
+  const fetchBalance = useCallback(async () => {
+    if (!userAddress) return;
+    try {
+      const pushToken = new ethers.Contract(PUSH_TOKEN_ADDRESS, PUSH_TOKEN_ABI, readProvider);
+      const bal = await pushToken.balanceOf(userAddress);
+      setBalance(parseFloat(ethers.utils.formatUnits(bal, 18)).toLocaleString());
+    } catch {}
+  }, [userAddress, readProvider]);
+
+  const fetchContractState = useCallback(async () => {
+    if (!lockerAddress) return;
+    try {
+      const pushToken = new ethers.Contract(PUSH_TOKEN_ADDRESS, PUSH_TOKEN_ABI, readProvider);
+      const locker = new ethers.Contract(lockerAddress, LOCKER_ABI, readProvider);
+      const [totalWei, paused] = await Promise.all([
+        pushToken.balanceOf(lockerAddress),
+        locker.paused(),
+      ]);
+      setTotalDeposited(parseFloat(ethers.utils.formatUnits(totalWei, 18)).toLocaleString());
+      setIsPaused(paused);
+    } catch {}
+  }, [lockerAddress, readProvider]);
+
+  useEffect(() => { fetchBalance(); }, [fetchBalance]);
+  useEffect(() => { fetchContractState(); }, [fetchContractState]);
+
+  // Builds, signs, and sends a single Ethereum transaction via the Push wallet
+  const sendTx = useCallback(async (to: string, data: string, from: string) => {
+    const [nonce, feeData, gasEstimate] = await Promise.all([
+      readProvider.getTransactionCount(from),
+      readProvider.getFeeData(),
+      readProvider.estimateGas({ to, from, data }),
+    ]);
+
+    const unsignedTx: ethers.utils.UnsignedTransaction = {
+      to,
+      data,
+      nonce,
+      gasLimit: gasEstimate.mul(120).div(100),
+      maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
+      chainId: MIGRATION_CHAIN_ID,
+      type: 2,
+    };
+
+    const serialized = ethers.utils.serializeTransaction(unsignedTx);
+    const txBytes = ethers.utils.arrayify(serialized);
+    const resultBytes = await handleSignAndSendTransaction(txBytes);
+    const txHash = ethers.utils.hexlify(resultBytes);
+    await readProvider.waitForTransaction(txHash);
+  }, [readProvider, handleSignAndSendTransaction]);
+
+  const handleDeposit = async () => {
+    if (!lockerAddress || !amount || !withdrawAddress || !userAddress) return;
+    setTxError("");
+    setTxSuccess(false);
+
+    try {
+      const pushTokenIface = new ethers.utils.Interface(PUSH_TOKEN_ABI);
+      const lockerIface = new ethers.utils.Interface(LOCKER_ABI);
+      const amountInWei = ethers.utils.parseUnits(amount, 18);
+
+      const pushToken = new ethers.Contract(PUSH_TOKEN_ADDRESS, PUSH_TOKEN_ABI, readProvider);
+      const allowance = await pushToken.allowance(userAddress, lockerAddress);
+
+      if (allowance.lt(amountInWei)) {
+        setIsApproving(true);
+        const approveData = pushTokenIface.encodeFunctionData("approve", [lockerAddress, amountInWei]);
+        await sendTx(PUSH_TOKEN_ADDRESS, approveData, userAddress);
+        setIsApproving(false);
+      }
+
+      setIsLocking(true);
+      const lockData = lockerIface.encodeFunctionData("lock", [amountInWei, withdrawAddress]);
+      await sendTx(lockerAddress, lockData, userAddress);
+      setIsLocking(false);
+
+      setTxSuccess(true);
+      setAmount("");
+      fetchBalance();
+      fetchContractState();
+    } catch (err: any) {
+      setIsApproving(false);
+      setIsLocking(false);
+      const msg = err?.reason || err?.message || "";
+      if (msg.includes("user rejected") || msg.includes("rejected"))
+        setTxError("Transaction cancelled.");
+      else if (msg.includes("paused") || msg.includes("EnforcedPause"))
+        setTxError("Migration is temporarily paused. Check back soon.");
+      else if (msg.includes("insufficient"))
+        setTxError("Insufficient PUSH balance.");
+      else
+        setTxError("Something went wrong. Please try again.");
+    }
+  };
+
+  const isDepositing = isApproving || isLocking;
+  const depositLabel = isApproving ? "Approving..." : isLocking ? "Locking..." : "Deposit $PUSH";
+  const canDeposit = isWalletConnected && !!amount && !!withdrawAddress && !isDepositing && !isPaused && !!lockerAddress;
 
   return (
   <Box
@@ -100,7 +222,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
         </Box>
         <Box display="flex" flexDirection="row" justifyContent="flex-end" width="100%">
           <Text variant="bes-semibold" color="text-tertiary">
-            Balance: 0
+            Balance: {balance}
           </Text>
         </Box>
       </Box>
@@ -149,20 +271,83 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
         </Text>
       </Box>
 
+    {isPaused && (
+      <Box width="100%" padding="spacing-xs" css={css`background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.3); border-radius: 12px; box-sizing: border-box;`}>
+        <Text variant="bs-regular" css={css`color: #ff8080;`}>Migration is temporarily paused. Check back soon.</Text>
+      </Box>
+    )}
+
+    {txError && (
+      <Box width="100%" padding="spacing-xs" css={css`background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.3); border-radius: 12px; box-sizing: border-box;`}>
+        <Text variant="bs-regular" css={css`color: #ff8080;`}>{txError}</Text>
+      </Box>
+    )}
+
+    {txSuccess && (
+      <Box width="100%" padding="spacing-xs" css={css`background: rgba(66,221,177,0.1); border: 1px solid rgba(66,221,177,0.3); border-radius: 12px; box-sizing: border-box;`}>
+        <Text variant="bs-regular" css={css`color: #42ddb1;`}>Tokens locked! Your migration is in progress.</Text>
+      </Box>
+    )}
+
+    {isWalletConnected && (
+      <Box
+        as="button"
+        width="100%"
+        padding="spacing-sm"
+        onClick={handleDeposit}
+        css={css`
+          background: ${canDeposit ? "#C742DD" : "rgba(255,255,255,0.08)"};
+          border: none;
+          border-radius: 16px;
+          cursor: ${canDeposit ? "pointer" : "not-allowed"};
+          color: ${canDeposit ? "#fff" : "rgba(255,255,255,0.3)"};
+          font-family: "DM Sans", sans-serif;
+          font-size: 16px;
+          font-weight: 600;
+          transition: background 0.2s;
+          box-sizing: border-box;
+        `}
+      >
+        {depositLabel}
+      </Box>
+    )}
+
     <Box display="flex" flexDirection="column" gap="spacing-lg" width="100%">
       <Box
         display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
+        flexDirection="column"
+        gap="spacing-xxs"
         padding="spacing-xxs"
       >
-        <Text variant="h6-regular" color="text-tertiary">
-          Conversion rate
-        </Text>
-        <Text variant="bs-semibold" color="text-secondary">
-          1 PUSH=45 PC
-        </Text>
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Text variant="h6-regular" color="text-tertiary">
+            Conversion rate
+          </Text>
+          <Text variant="bs-semibold" color="text-secondary">
+            1 PUSH = 45 PC
+          </Text>
+        </Box>
+
+        {amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0 && (
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Text variant="h6-regular" color="text-tertiary">
+              You will receive
+            </Text>
+            <Text variant="bs-semibold" color="text-primary">
+              {(parseFloat(amount) * 45).toLocaleString()} PC
+            </Text>
+          </Box>
+        )}
       </Box>
 
       <Box
@@ -185,7 +370,7 @@ export const DepositForm = ({ isWalletConnected }: DepositFormProps) => {
         <Box display="flex" flexDirection="row" alignItems="center" gap="spacing-xxs">
           <PushIcon size={24} />
           <Text variant="bs-semibold" color="text-primary">
-            0 PUSH
+            {totalDeposited} PUSH
           </Text>
         </Box>
       </Box>

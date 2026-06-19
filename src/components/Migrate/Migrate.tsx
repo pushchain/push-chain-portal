@@ -2,10 +2,13 @@ import { css } from "styled-components";
 import { usePushWalletContext } from "@pushchain/ui-kit";
 
 import { Box, Text } from "../../blocks";
+import { DepositForm } from "../PreMigrate/DepositForm";
+import { MIGRATION_LOCKER_ADDRESS } from "../../config/migration";
 
 export const Migrate = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
+  const userAddress = universalAccount?.address;
 
   return (
     <Box
@@ -50,6 +53,12 @@ export const Migrate = () => {
             Lock your old PUSH tokens on Ethereum and claim your new native $PUSH tokens on Push Chain at a 1:15 ratio.
           </Text>
         </Box>
+
+        <DepositForm
+          isWalletConnected={isWalletConnected}
+          userAddress={userAddress}
+          lockerAddress={MIGRATION_LOCKER_ADDRESS}
+        />
       </Box>
     </Box>
   );

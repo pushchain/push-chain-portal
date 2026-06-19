@@ -5,10 +5,12 @@ import { Box, Text } from "../../blocks";
 import { CountdownBanner } from "./CountdownBanner";
 import { DepositForm } from "./DepositForm";
 import { FAQSection } from "./FAQSection";
+import { PRE_MIGRATION_LOCKER_ADDRESS } from "../../config/migration";
 
 export const PreMigrate = () => {
   const { universalAccount } = usePushWalletContext('wallet1');
   const isWalletConnected = Boolean(universalAccount?.address);
+  const userAddress = universalAccount?.address;
 
   return (
     <Box
@@ -56,7 +58,11 @@ export const PreMigrate = () => {
           </Text>
         </Box>
 
-        <DepositForm isWalletConnected={isWalletConnected} />
+        <DepositForm
+          isWalletConnected={isWalletConnected}
+          userAddress={userAddress}
+          lockerAddress={PRE_MIGRATION_LOCKER_ADDRESS}
+        />
       </Box>
 
       <FAQSection />
