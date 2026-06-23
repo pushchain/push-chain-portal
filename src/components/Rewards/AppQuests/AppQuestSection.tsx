@@ -46,13 +46,18 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
-  const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
+  const filteredLastOneQuestIds = lastOneQuests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
+  const filteredPusdQuestIds = pusdQuests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
+
+  const lastOneQuestIds = filteredLastOneQuestIds?.map((q) => q.id) || [];
+  const pusdQuestIds = filteredPusdQuestIds?.map((q) => q.id) || [];
 
   const allActivityIds = [
     ...lastOneQuestIds,
     ...pusdQuestIds,
   ];
+
+  console.log(lastOneQuestIds, pusdQuestIds, 'kokokok')
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
