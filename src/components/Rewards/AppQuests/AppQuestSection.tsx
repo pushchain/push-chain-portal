@@ -8,7 +8,7 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
+import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
 import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
@@ -28,16 +28,16 @@ const AppQuestSection = () => {
     walletAddress: caip10WalletAddress,
   })
 
-  const { data: pusdQuests } = useGetQuests({
-    appId: "pusd"
+  const { data: lastOneQuests } = useGetQuests({
+    appId: "lastone"
   });
 
   const { data: zappiQuests } = useGetQuests({
     appId: "zappi"
   });
 
-  const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
-    appId: "pusd",
+  const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
+    appId: "lastone",
     userId: userDetails?.userId
   });
 
@@ -46,11 +46,11 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
+  const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
   const zappiQuestIds = zappiQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
-    ...pusdQuestIds,
+    ...lastOneQuestIds,
     ...zappiQuestIds,
   ];
 
@@ -73,12 +73,12 @@ const AppQuestSection = () => {
 
   const refetchAll = () => {
     refetchActivities();
-    refetchPusdProgress();
+    refetchLastOneProgress();
     refetchZappiProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-06-23T14:00:00Z";
+  const targetDate = "2026-07-07T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -86,10 +86,10 @@ const AppQuestSection = () => {
     return map;
   };
 
-  const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
+  const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
   const zappiCompletedMap = buildCompletedMap(zappiQuestsProgress?.data?.quests);
 
-  const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledlastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
   const enabledZappiQuests = zappiQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
@@ -106,21 +106,21 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="PUSD Stablecoin"
-          appUrl="pusd.push.org"
-          bgImage={pusdBg}
+          appName="Last One"
+          appUrl="lastone.fun"
+          bgImage={lastOneBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledPusdQuests}
+          quests={enabledlastOneQuests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={pusdCompletedMap}
+          completedMap={lastOneCompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
-          linkColor="#4D2783"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);"
+          linkColor="#653468"
         />
 
         <AppQuestCard
