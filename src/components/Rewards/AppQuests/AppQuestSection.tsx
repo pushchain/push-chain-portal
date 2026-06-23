@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
-import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
+import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -32,8 +32,8 @@ const AppQuestSection = () => {
     appId: "lastone"
   });
 
-  const { data: zappiQuests } = useGetQuests({
-    appId: "zappi"
+  const { data: pusdQuests } = useGetQuests({
+    appId: "pusd"
   });
 
   const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
@@ -41,17 +41,17 @@ const AppQuestSection = () => {
     userId: userDetails?.userId
   });
 
-  const { data: zappiQuestsProgress, refetch: refetchZappiProgress } = useGetQuestsProgress({
-    appId: "zappi",
+  const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
+    appId: "pusd",
     userId: userDetails?.userId
   });
 
   const lastOneQuestIds = lastOneQuests?.data?.quests?.map((q) => q.id) || [];
-  const zappiQuestIds = zappiQuests?.data?.quests?.map((q) => q.id) || [];
+  const pusdQuestIds = pusdQuests?.data?.quests?.map((q) => q.id) || [];
 
   const allActivityIds = [
     ...lastOneQuestIds,
-    ...zappiQuestIds,
+    ...pusdQuestIds,
   ];
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
@@ -74,7 +74,7 @@ const AppQuestSection = () => {
   const refetchAll = () => {
     refetchActivities();
     refetchLastOneProgress();
-    refetchZappiProgress();
+    refetchPusdProgress();
     refetchQuestActivities();
   };
 
@@ -87,10 +87,10 @@ const AppQuestSection = () => {
   };
 
   const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
-  const zappiCompletedMap = buildCompletedMap(zappiQuestsProgress?.data?.quests);
+  const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
 
   const enabledlastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledZappiQuests = zappiQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -105,6 +105,24 @@ const AppQuestSection = () => {
             box-sizing: border-box;
         `}
       >
+        <AppQuestCard
+          appName="PUSD Stablecoin"
+          appUrl="pusd.push.org"
+          bgImage={pusdBg}
+          description=""
+          resetTime={timeLeft}
+          quests={enabledPusdQuests}
+          activityStatus={activityStatuses}
+          isLoading={isLoadingActivities}
+          refetchActivities={refetchAll}
+          userId={userDetails?.userId}
+          completedMap={pusdCompletedMap}
+          questProgressMap={questProgressMap}
+          setErrorMessage={setErrorMessage}
+          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
+          linkColor="#4D2783"
+        />
+
         <AppQuestCard
           appName="Last One"
           appUrl="lastone.fun"
@@ -121,24 +139,6 @@ const AppQuestSection = () => {
           setErrorMessage={setErrorMessage}
           titleGradient="linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);"
           linkColor="#653468"
-        />
-
-        <AppQuestCard
-          appName="Zappi.to"
-          appUrl="zappi.to"
-          bgImage={zappiBg}
-          description=""
-          resetTime={timeLeft}
-          quests={enabledZappiQuests}
-          activityStatus={activityStatuses}
-          isLoading={isLoadingActivities}
-          refetchActivities={refetchAll}
-          userId={userDetails?.userId}
-          completedMap={zappiCompletedMap}
-          questProgressMap={questProgressMap}
-          setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
-          linkColor="#551798"
         />
       </Box>
     </Box>
