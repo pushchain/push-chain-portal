@@ -124,6 +124,7 @@ const AppQuestSection = () => {
           setErrorMessage={setErrorMessage}
           titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
           linkColor="#551798"
+          isNew
         />
 
         <AppQuestCard

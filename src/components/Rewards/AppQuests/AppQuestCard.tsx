@@ -5,7 +5,7 @@ import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
-import NewTag from '../../../../static/assets/website/rewards/NewTag.webp';
+import NewTag from '../../../../static/assets/website/rewards/NewTag.png';
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -385,7 +385,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
               <Box
                 display="flex"
                 alignItems="center"
-                gap="spacing-xxs"
+                gap="spacing-xs"
                 alignSelf="stretch"
               >
                 <LinkTo
@@ -413,9 +413,8 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
                   </Text>
 
                   <ArrowUpRight size={23} color='#000' />
-                  
-                  { isNew && <NewTag />}
                 </LinkTo>
+                { isNew && <img src={NewTag} alt="New" height={20} width={54} />}
               </Box>
 
               <Text
