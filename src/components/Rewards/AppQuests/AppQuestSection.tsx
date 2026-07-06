@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
-import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
+import cetraBg from '../../../../static/assets/website/rewards/cetra-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -81,7 +81,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-07-07T14:00:00Z";
+  const targetDate = "2026-07-14T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -122,14 +122,14 @@ const AppQuestSection = () => {
           completedMap={app1CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
-          linkColor="#4D2783"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
+          linkColor="#551798"
         />
 
         <AppQuestCard
           appName="Cetra.app"
           appUrl="cetra.app"
-          bgImage={pusdBg}
+          bgImage={cetraBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
@@ -140,8 +140,8 @@ const AppQuestSection = () => {
           completedMap={app2CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);"
-          linkColor="#653468"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #5380F7 89.06%);"
+          linkColor="#273583"
         />
       </Box>
     </Box>
