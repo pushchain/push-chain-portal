@@ -5,6 +5,7 @@ import { useVerifyRewards } from '../hooks/useVerifyRewards';
 import { LinkTo } from '../../../css/SharedStyling';
 import LevelUpModal from '../LevelUpModal';
 import { useRewardStatus } from '../../../context/rewardStatusContext';
+import NewTag from '../../../../static/assets/website/rewards/NewTag.png';
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -254,6 +255,7 @@ type AppQuestCardProps = {
   userId?: string;
   completedMap?: Record<string, boolean>;
   questProgressMap?: Record<string, { progress: number; status: string }>;
+  isNew?: boolean;
   setErrorMessage?: (errorMessage: string) => void;
 };
 
@@ -274,6 +276,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
   userId,
   completedMap = {},
   questProgressMap = {},
+  isNew = false,
   setErrorMessage,
 }) => {
 
@@ -382,7 +385,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
               <Box
                 display="flex"
                 alignItems="center"
-                gap="spacing-xxs"
+                gap="spacing-xs"
                 alignSelf="stretch"
               >
                 <LinkTo
@@ -411,6 +414,7 @@ const AppQuestCard: FC<AppQuestCardProps> = ({
 
                   <ArrowUpRight size={23} color='#000' />
                 </LinkTo>
+                { isNew && <img src={NewTag} alt="New" height={20} width={54} />}
               </Box>
 
               <Text

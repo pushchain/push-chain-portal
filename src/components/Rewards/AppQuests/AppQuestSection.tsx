@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
-import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
+import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
+import cetraBg from '../../../../static/assets/website/rewards/cetra-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -28,36 +28,34 @@ const AppQuestSection = () => {
     walletAddress: caip10WalletAddress,
   })
 
-  const { data: lastOneQuests } = useGetQuests({
-    appId: "lastone"
+  const { data: app1Quests } = useGetQuests({
+    appId: "zappi"
   });
 
-  const { data: pusdQuests } = useGetQuests({
-    appId: "pusd"
+  const { data: app2Quests } = useGetQuests({
+    appId: "cetra"
   });
 
-  const { data: lastOneQuestsProgress, refetch: refetchLastOneProgress } = useGetQuestsProgress({
-    appId: "lastone",
+  const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
+    appId: "zappi",
     userId: userDetails?.userId
   });
 
-  const { data: pusdQuestsProgress, refetch: refetchPusdProgress } = useGetQuestsProgress({
-    appId: "pusd",
+  const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
+    appId: "cetra",
     userId: userDetails?.userId
   });
 
-  const filteredLastOneQuestIds = lastOneQuests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
-  const filteredPusdQuestIds = pusdQuests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
+  const filteredApp1QuestIds = app1Quests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
+  const filteredApp2QuestIds = app2Quests?.data?.quests?.filter((q) => q.status == 'ENABLED') || [];
 
-  const lastOneQuestIds = filteredLastOneQuestIds?.map((q) => q.id) || [];
-  const pusdQuestIds = filteredPusdQuestIds?.map((q) => q.id) || [];
+  const app1QuestIds = filteredApp1QuestIds?.map((q) => q.id) || [];
+  const app2QuestIds = filteredApp2QuestIds?.map((q) => q.id) || [];
 
   const allActivityIds = [
-    ...lastOneQuestIds,
-    ...pusdQuestIds,
+    ...app1QuestIds,
+    ...app2QuestIds,
   ];
-
-  console.log(lastOneQuestIds, pusdQuestIds, 'kokokok')
 
   const { data: activityStatuses, isLoading: isLoadingActivities, refetch: refetchActivities } = useGetRewardsActivity(
     {
@@ -78,12 +76,12 @@ const AppQuestSection = () => {
 
   const refetchAll = () => {
     refetchActivities();
-    refetchLastOneProgress();
-    refetchPusdProgress();
+    refetchApp1QuestsProgress();
+    refetchApp2QuestsProgress();
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-07-08T14:00:00Z";
+  const targetDate = "2026-07-22T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -91,11 +89,11 @@ const AppQuestSection = () => {
     return map;
   };
 
-  const lastOneCompletedMap = buildCompletedMap(lastOneQuestsProgress?.data?.quests);
-  const pusdCompletedMap = buildCompletedMap(pusdQuestsProgress?.data?.quests);
+  const app1CompletedMap = buildCompletedMap(app1QuestsProgress?.data?.quests);
+  const app2CompletedMap = buildCompletedMap(app2QuestsProgress?.data?.quests);
 
-  const enabledlastOneQuests = lastOneQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
-  const enabledPusdQuests = pusdQuests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledApp1Quests = app1Quests?.data?.quests?.filter((q) => q.status === 'ENABLED');
+  const enabledApp2Quests = app2Quests?.data?.quests?.filter((q) => q.status === 'ENABLED');
 
   return (
     <Box
@@ -111,39 +109,40 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="PUSD Stablecoin"
-          appUrl="pusd.push.org"
-          bgImage={pusdBg}
+          appName="Zappi.to"
+          appUrl="zappi.to"
+          bgImage={zappiBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledPusdQuests}
+          quests={enabledApp1Quests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={pusdCompletedMap}
+          completedMap={app1CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #730BE3 89.06%);"
-          linkColor="#4D2783"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
+          linkColor="#551798"
+          isNew
         />
 
         <AppQuestCard
-          appName="Last One"
-          appUrl="lastone.fun"
-          bgImage={lastOneBg}
+          appName="Cetra.app"
+          appUrl="cetra.app"
+          bgImage={cetraBg}
           description=""
           resetTime={timeLeft}
-          quests={enabledlastOneQuests}
+          quests={enabledApp2Quests}
           activityStatus={activityStatuses}
           isLoading={isLoadingActivities}
           refetchActivities={refetchAll}
           userId={userDetails?.userId}
-          completedMap={lastOneCompletedMap}
+          completedMap={app2CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #6B30B2 89.06%);"
-          linkColor="#653468"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #5380F7 89.06%);"
+          linkColor="#273583"
         />
       </Box>
     </Box>
