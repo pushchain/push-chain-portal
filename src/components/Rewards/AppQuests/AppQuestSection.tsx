@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
-import cetraBg from '../../../../static/assets/website/rewards/cetra-bg.webp';
+import degenChessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -33,7 +33,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "cetra"
+    appId: "unichess"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
@@ -42,7 +42,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "cetra",
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
@@ -128,9 +128,9 @@ const AppQuestSection = () => {
         />
 
         <AppQuestCard
-          appName="Cetra.app"
-          appUrl="cetra.app"
-          bgImage={cetraBg}
+          appName="Degen Chess"
+          appUrl="degenchess.fun"
+          bgImage={degenChessBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
