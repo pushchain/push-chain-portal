@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import pushNinjaBg from '../../../../static/assets/website/rewards/Push-Ninja-bg.webp';
-import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
+import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -33,7 +33,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "lastone"
+    appId: "unichess"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
@@ -42,7 +42,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "lastone",
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
@@ -127,9 +127,9 @@ const AppQuestSection = () => {
         />
 
         <AppQuestCard
-          appName="Last One"
-          appUrl="lastone.fun"
-          bgImage={lastOneBg}
+          appName="Degen Chess"
+          appUrl="degenchess.fun"
+          bgImage={unichessBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
