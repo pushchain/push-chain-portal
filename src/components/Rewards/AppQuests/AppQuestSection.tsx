@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
-import cetraBg from '../../../../static/assets/website/rewards/cetra-bg.webp';
+import pushNinjaBg from '../../../../static/assets/website/rewards/Push-Ninja-bg.webp';
+import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -29,20 +29,20 @@ const AppQuestSection = () => {
   })
 
   const { data: app1Quests } = useGetQuests({
-    appId: "zappi"
+    appId: "push-ninja"
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "cetra"
+    appId: "unichess"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
-    appId: "zappi",
+    appId: "push-ninja",
     userId: userDetails?.userId
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "cetra",
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
@@ -81,7 +81,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-07-22T14:00:00Z";
+  const targetDate = "2026-08-05T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -109,9 +109,9 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="Zappi.to"
-          appUrl="zappi.to"
-          bgImage={zappiBg}
+          appName="Push Ninja"
+          appUrl="pushninja.fun"
+          bgImage={pushNinjaBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp1Quests}
@@ -124,13 +124,12 @@ const AppQuestSection = () => {
           setErrorMessage={setErrorMessage}
           titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
           linkColor="#551798"
-          isNew
         />
 
         <AppQuestCard
-          appName="Cetra.app"
-          appUrl="cetra.app"
-          bgImage={cetraBg}
+          appName="Degen Chess"
+          appUrl="degenchess.fun"
+          bgImage={unichessBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
