@@ -81,7 +81,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-07-22T14:00:00Z";
+  const targetDate = "2026-08-05T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
