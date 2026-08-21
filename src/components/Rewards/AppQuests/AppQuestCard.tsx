@@ -54,13 +54,14 @@ const QuestItem: FC<QuestItemProps> = ({
   });
 
   const handleClaim = () => {
-    if (!userId || verifyingRewards) return;
+    if (!userId || verifyingRewards || rewardsLocked) return;
     handleRewardsVerification(userId);
   };
 
   const apiProgress = questProgress?.progress ?? 0;
-  // Show claim button when quest is fully progressed but not yet claimed
-  const canShowClaimButton = !isClaimCompleted && !rewardsLocked && apiProgress >= 100;
+  // Keep the claim action visible for completed quests so locked users know they
+  // need to finish verification before claiming.
+  const canShowClaimButton = !isClaimCompleted && apiProgress >= 100;
 
   return (
     <Box
@@ -185,36 +186,52 @@ const QuestItem: FC<QuestItemProps> = ({
                   </Box>
 
                   {canShowClaimButton && (
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      cursor="pointer"
-                      gap="spacing-xxs"
-                      onClick={handleClaim}
+                    <Tooltip
+                      title={
+                        rewardsLocked
+                          ? "Verify X and Discord to claim this quest."
+                          : undefined
+                      }
+                      tooltipPosition="bottom-left"
+                      width="fit-content"
+                      maxWidth="220px"
                       css={css`
-                        border-radius: 24px;
-                        border: 1px solid rgba(255, 255, 255, 0.25);
+                        text-wrap: balance;
                       `}
                     >
-                      <HoverableSVG
-                        defaultBackground={verifyingRewards ? "#C742DD" :"transparent"}
-                        defaultColor={verifyingRewards ? "#FFFFFF" : "rgba(255, 255, 255, 0.25)"}
-                        hoverBackground="#C742DD"
-                        hoverColor="#FFFFFF"
-                        padding="spacing-xxxs"
-                        borderRadius="radius-sm"
-                        icon={
-                          <Box
-                            css={css`
-                              display: flex;
-                              ${verifyingRewards && css`animation: ${spin} 0.5s linear infinite;`}
-                            `}
-                          >
-                            <Refresh color="currentColor" />
-                          </Box>
-                        }
-                      />
-                    </Box>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        cursor={rewardsLocked ? "not-allowed" : "pointer"}
+                        gap="spacing-xxs"
+                        onClick={handleClaim}
+                        css={css`
+                          border-radius: 24px;
+                          border: 1px solid rgba(255, 255, 255, 0.25);
+                        `}
+                      >
+                        <HoverableSVG
+                          defaultBackground={verifyingRewards ? "#C742DD" :"transparent"}
+                          defaultColor={verifyingRewards ? "#FFFFFF" : "rgba(255, 255, 255, 0.25)"}
+                          hoverBackground={rewardsLocked ? "transparent" : "#C742DD"}
+                          hoverColor={rewardsLocked ? "rgba(255, 255, 255, 0.25)" : "#FFFFFF"}
+                          disabled={rewardsLocked || verifyingRewards}
+                          aria-label={rewardsLocked ? "Claim locked: complete X and Discord verification" : "Claim quest rewards"}
+                          padding="spacing-xxxs"
+                          borderRadius="radius-sm"
+                          icon={
+                            <Box
+                              css={css`
+                                display: flex;
+                                ${verifyingRewards && css`animation: ${spin} 0.5s linear infinite;`}
+                              `}
+                            >
+                              <Refresh color="currentColor" />
+                            </Box>
+                          }
+                        />
+                      </Box>
+                    </Tooltip>
                   )}
                 </Box>
               </Box>
