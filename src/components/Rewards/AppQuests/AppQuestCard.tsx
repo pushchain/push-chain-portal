@@ -193,10 +193,11 @@ const QuestItem: FC<QuestItemProps> = ({
                           : undefined
                       }
                       tooltipPosition="bottom-left"
-                      width="fit-content"
-                      maxWidth="220px"
                       css={css`
-                        text-wrap: balance;
+                        box-sizing: border-box;
+                        width: max-content;
+                        max-width: none;
+                        white-space: nowrap;
                       `}
                     >
                       <Box
