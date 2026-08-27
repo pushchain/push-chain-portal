@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import bridgeBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
-import zappiBg from '../../../../static/assets/website/rewards/zappi-bg.webp';
+import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
+import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -29,20 +29,20 @@ const AppQuestSection = () => {
   })
 
   const { data: app1Quests } = useGetQuests({
-    appId: "push-chain-bridge"
+    appId: "pusd"
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "zappi"
+    appId: "lastone"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
-    appId: "push-chain-bridge",
+    appId: "pusd",
     userId: userDetails?.userId
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "zappi",
+    appId: "lastone",
     userId: userDetails?.userId
   });
 
@@ -81,7 +81,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-08-27T14:00:00Z";
+  const targetDate = "2026-09-10T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -109,9 +109,9 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="Push Chain Bridge"
-          appUrl="bridge.push.org"
-          bgImage={bridgeBg}
+          appName="PUSD Stablecoin"
+          appUrl="pusd.push.org"
+          bgImage={pusdBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp1Quests}
@@ -122,14 +122,14 @@ const AppQuestSection = () => {
           completedMap={app1CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
-          linkColor="#551798"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
+          linkColor="#4D2783"
         />
 
         <AppQuestCard
-          appName="Zappi.to"
-          appUrl="zappi.to"
-          bgImage={zappiBg}
+          appName="Last One"
+          appUrl="lastone.fun"
+          bgImage={lastOneBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
