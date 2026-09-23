@@ -15,7 +15,7 @@ export type ActvityType =
   | "follow_push_on_discord"
   | "follow_push_on_twitter"
   | `unichess_${string}`
-  | `ramen_swap_${string}`
+  | `bridge_${string}`
   | `moleswap_${string}`
   | `boss_${string}`
   | `bonus_${string}`

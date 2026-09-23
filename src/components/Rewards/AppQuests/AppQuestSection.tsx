@@ -9,7 +9,7 @@ import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
 import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
-import ramenBg from '../../../../static/assets/website/rewards/ramen-bg.webp';
+import bridgeBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -33,7 +33,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "ramen-swap"
+    appId: "push-chain-bridge"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
@@ -42,7 +42,7 @@ const AppQuestSection = () => {
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "ramen-swap",
+    appId: "push-chain-bridge",
     userId: userDetails?.userId
   });
 
@@ -127,9 +127,9 @@ const AppQuestSection = () => {
         />
 
         <AppQuestCard
-          appName="Ramen Swap"
-          appUrl="ramenfi.xyz"
-          bgImage={ramenBg}
+          appName="Push Chain Bridge"
+          appUrl="bridge.push.org"
+          bgImage={bridgeBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
@@ -140,8 +140,8 @@ const AppQuestSection = () => {
           completedMap={app2CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #ED2027 89.06%);"
-          linkColor="#DB2D33"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
+          linkColor="#551798"
         />
       </Box>
     </Box>
