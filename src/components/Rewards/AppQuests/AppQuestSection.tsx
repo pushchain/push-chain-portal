@@ -8,8 +8,8 @@ import { walletToFullCAIP10 } from '../../../helpers/web3helper';
 import AppQuestCard from './AppQuestCard';
 import { fadeInCss } from '../utils/FadeIn';
 import { css } from 'styled-components';
-import pusdBg from '../../../../static/assets/website/rewards/pusd-bg.webp';
-import lastOneBg from '../../../../static/assets/website/rewards/last-one-bg.webp';
+import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg.webp';
+import bridgeBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
 import { Box } from '../../../blocks';
@@ -29,20 +29,20 @@ const AppQuestSection = () => {
   })
 
   const { data: app1Quests } = useGetQuests({
-    appId: "pusd"
+    appId: "unichess"
   });
 
   const { data: app2Quests } = useGetQuests({
-    appId: "lastone"
+    appId: "push-chain-bridge"
   });
 
   const { data: app1QuestsProgress, refetch: refetchApp1QuestsProgress } = useGetQuestsProgress({
-    appId: "pusd",
+    appId: "unichess",
     userId: userDetails?.userId
   });
 
   const { data: app2QuestsProgress, refetch: refetchApp2QuestsProgress } = useGetQuestsProgress({
-    appId: "lastone",
+    appId: "push-chain-bridge",
     userId: userDetails?.userId
   });
 
@@ -81,7 +81,7 @@ const AppQuestSection = () => {
     refetchQuestActivities();
   };
 
-  const targetDate = "2026-09-24T14:00:00Z";
+  const targetDate = "2026-10-08T14:00:00Z";
   const { timeLeft } = useCountdown(targetDate);
 
   const buildCompletedMap = (quests: QuestProgress[] | undefined) => {
@@ -109,9 +109,9 @@ const AppQuestSection = () => {
         `}
       >
         <AppQuestCard
-          appName="PUSD Stablecoin"
-          appUrl="pusd.push.org"
-          bgImage={pusdBg}
+          appName="Degen Chess"
+          appUrl="degenchess.fun"
+          bgImage={unichessBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp1Quests}
@@ -122,14 +122,14 @@ const AppQuestSection = () => {
           completedMap={app1CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000 16.15%, #A056E2 89.06%);"
-          linkColor="#4D2783"
+          titleGradient="linear-gradient(180deg, #000 16.15%, #40278D 89.06%)"
+          linkColor="#40278D"
         />
 
         <AppQuestCard
-          appName="Last One"
-          appUrl="lastone.fun"
-          bgImage={lastOneBg}
+          appName="Push Chain Bridge"
+          appUrl="bridge.push.org"
+          bgImage={bridgeBg}
           description=""
           resetTime={timeLeft}
           quests={enabledApp2Quests}
@@ -140,8 +140,8 @@ const AppQuestSection = () => {
           completedMap={app2CompletedMap}
           questProgressMap={questProgressMap}
           setErrorMessage={setErrorMessage}
-          titleGradient="linear-gradient(180deg, #000000 16.15%, #5380F7 89.06%);"
-          linkColor="#273583"
+          titleGradient="linear-gradient(180deg, #000000 16.15%, #730BE3 89.06%);"
+          linkColor="#551798"
         />
       </Box>
     </Box>

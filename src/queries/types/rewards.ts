@@ -14,8 +14,8 @@ export type RewardsAcitivitesResponse = {
 export type ActvityType =
   | "follow_push_on_discord"
   | "follow_push_on_twitter"
-  | `pusd_${string}`
-  | `lastone_${string}`
+  | `unichess_${string}`
+  | `bridge_${string}`
   | `moleswap_${string}`
   | `boss_${string}`
   | `bonus_${string}`
