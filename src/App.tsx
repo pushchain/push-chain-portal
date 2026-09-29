@@ -1,7 +1,6 @@
 // React + Web3 Essentials
 import React, { useState, useEffect, useRef } from "react";
 
-// External Packages
 import {
   BrowserRouter as Router,
   Routes,
@@ -22,34 +21,40 @@ import {
 
 import { getPreviewBasePath } from "../basePath";
 import { FLAGS } from "./config/flags";
+
 import { ThemeProviderWrapper } from "./context/themeContext";
 import { RewardsContextProvider } from "./context/rewardsContext";
+import { AuthHeadersProvider } from "./context/authHeadersContext";
+import { RewardStatusContextProvider } from "./context/rewardStatusContext";
+import { ActivityContextProvider } from "./context/activityContext";
+import { LinkedWalletProvider } from "./context/linkedWalletContext";
+
+import { walletToFullCAIP10 } from "./helpers/web3helper";
+import { trackEvent } from "./helpers/analytics";
+import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
+import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
 
 import { blocksColors, Box, getBlocksCSSVariables } from "../src/blocks";
 import NotFound from "./components/NotFound";
+import { Sidebar } from "./components/sidebar";
+import Header from "./structure/Header";
+
 import RewardsPage from "./pages/RewardsPage";
 import LeaderBoardPage from "./pages/LeaderBoardPage";
 import { DiscordVerificationPage } from "./pages/DiscordVerificationPage";
 import PushPassPage from "./pages/PushPassPage";
 import PushPassItemPage from "./pages/PushPassItemPage";
-
-import { Sidebar } from "./components/sidebar";
-import Header from "./structure/Header";
-import SeasonBg from "../static/assets/website/shared/season-bg.webp";
 import PreLaunchPage from "./pages/PreLaunchPage";
 import AdminPage from "./pages/AdminPage";
 import CultLeaderboardPage from "./pages/CultLeaderboardPage";
 import SquadsPage from "./pages/SquadsPage";
-import { walletToFullCAIP10 } from "./helpers/web3helper";
-import { useGetSeasonThreeUserByWallet, useGetUserCultStatus, useResolveInviteLink } from "./queries";
-import { useAutoCreateUser } from "./components/Rewards/hooks/useAutoCreateUser";
-import { AuthHeadersProvider } from "./context/authHeadersContext";
-import { RewardStatusContextProvider } from "./context/rewardStatusContext";
 import S3CountdownPage from "./pages/S3CountdownPage";
 import CultPage from "./pages/CultPage";
-import { ActivityContextProvider } from "./context/activityContext";
-import { trackEvent } from "./helpers/analytics";
-import { LinkedWalletProvider } from "./context/linkedWalletContext";
+import PreMigratePage from "./pages/PreMigratePage";
+import MigratePage from "./pages/MigratePage";
+
+import SeasonBg from "../static/assets/website/shared/season-bg.webp";
+import OtherBg from "../static/assets/website/shared/other-bg.webp";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -200,8 +205,14 @@ const AppContent = () => {
 
   const hideSideBar =
     location.pathname === "/discord/verification" ||
+    location.pathname === "/pre-migrate" ||
+    location.pathname === "/migrate" ||
     location.pathname === "/admin/controls";
+
   const isAdminPage = location.pathname === "/admin/controls";
+  const isMigratePage =
+    location.pathname === "/pre-migrate" ||
+    location.pathname === "/migrate";
 
   return (
     <Box display="flex" flexDirection="column" height="100vh" css={css``}>
@@ -215,7 +226,7 @@ const AppContent = () => {
             right: 0;
             width: 100%;
             height: 100%;
-            background: url(${SeasonBg}) no-repeat center center fixed;
+            background: url(${isMigratePage ? OtherBg : SeasonBg}) no-repeat center center fixed;
             background-size: cover;
             pointer-events: none;
             z-index: -1;
@@ -268,6 +279,8 @@ const AppContent = () => {
                 path="/discord/verification"
                 element={<DiscordVerificationPage />}
               />
+              <Route path="/pre-migrate" element={<PreMigratePage />} />
+              <Route path="/migrate" element={<MigratePage />} />
 
               {FLAGS.SEASON_THREE && (
                 <>
