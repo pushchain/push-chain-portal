@@ -12,7 +12,7 @@ import unichessBg from '../../../../static/assets/website/rewards/Degen-Chess-bg
 import bridgeBg from '../../../../static/assets/website/rewards/bridgeapp-bg.webp';
 import { useCountdown } from '../hooks/useCountdown';
 
-import { Box } from '../../../blocks';
+import { Alert, Box } from '../../../blocks';
 
 
 const AppQuestSection = () => {
@@ -99,6 +99,11 @@ const AppQuestSection = () => {
     <Box
       width="100%"
       css={css`${fadeInCss(100)}`}>
+      {errorMessage && (
+        <Box position="relative" margin="spacing-none spacing-none spacing-md spacing-none">
+          <Alert variant="error" description={errorMessage} />
+        </Box>
+      )}
       <Box
         display="flex"
         gap="spacing-md"
