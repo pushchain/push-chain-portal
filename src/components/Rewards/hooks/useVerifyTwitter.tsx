@@ -103,7 +103,7 @@ const useVerifyTwitter = ({
 
   const { mutate: claimRewardsActivity } = useClaimRewardsActivity();
 
-  const formatTwitterVerificationError = (rawMessage: string): string => {
+  const formatTwitterVerificationError = (rawMessage: string, errorCode?: string): string => {
     if (!rawMessage) return "Twitter verification failed. Please try again.";
 
     const lines = rawMessage.split("\n").map(l => l.trim());
@@ -119,12 +119,24 @@ const useVerifyTwitter = ({
         reasons.push("Your account must have at least 100 followers.");
       }
 
-      if (line.includes("Unable to verify account age")) {
+      if (line.includes("Account too new")) {
         reasons.push("Your Twitter account must be at least 6 months old.");
+      }
+
+      if (line.includes("Unable to verify account age")) {
+        reasons.push("We couldn't check your account age right now. Please try again later.");
+      }
+
+      if (line.includes("verify follow status")) {
+        reasons.push("We couldn't check if you follow @pushchain right now. Please try again later.");
       }
     });
 
     if (reasons.length === 0) {
+      // One-line validation errors are written for users, e.g. "already linked to
+      // another wallet" or "Too many verification attempts".
+      if (errorCode === "VALIDATION_ERROR" && lines.length === 1) return rawMessage;
+
       return "Twitter verification failed. Please try again later.";
     }
 
@@ -170,8 +182,8 @@ const useVerifyTwitter = ({
               console.log("Error in creating activity", error);
               setVerifyingTwitter(false);
 
-              const rawMessage = error?.response?.data?.error?.message;
-              setErrorMessage(formatTwitterVerificationError(rawMessage));
+              const apiError = error?.response?.data?.error;
+              setErrorMessage(formatTwitterVerificationError(apiError?.message, apiError?.code));
 
             },
           },
