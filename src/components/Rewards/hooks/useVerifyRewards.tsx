@@ -151,7 +151,7 @@ const useVerifyRewards = ({
         refetchActivity();
         refetchUserDetails();
       }
-      if (response.data.status === "PENDING" || response?.status === "COMPLETED") {
+      if (response.data.status === "PENDING" || response?.status === "PENDING") {
         setRewardsActivityStatus("Pending");
         refetchActivity();
       }
